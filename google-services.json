@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "978334163161",
+    "project_id": "sincere-passage-428004-c2",
+    "storage_bucket": "sincere-passage-428004-c2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:978334163161:android:27f9f8ce04300b8793dec8",
+        "android_client_info": {
+          "package_name": "com.Tharindu.MIS"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDGLEw0G--DM7xiKDSqAg67ddjZ5UDltv0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

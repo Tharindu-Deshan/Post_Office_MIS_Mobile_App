@@ -1,0 +1,36 @@
+{
+  "expo": {
+    "name": "Post_Office_Mobile_App",
+    "slug": "Post_Office_Mobile_App",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff",
+        "googleServicesFile":"./google-services.json",
+        
+        "package":"com.Tharindu.MIS",
+        "googleMapsApiKey":"AIzaSyBbjF0HeGK-nW2YxLu27QDxVXQQeDvQjAU"
+
+
+        
+      },
+
+      
+    "web": {
+      "favicon": "./assets/favicon.png"
+    }
+  }
+}
+}
