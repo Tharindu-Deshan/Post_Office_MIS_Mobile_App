@@ -1,3 +1,4 @@
+import { GOOGLE_MAPS_API_KEY } from '@env';
 import React, { useState, useEffect } from 'react';
 import { View, Text, Dimensions } from 'react-native';
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
