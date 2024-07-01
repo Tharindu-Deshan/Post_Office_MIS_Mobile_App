@@ -5,7 +5,7 @@ import Colors from '../../Shared/Colors'
 export default function Header() {
   return (
     <View style={{display:'flex',flexDirection:'row',justifyContent:'space-evenly',gap:10,
-      alignItems: 'center'
+      alignItems: 'center',marginTop:20
     }}>
       <Image source={require('./../../../assets/logo.png')}
       style={styles.logo}/>
@@ -26,6 +26,7 @@ export default function Header() {
 const styles = StyleSheet.create({
   logo:{
     width:50,
+
     height:50
   }, 
   searchBar:{

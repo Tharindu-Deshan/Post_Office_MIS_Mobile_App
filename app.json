@@ -17,20 +17,22 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff",
-        "googleServicesFile":"./google-services.json",
-        
-        "package":"com.Tharindu.MIS",
-        "googleMapsApiKey":"AIzaSyBbjF0HeGK-nW2YxLu27QDxVXQQeDvQjAU"
-
-
-        
+        "backgroundColor": "#ffffff"
       },
-
-      
+      "googleServicesFile": "./google-services.json",
+      "package": "com.Tharindu.MIS",
+      "permissions": [
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION"
+      ],
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyBbjF0HeGK-nW2YxLu27QDxVXQQeDvQjAU"
+        }
+      }
+    },
     "web": {
       "favicon": "./assets/favicon.png"
     }
   }
-}
 }
