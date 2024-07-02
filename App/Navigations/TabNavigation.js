@@ -2,11 +2,14 @@ import { View, Text } from 'react-native'
 import React from 'react'
 import Home from '../Screens/Home';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs'
-import Fav from '../Screens/Fav';
-import Search from '../Screens/Search';
+import Fav from '../Screens/RouteDisplay';
+import ViewDeliveryPage from '../Screens/ViewDeliveryPage';
 import Profile from '../Screens/Profile';
 import {Ionicons} from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
+import { FontAwesome5 } from '@expo/vector-icons';
+import RouteDisplay from '../Screens/RouteDisplay';
 export default function TabNavigation() {
     const Tab = createBottomTabNavigator();
   return (
@@ -22,21 +25,23 @@ export default function TabNavigation() {
 
             }}
         />
-        <Tab.Screen name = "Search" component ={Search}
+        <Tab.Screen name = "ViewDeliveryPage" component ={ViewDeliveryPage}
             options={{
-                tabBarLabel:'Search',
+                tabBarLabel:'View Delivery',
                 tabBarIcon : ({color,size})=>(
-                    <Ionicons name="search" color = {color} size = {size}/>
+                    <MaterialCommunityIcons name="google-maps" color = {color} size = {size}/>
                 ),
+              
 
         }}
         />
-        <Tab.Screen name = "Fav" component ={Fav}
+        <Tab.Screen name ="RouteDisplay" component ={RouteDisplay}
             options={{
-                tabBarLabel:'Fav',
+                tabBarLabel:'Route',
                 tabBarIcon : ({color,size})=>(
-                    <Ionicons name="heart" color = {color} size = {size}/>
+                    <FontAwesome5 name="route" color = {color} size = {size}/>
                 ),
+                
 
         }}
         />

@@ -54,8 +54,8 @@ export default function GoogleMapView() {
   }, []);
 
   return (
-    <View style={{ borderRadius: 20, overflow: 'hidden' }}>
-      <MapView
+    <View style={{  }}>
+      <MapView 
         ref={mapRef}
         provider={PROVIDER_GOOGLE}
         showsUserLocation={true}
@@ -95,7 +95,8 @@ const styles = StyleSheet.create({
   map: {
     width: Dimensions.get('screen').width * 0.89,
     height: Dimensions.get('screen').height * 0.23,
-    borderRadius: 20,
+    display: 'flex',
+    alignContent:'center'
   },
   zoomContainer: {
     flexDirection: 'row',

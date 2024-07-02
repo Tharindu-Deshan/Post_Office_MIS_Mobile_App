@@ -1,7 +1,11 @@
+
+//view delivery page
+//homes where the deliveries to go in the map (not the route)
+
 import { View, Text } from 'react-native'
 import React from 'react'
 import Header from '../Components/Home/Header'
-import GoogleMapView from '../Components/Home/GoogleMapView'
+
 
 
 export default function Home() {
@@ -9,7 +13,7 @@ export default function Home() {
    
     <View style={{padding:20}}>
      <Header/>
-     <GoogleMapView/>
+     
     </View>
     
   )
