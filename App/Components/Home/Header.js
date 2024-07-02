@@ -5,7 +5,7 @@ import Colors from '../../Shared/Colors'
 export default function Header() {
   return (
     <View style={{display:'flex',flexDirection:'row',justifyContent:'space-evenly',gap:10,
-      alignItems: 'center',marginTop:20
+      alignItems: 'center',marginTop:30
     }}>
       <Image source={require('./../../../assets/logo.png')}
       style={styles.logo}/>

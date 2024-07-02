@@ -7,6 +7,7 @@ export default function App() {
   return (
     <View style={styles.container}>
       <NavigationContainer>
+
         <TabNavigation/>
       </NavigationContainer>
     </View>
@@ -17,7 +18,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    
-   
+
+
+
   },
 });
