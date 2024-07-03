@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, Dimensions, Button, StyleSheet } from 'react-native';
 import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
-import { markers } from './markerLocations';
+import { markers } from '../DataHardCoded/markerLocations';
+
 
 export default function GoogleMapView() {
   const [location, setLocation] = useState(null);
@@ -33,8 +34,8 @@ export default function GoogleMapView() {
     if (region) {
       mapRef.current.animateToRegion({
         ...region,
-        latitudeDelta: region.latitudeDelta*1/3 ,
-        longitudeDelta: region.longitudeDelta*1/3 ,
+        latitudeDelta: region.latitudeDelta*1/5 ,
+        longitudeDelta: region.longitudeDelta*1/5 ,
       }, 1000);
     }
   };
