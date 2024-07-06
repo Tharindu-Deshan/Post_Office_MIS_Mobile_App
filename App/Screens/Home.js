@@ -15,7 +15,7 @@ export default function Home() {
   const [status, setStatus] = useState(null);
   const [name,setName]=useState(null);
   const [loading, setLoading] = useState(true);
-  const postmanId = 2; //for testing purpose only
+  const postmanId = 1; //for testing purpose only
 
   useEffect(() => {
     const getStatus = () => {

@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, ScrollView } from 'react-native';
 import { Table, Row, Rows } from 'react-native-table-component';
 
-export default function TableDisplay({ tableHead, tableData }) {
+export default function DisplayTable({ tableHead, tableData }) {
   return (
     <ScrollView style={styles.container}>
       <Table borderStyle={{ borderWidth: 1, borderColor: '#C1C0B9' }}>

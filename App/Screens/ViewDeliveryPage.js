@@ -3,8 +3,12 @@ import React from 'react';
 import CommonLayout from '../Components/commonLayout/CommonLayout';
 import GoogleMapView from '../Components/DeliveryView/GoogleMapView';
 import Header from '../Components/DeliveryView/Header';
-import TableDisplay from '../Components/commonLayout/tableDisplay'; 
+
 import { tableHead, tableData } from '../Components/DataHardCoded/tableData'; 
+import DisplayTable from '../Components/commonLayout/DisplayTable';
+
+
+
 export default function ViewDeliveryPage() {
   return (
     <CommonLayout>
@@ -15,7 +19,7 @@ export default function ViewDeliveryPage() {
           <GoogleMapView />
         </View>
         <SafeAreaView style={styles.tableContainer}>
-          <TableDisplay tableHead={tableHead} tableData={tableData} />
+          <DisplayTable tableHead={tableHead} tableData={tableData} />
         </SafeAreaView>
       </View>
     </CommonLayout>

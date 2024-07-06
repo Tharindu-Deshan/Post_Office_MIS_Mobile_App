@@ -10,6 +10,11 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
 import { FontAwesome5 } from '@expo/vector-icons';
 import RouteDisplay from '../Screens/RouteDisplay';
+import MailStatusUpdate from '../Screens/MailStatusUpdate';
+import { Foundation } from '@expo/vector-icons';
+
+
+
 export default function TabNavigation() {
     const Tab = createBottomTabNavigator();
   return (
@@ -45,6 +50,18 @@ export default function TabNavigation() {
 
         }}
         />
+        <Tab.Screen name = "MailStatusUpdate" component ={MailStatusUpdate}
+            options={{
+                tabBarLabel:'Update Status',
+                tabBarIcon : ({color,size})=>(
+                    <Foundation name="clipboard-notes" color = {color} size = {size}/>
+                ),
+                
+              
+
+        }}
+        />
+
         <Tab.Screen name = "Profile" component ={Profile}
             options={{
                 tabBarLabel:'Profile',

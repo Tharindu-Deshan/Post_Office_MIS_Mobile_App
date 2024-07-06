@@ -5,9 +5,11 @@ import { Provider as PaperProvider, Button } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 import * as Location from 'expo-location';
-import CommonLayout from '../commonLayout/CommonLayout';
-import DropdownExample from '../commonLayout/dropDown';
+
+
 import Dropdown from '../commonLayout/dropDown';
+import CommonLayout from '../commonLayout/CommonLayout';
+
 
 export default function DeliveryRootDisplayMaps() {
   const navigation = useNavigation();
