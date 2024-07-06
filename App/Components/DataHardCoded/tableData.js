@@ -1,6 +1,12 @@
 
 
-export const tableHead = ['ID', 'Recipient', 'Address', 'Status', 'Delivery Date'];
+export const tableHead = [
+  "ID",
+  "Recipient",
+  "Address",
+  "Status",
+  "Delivery Date",
+];
 export const tableData = [
   ['1', 'John Doe', '123 Main St, Springfield', 'Delivered', '2023-07-01'],
   ['2', 'Jane Smith', '456 Oak St, Springfield', 'Pending', '2023-07-02'],
