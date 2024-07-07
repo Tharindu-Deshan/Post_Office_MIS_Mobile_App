@@ -10,6 +10,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
 import { FontAwesome5 } from '@expo/vector-icons';
 import RouteDisplay from '../Screens/RouteDisplay';
+import MailStatusUpdate from '../Screens/MailStatusUpdate';
 export default function TabNavigation() {
     const Tab = createBottomTabNavigator();
   return (
@@ -54,6 +55,16 @@ export default function TabNavigation() {
 
         }}
         />
+        <Tab.Screen name = "MailStatusUpdate" component ={MailStatusUpdate}
+            options={{
+                tabBarLabel:'MailStatusUpdate',
+                tabBarIcon : ({color,size})=>(
+                    <FontAwesome name="user-circle-o" color = {color} size = {size}/>
+                ),
+
+        }}
+        />
+
     </Tab.Navigator>
   )
 }
