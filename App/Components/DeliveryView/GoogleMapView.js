@@ -94,16 +94,16 @@ export default function GoogleMapView() {
 
 const styles = StyleSheet.create({
   map: {
-    width: Dimensions.get('screen').width * 0.89,
-    height: Dimensions.get('screen').height * 0.23,
-    display: 'flex',
-    alignContent:'center'
+    width: Dimensions.get("screen").width * 0.89,
+    height: Dimensions.get("screen").height * 0.23,
+    display: "flex",
+    alignContent: "center",
   },
   zoomContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    position: 'relative',
-    bottom: 20,
-    width: '100%',
+    flexDirection: "row",
+    justifyContent: "space-around",
+    position: "relative",
+    bottom: 0,
+    width: "100%",
   },
 });
