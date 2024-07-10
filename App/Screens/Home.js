@@ -18,16 +18,16 @@ export default function Home() {
   const [deliveryId, setDeliveryId] = useState(5);
   const [hasClicked, setHasClicked] = useState(false);
 
-  const fetchDelivery = async () => {
-    try {
-      const response = await axios.get(
-        `http://10.0.2.2:8082/api/postman/get-delivery/${deliveryId}`
-      );
-      console.log(response.data.deliveredCount);
-    } catch (e) {
-      console.error("Error fetching delivery data", e.message);
-    }
-  };
+  // const fetchDelivery = async () => {
+  //   try {
+  //     const response = await axios.get(
+  //       `http://10.0.2.2:8082/api/postman/get-delivery/${deliveryId}`
+  //     );
+  //     console.log(response.data.deliveredCount);
+  //   } catch (e) {
+  //     console.error("Error fetching delivery data", e.message);
+  //   }
+  // };
 
   useEffect(() => {
     const getStatus = () => {
@@ -69,11 +69,11 @@ export default function Home() {
       <Button
         style={{ marginTop: 20 }}
         mode="contained"
-        // onPress={() => navigation.navigate("RouteDisplay")}
-        onPress={() => {
-          console.log("Button clicked");
-          fetchDelivery();
-        }}
+        onPress={() => navigation.navigate("RouteDisplay")}
+        // onPress={() => {
+        //   console.log("Button clicked");
+        //   fetchDelivery();
+        // }}
       >
         Start Delivery
       </Button>

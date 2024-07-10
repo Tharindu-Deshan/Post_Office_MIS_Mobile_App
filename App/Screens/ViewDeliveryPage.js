@@ -9,28 +9,28 @@ import DisplayTable from "../Components/commonLayout/DisplayTable";
 import axios from "axios";
 
 export default function ViewDeliveryPage() {
-  const postmanId = 4; //for testing purpose only
+  // const postmanId = 4; //for testing purpose only
   // const [deliveryId, setDeliveryId] = useState(5);
-  const [data, setData] = useState(null);
-  const [destinations, setDestinations] = useState([]);
+  // const [data, setData] = useState(null);
+  // const [destinations, setDestinations] = useState([]);
 
-  useEffect(() => {
-    fetchDelivery();
-    // console.log("Delivery ID: ", deliveryId);
-  }, []);
+  // useEffect(() => {
+  //   fetchDelivery();
+  //   // console.log("Delivery ID: ", deliveryId);
+  // }, []);
 
-  const fetchDelivery = async () => {
-    try {
-      const response = await axios.get(
-        `http://10.0.2.2:8082/api/postman/view-delivery/get-today-delivery/${postmanId}`
-      );
-      console.log(response.data);
-      setData(response.data);
-      setDestinations(response.data.destinations);
-    } catch (e) {
-      console.error("Error fetching delivery data", e.message);
-    }
-  };
+  // const fetchDelivery = async () => {
+  //   try {
+  //     const response = await axios.get(
+  //       `http://10.0.2.2:8082/api/postman/view-delivery/get-today-delivery/${postmanId}`
+  //     );
+  //     console.log(response.data);
+  //     setData(response.data);
+  //     setDestinations(response.data.destinations);
+  //   } catch (e) {
+  //     console.error("Error fetching delivery data", e.message);
+  //   }
+  // };
 
   return (
     <CommonLayout>
@@ -40,7 +40,7 @@ export default function ViewDeliveryPage() {
         <View style={styles.mapContainer}>
           <GoogleMapView />
         </View>
-        <Text>Mail Id:={data.date}</Text>
+        {/* <Text>Mail Id:={data.date}</Text> */}
         <SafeAreaView style={styles.tableContainer}>
           <DisplayTable tableHead={tableHead} tableData={tableData} />
         </SafeAreaView>

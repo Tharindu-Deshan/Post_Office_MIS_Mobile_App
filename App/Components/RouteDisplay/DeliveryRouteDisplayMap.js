@@ -5,8 +5,6 @@ import { Provider as PaperProvider, Button } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 import * as Location from 'expo-location';
-
-
 import Dropdown from '../commonLayout/dropDown';
 import CommonLayout from '../commonLayout/CommonLayout';
 
