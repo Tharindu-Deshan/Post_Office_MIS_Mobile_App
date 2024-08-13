@@ -2,7 +2,7 @@ import { View, Text } from 'react-native'
 import React from 'react'
 import Home from '../Screens/Home';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs'
-import Fav from '../Screens/RouteDisplay';
+
 import ViewDeliveryPage from '../Screens/ViewDeliveryPage';
 import Profile from '../Screens/Profile';
 import {Ionicons} from '@expo/vector-icons';

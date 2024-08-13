@@ -1,15 +1,17 @@
-import { View, Text } from 'react-native'
-import React from 'react'
-import DeliveryRootDisplayMaps from '../Components/RouteDisplay/DeliveryRouteDisplayMap'
+import { View, StyleSheet } from 'react-native';
+import React from 'react';
+import DeliveryRouteDisplayMaps from '../Components/RouteDisplay/DeliveryRouteDisplayMaps';
 
 export default function RouteDisplay() {
   return (
-    <View>
-      <Text>
-          <DeliveryRootDisplayMaps/>
-          
-          
-      </Text>
+    <View style={styles.container}>
+      <DeliveryRouteDisplayMaps />
     </View>
-  )
+  );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});

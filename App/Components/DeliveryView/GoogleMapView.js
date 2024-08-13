@@ -2,14 +2,14 @@ import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, Dimensions, Button, StyleSheet } from 'react-native';
 import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
-import { markers } from '../DataHardCoded/markerLocations';
-
+import { deliveryObject } from '../DataHardCoded/deliveryObject';
 
 export default function GoogleMapView() {
   const [location, setLocation] = useState(null);
   const [region, setRegion] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const mapRef = useRef(null);
+  const markers = deliveryObject.destinations;
 
   useEffect(() => {
     (async () => {
@@ -34,8 +34,8 @@ export default function GoogleMapView() {
     if (region) {
       mapRef.current.animateToRegion({
         ...region,
-        latitudeDelta: region.latitudeDelta*1/5 ,
-        longitudeDelta: region.longitudeDelta*1/5 ,
+        latitudeDelta: region.latitudeDelta / 5,
+        longitudeDelta: region.longitudeDelta / 5,
       }, 1000);
     }
   };
@@ -55,7 +55,7 @@ export default function GoogleMapView() {
   }, []);
 
   return (
-    <View style={{  }}>
+    <View style={{ flex: 1 }}>
       <MapView 
         ref={mapRef}
         provider={PROVIDER_GOOGLE}
@@ -68,9 +68,9 @@ export default function GoogleMapView() {
         {markers.map((marker, index) => (
           <Marker
             key={index}
-            coordinate={{ latitude: marker.latitude, longitude: marker.longitude }}
-            title={marker.title}
-            description={marker.description}
+            coordinate={{ latitude: marker.lat, longitude: marker.lng }}
+            title={marker.title || `Marker ${index + 1}`}
+            description={marker.description || `Description for marker ${index + 1}`}
           />
         ))}
       </MapView>
@@ -94,10 +94,8 @@ export default function GoogleMapView() {
 
 const styles = StyleSheet.create({
   map: {
-    width: Dimensions.get("screen").width * 0.89,
-    height: Dimensions.get("screen").height * 0.23,
-    display: "flex",
-    alignContent: "center",
+    width: Dimensions.get("screen").width,
+    height: Dimensions.get("screen").height * 0.6,
   },
   zoomContainer: {
     flexDirection: "row",
