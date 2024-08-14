@@ -1,26 +1,39 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, Button, ImageBackground, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useContext, useState } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  
+  ImageBackground,
+  TouchableOpacity,
+  StyleSheet,
+  StatusBar,
+} from "react-native";
+import AuthContext from "../../context/AuthContext";
 
 // Import the local image
-const backgroundImage = require('../specialPages/download.jpeg');
+const backgroundImage = require("../LoginPage/07cfeb9c-421d-4ae1-b95f-73c60c97efbb.jpg");
 
-const LoginScreen = ({ onLogin }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+const LoginScreen = () => {
+  let { handleLogin, ...other } = useContext(AuthContext);
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const authenticateUser = () => {
     // Replace this with your actual authentication logic
-    if (email=="user" && password=="password") {
-      onLogin();  // Trigger login callback to update isLoggedIn state
+    if (email && password) {
+      handleLogin(); // Trigger login callback to update isLoggedIn state
     } else {
-      alert('Please enter your email and password');
+      alert("Please enter your email and password");
     }
   };
 
   return (
     <View style={styles.container}>
+   
+    
       <ImageBackground source={backgroundImage} style={styles.image}>
-      
         <View style={styles.loginContainer}>
           <Text style={styles.welcomeText}>Welcome back</Text>
           <Text style={styles.subText}>Login to your account</Text>
@@ -42,16 +55,15 @@ const LoginScreen = ({ onLogin }) => {
             secureTextEntry
           />
 
-          <TouchableOpacity style={styles.loginButton} onPress={authenticateUser}>
+          <TouchableOpacity
+            style={styles.loginButton}
+            onPress={authenticateUser}
+          >
             <Text style={styles.loginButtonText}>Login</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.forgotPassword}>
             <Text style={styles.forgotPasswordText}>Forgot your password?</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.signUp}>
-            <Text style={styles.signUpText}>Don't have an account? <Text style={styles.signUpLink}>Sign up</Text></Text>
           </TouchableOpacity>
         </View>
       </ImageBackground>
@@ -65,66 +77,58 @@ const styles = StyleSheet.create({
   },
   image: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: "center",
+    resizeMode: "cover",
   },
   loginContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    backgroundColor: "#ffffff", // Fully opaque white
     borderRadius: 15,
     padding: 20,
     marginHorizontal: 20,
-    marginTop: 250, // Adjust as needed
+    marginTop: 400, // Adjust as needed
   },
+
   welcomeText: {
     fontSize: 24,
-    fontWeight: 'bold',
-    textAlign: 'center',
+    fontWeight: "bold",
+    textAlign: "center",
     marginBottom: 5,
-    color: '#333',
+    color: "#333",
   },
   subText: {
     fontSize: 16,
-    textAlign: 'center',
+    textAlign: "center",
     marginBottom: 20,
-    color: '#666',
+    color: "#666",
   },
   input: {
-    backgroundColor: '#f5f5f5',
+    backgroundColor: "#f5f5f5",
     borderRadius: 10,
     padding: 15,
     marginBottom: 15,
+    borderWidth: 2, // Thickness of the border
+    borderColor: "#d3d3d3", // Color of the border
   },
   loginButton: {
-    backgroundColor: '#ff3b3b',
+    backgroundColor: "#6a2392",
     paddingVertical: 15,
     borderRadius: 10,
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 10,
   },
   loginButtonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   forgotPassword: {
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 20,
   },
   forgotPasswordText: {
-    color: '#666',
-    textDecorationLine: 'underline',
-  },
-  signUp: {
-    alignItems: 'center',
-  },
-  signUpText: {
-    color: '#666',
-  },
-  signUpLink: {
-    color: '#ff3b3b',
-    fontWeight: 'bold',
+    color: "#666",
+    textDecorationLine: "underline",
   },
 });
-
-
 
 export default LoginScreen;

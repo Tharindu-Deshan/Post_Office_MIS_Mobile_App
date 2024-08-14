@@ -1,6 +1,7 @@
 import { View, StyleSheet } from 'react-native';
 import React from 'react';
-import DeliveryRouteDisplayMaps from '../Components/RouteDisplay/DeliveryRouteDisplayMaps';
+import DeliveryRouteDisplayMaps from './DeliveryRouteDisplayMaps';
+
 
 export default function RouteDisplay() {
   return (

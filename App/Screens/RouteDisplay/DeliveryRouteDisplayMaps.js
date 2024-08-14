@@ -4,8 +4,9 @@ import MapView, { Marker, Polyline } from 'react-native-maps';
 import * as Location from 'expo-location';
 import axios from 'axios';
 import polyline from 'polyline';
-import CommonLayout from '../commonLayout/CommonLayout';
-import { deliveryObject } from '../DataHardCoded/deliveryObject';
+
+import { deliveryObject } from '../../Components/DataHardCoded/deliveryObject';
+import CommonLayout from '../../Components/commonLayout/CommonLayout';
 
 const GOOGLE_MAPS_API_KEY = 'AIzaSyDtman-i1xVwD90dMS3HgHc_0CoobjBelc';
 

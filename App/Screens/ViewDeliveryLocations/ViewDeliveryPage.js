@@ -1,7 +1,8 @@
 import { View, Text, StyleSheet } from "react-native";
 import React from "react";
-import CommonLayout from "../Components/commonLayout/CommonLayout";
-import GoogleMapView from "../Components/DeliveryView/GoogleMapView";
+import CommonLayout from "../../Components/commonLayout/CommonLayout";
+import GoogleMapView from "./GoogleMapView";
+
 
 export default function ViewDeliveryPage() {
   return (

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, Dimensions, Button, StyleSheet } from 'react-native';
 import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
-import { deliveryObject } from '../DataHardCoded/deliveryObject';
+import { deliveryObject } from '../../Components/DataHardCoded/deliveryObject';
 
 export default function GoogleMapView() {
   const [location, setLocation] = useState(null);
@@ -50,9 +50,9 @@ export default function GoogleMapView() {
     }
   };
 
-  useEffect(() => {
-    console.log(markers); // Log markers only once when component mounts
-  }, []);
+  // useEffect(() => {
+  //   console.log(markers); // Log markers only once when component mounts
+  // }, []);
 
   return (
     <View style={{ flex: 1 }}>
