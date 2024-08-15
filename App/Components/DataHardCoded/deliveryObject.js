@@ -6,25 +6,25 @@ export const deliveryObject = {
       {
         addressId: "1",
         mailId: "7",
-        lat: 6.2774,
-        lng: 80.145
+        lat: 6.7972,
+        lng: 79.900
       },
       {
         addressId: "2",
         mailId: "8",
-        lat: 6.2974,
-        lng: 80.1453
+        lat: 6.7942,
+        lng: 79.880
       },
       {
         addressId: "3",
         mailId: "9",
-        lat: 6.3,
-        lng: 80.1453
+        lat: 6.7932,
+        lng: 79.889
       },
       {
         addressId: "4",
         mailId: "10",
-        lat: 6.2874,
+        lat: 6.794,
         lng: 80.149
       },
       {

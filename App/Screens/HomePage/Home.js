@@ -87,7 +87,7 @@ export default function Home() {
                       onPress={() => navigation.navigate("ViewDeliveryPage")}
                     >
                       <MaterialCommunityIcons name="map-marker-multiple" size={60} color="#fff" />
-                      <Text style={styles.buttonText}>View Delivery</Text>
+                      <Text style={styles.buttonText}>Explore Map</Text>
                     </TouchableOpacity>
 
                   </View>
