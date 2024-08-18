@@ -7,7 +7,7 @@ import {
   ImageBackground,
   TouchableOpacity,
   StyleSheet,
-  StatusBar,
+
 } from "react-native";
 import AuthContext from "../../context/AuthContext";
 
@@ -15,7 +15,7 @@ import AuthContext from "../../context/AuthContext";
 const backgroundImage = require("../LoginPage/07cfeb9c-421d-4ae1-b95f-73c60c97efbb.jpg");
 
 const LoginScreen = () => {
-  let { handleLogin, ...other } = useContext(AuthContext);
+  let { handleLogin,UserId, ...other } = useContext(AuthContext);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -23,7 +23,7 @@ const LoginScreen = () => {
   const authenticateUser = () => {
     // Replace this with your actual authentication logic
     if (email && password) {
-      handleLogin(); // Trigger login callback to update isLoggedIn state
+      handleLogin(UserId); // Trigger login callback to update isLoggedIn state
     } else {
       alert("Please enter your email and password");
     }

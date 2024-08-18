@@ -6,7 +6,7 @@ export const deliveryObject = {
       {
         addressId: "1",
         mailId: "7",
-        lat: 6.7972,
+        lat: 6.872,
         lng: 79.900
       },
       {

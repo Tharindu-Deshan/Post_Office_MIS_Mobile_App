@@ -15,6 +15,7 @@ import Feather from "@expo/vector-icons/Feather";
 const imageUser = require("../Profile/e03b2bf1-678e-49f1-998d-d5b03fb09a99.webp");
 
 export default function Profile() {
+  
   const { handleLogout, ...others } = useContext(AuthContext);
 
   return (

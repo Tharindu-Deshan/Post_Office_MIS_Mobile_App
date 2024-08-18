@@ -1,67 +1,75 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, Dimensions, TouchableOpacity, StyleSheet } from 'react-native';
 import MapView, { PROVIDER_GOOGLE, Marker, Callout } from 'react-native-maps';
-import * as Location from 'expo-location';
-import { deliveryObject } from '../../Components/DataHardCoded/deliveryObject';
-import { useNavigation } from "@react-navigation/native";
-import CommonLayout from '../../Components/commonLayout/CommonLayout';
+import * as Location from 'expo-location'; // Import for handling location services
+import { deliveryObject } from '../../Components/DataHardCoded/deliveryObject'; // Importing the delivery object data
+import { useNavigation } from "@react-navigation/native"; // Navigation hook for moving between screens
+import CommonLayout from '../../Components/commonLayout/CommonLayout'; // Custom layout component
 
 export default function ViewDeliveryPage() {
-  const navigation = useNavigation();
-  const [location, setLocation] = useState(null);
-  const [region, setRegion] = useState(null);
-  const [errorMsg, setErrorMsg] = useState(null);
-  const mapRef = useRef(null);
-  const markers = deliveryObject.destinations;
-  const visitOrder = deliveryObject.visitOrder;
+  const navigation = useNavigation(); // Hook to use navigation between screens
+  const [location, setLocation] = useState(null); // State for storing the user's current location
+  const [region, setRegion] = useState(null); // State for storing the map region
+  const [errorMsg, setErrorMsg] = useState(null); // State for storing any location permission error
+  const mapRef = useRef(null); // Ref to control the MapView programmatically
+  
+  
+  
+  //const markers = deliveryObject.destinations; // Get destinations from deliveryObject
+  // const visitOrder = deliveryObject.visitOrder; // Get visiting order from deliveryObject
 
   useEffect(() => {
+    // Fetch user's current location and request permissions on component mount
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
-        setErrorMsg('Permission to access location was denied');
+        setErrorMsg('Permission to access location was denied'); // Set error message if permissions are denied
         return;
       }
 
+      // Get the user's current location
       let location = await Location.getCurrentPositionAsync({});
-      setLocation(location);
+      setLocation(location); // Update state with user's location
       setRegion({
         latitude: location.coords.latitude,
         longitude: location.coords.longitude,
-        latitudeDelta: 0.05,
-        longitudeDelta: 0.05,
-      });
+        latitudeDelta: 50,
+        longitudeDelta: 100,
+      }); // Set initial region to focus on user's location
     })();
-  }, []);
+  }, []); // Empty dependency array to run once on component mount
 
   return (
     <CommonLayout>
       <View style={styles.container}>
         <View style={styles.mapContainer}>
+          {/* MapView component with Google Maps as the provider */}
           <MapView
-            ref={mapRef}
-            provider={PROVIDER_GOOGLE}
-            showsUserLocation={true}
-            showsMyLocationButton={true}
-            style={styles.map}
-            region={region}
-            onRegionChangeComplete={(region) => setRegion(region)}
+            ref={mapRef} // Assign ref for programmatic control
+            provider={PROVIDER_GOOGLE} // Use Google Maps as provider
+            showsUserLocation={true} // Show user's current location
+            showsMyLocationButton={true} // Show the button to center on user's location
+            style={styles.map} // Apply styles to the map
+            region={region} // Set the map's region
+            onRegionChangeComplete={(region) => setRegion(region)} // Update region state when the map region changes
           >
             {/* Loop through the visitOrder array to display numbered markers */}
-            {visitOrder.map((orderIndex, index) => {
-              const marker = markers[orderIndex]; // Get the marker according to the visiting order
+            {deliveryObject.visitOrder.map((orderIndex, index) => {
+              const marker = deliveryObject.destinations[orderIndex]; // Get the marker according to the visiting order
               return (
                 <Marker
-                  key={index}
-                  coordinate={{ latitude: marker.lat, longitude: marker.lng }}
+                  key={index} // Unique key for each marker
+                  coordinate={{ latitude: marker.lat, longitude: marker.lng }} // Marker position (latitude and longitude)
                 >
-                  {/* Default Google Marker with number overlay */}
+                  {/* Custom View to display marker number */}
                   <View style={styles.numberOverlay}>
                     <Text style={styles.markerText}>{index + 1}</Text>
                   </View>
+                  {/* Callout component to show info when marker is clicked */}
                   <Callout>
                     <Text>{`Marker ${index + 1}`}</Text>
                     <Text>{`Address: ${marker.lat}, ${marker.lng}`}</Text>
+                    
                   </Callout>
                 </Marker>
               );
@@ -69,15 +77,17 @@ export default function ViewDeliveryPage() {
           </MapView>
         </View>
 
-        {/* Bottom Section for Details and Button */}
+        {/* Bottom section for displaying total destinations and action buttons */}
         <View style={styles.bottomSection}>
-          <Text style={styles.detailText}>Total Destinations: {deliveryObject.destinations.length}</Text>
+          <Text style={styles.detailText}>Total Destinations: {deliveryObject.destinations.length}</Text> 
 
           <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.startButton}  onPress={() => navigation.navigate("RouteDisplay")}>
+            {/* Button to navigate to the RouteDisplay screen */}
+            <TouchableOpacity style={styles.startButton} onPress={() => navigation.navigate("RouteDisplay")}>
               <Text style={styles.buttonText}>Start Duty</Text>
             </TouchableOpacity>
 
+            {/* Button to end the delivery duty (currently not functional) */}
             <TouchableOpacity style={styles.endButton} onPress={() => {}}>
               <Text style={styles.buttonText}>End Duty</Text>
             </TouchableOpacity>
@@ -87,6 +97,7 @@ export default function ViewDeliveryPage() {
     </CommonLayout>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {

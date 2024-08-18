@@ -4,44 +4,65 @@ import {
   ActivityIndicator,
   StyleSheet,
   Image,
-  TouchableOpacity,StatusBar,
+  TouchableOpacity,
+  StatusBar,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import CommonLayout from "../../Components/commonLayout/CommonLayout";
-import { postmanData } from "../../Components/DataHardCoded/postmanData";
+
 import axios from "axios";
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 // import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 // im??port Ionicons from '@expo/vector-icons/Ionicons';
-import Entypo from '@expo/vector-icons/Entypo';
+import Entypo from "@expo/vector-icons/Entypo";
+import AuthContext from "../../context/AuthContext";
 
 const backgroundimage = require("../HomePage/e03b2bf1-678e-49f1-998d-d5b03fb09a99.webp");
 
 export default function Home() {
   const navigation = useNavigation();
-  const [status, setStatus] = useState(null);
+  const [status, setStatus] = useState("Unassigned");
   const [name, setName] = useState(null);
   const [loading, setLoading] = useState(true);
-  const postmanId = 1; // for testing purposes only
+  const [error, setError] = useState(null);
+  const [delivery, setDelivery] = useState(null);
+
+  const { userId, userName, deliveryDetails, ...other } =
+    useContext(AuthContext);
+
+    const getPostmanData = async () => {
+      console.log("getting postman data");
+      try {
+        const response = await axios.get(`http://10.0.2.2:8083/api/postman/route-display/get-delivery?postmanId=${userId}`);
+
+    
+        if (response.status === 200) {
+          console.log("Request successful");
+          console.log(response.data);
+          setDelivery(response.data);
+          setStatus(response.data.status);
+          setName(userName)
+          
+         
+          
+       
+        } else {
+          console.error(`Error: Received status ${response.status}`);
+        }
+      } catch (error) {
+        console.error("Error fetching postman data", error.message);
+        setError(error.message); 
+      } finally {
+        setLoading(false);
+      }
+    };
+    
 
   useEffect(() => {
-    const getStatus = () => {
-      setLoading(true);
-      const postman = postmanData.find((p) => p.id === postmanId);
-      if (postman) {
-        setStatus(postman.status);
-        setName(postman.name); // Set the name
-      } else {
-        setStatus("not assigned");
-        setName("Unknown"); // Set a default name if not found
-      }
-      setLoading(false);
-    };
-
-    getStatus();
-  }, [postmanId]);
+    getPostmanData();
+  }, []);
 
   if (loading) {
     return <ActivityIndicator size="large" color="#0000ff" />;
@@ -55,64 +76,57 @@ export default function Home() {
         translucent={true}
       />
       <View style={styles.container}>
+        <View style={styles.profileContainer}>
+          <Image
+            source={backgroundimage} // Replace with actual user profile image
+            style={styles.profileImage}
+          />
+          <Text style={styles.welcomeMessage}>Welcome, {name}!</Text>
+          <Text style={styles.subWelcomeMessage}>
+            You're logged in as a Postman
+          </Text>
+        </View>
 
-              <View style={styles.profileContainer}>
-                <Image
-                  source={backgroundimage} // Replace with actual user profile image
-                  style={styles.profileImage}
-                />
-                <Text style={styles.welcomeMessage}>Welcome, {name}!</Text>
-                <Text style={styles.subWelcomeMessage}>
-                  You're logged in as a Postman
-                </Text>
-              </View>
+        <View style={styles.statusContainer}>
+          <Text style={styles.statusText}>Current Status: {status}</Text>
+        </View>
 
-              <View style={styles.statusContainer}>
-                <Text style={styles.statusText}>Current Status: {status}</Text>
-              </View>
+        <View style={styles.blockContainer}>
+          <View style={styles.rowContainer}>
+            <TouchableOpacity style={styles.buttonBlock} onPress={() => ({})}>
+              <MaterialCommunityIcons
+                name="qrcode-scan"
+                size={60}
+                color="#fff"
+              />
+              <Text style={styles.buttonText}>Scan</Text>
+            </TouchableOpacity>
 
-            <View style={styles.blockContainer}>
-                  <View style={styles.rowContainer}>
-                    <TouchableOpacity
-                      style={styles.buttonBlock}
-                      onPress={() => ({})}
-                    >
-                      <MaterialCommunityIcons name="qrcode-scan" size={60} color="#fff" />
-                      <Text style={styles.buttonText}>Scan</Text>
-                    </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.buttonBlock}
+              onPress={() => navigation.navigate("ViewDeliveryPage")}
+            >
+              <MaterialCommunityIcons
+                name="map-marker-multiple"
+                size={60}
+                color="#fff"
+              />
+              <Text style={styles.buttonText}>Explore Map</Text>
+            </TouchableOpacity>
+          </View>
 
+          <View style={styles.rowContainer}>
+            <TouchableOpacity style={styles.buttonBlock} onPress={() => ({})}>
+              <Ionicons name="person-add" size={60} color="#fff" />
+              <Text style={styles.buttonText}>Add Person</Text>
+            </TouchableOpacity>
 
-                    <TouchableOpacity
-                      style={styles.buttonBlock}
-                      onPress={() => navigation.navigate("ViewDeliveryPage")}
-                    >
-                      <MaterialCommunityIcons name="map-marker-multiple" size={60} color="#fff" />
-                      <Text style={styles.buttonText}>Explore Map</Text>
-                    </TouchableOpacity>
-
-                  </View>
-
-              <View style={styles.rowContainer}>
-                <TouchableOpacity
-                  style={styles.buttonBlock}
-                  onPress={() => ({})}
-                >
-                  <Ionicons name="person-add" size={60} color="#fff" />
-                  <Text style={styles.buttonText}>Add Person</Text>
-                </TouchableOpacity>
-
-
-                <TouchableOpacity
-                  style={styles.buttonBlock}
-                  onPress={() => ({})}
-                >
-                  <Entypo name="new-message" size={60} color="#fff" />
-                  <Text style={styles.buttonText}>Add Address</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-
-        
+            <TouchableOpacity style={styles.buttonBlock} onPress={() => ({})}>
+              <Entypo name="new-message" size={60} color="#fff" />
+              <Text style={styles.buttonText}>Add Address</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
       </View>
     </CommonLayout>
   );
@@ -168,7 +182,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 8,
     elevation: 5,
-    marginBottom:30,
+    marginBottom: 30,
   },
   rowContainer: {
     flexDirection: "row",
@@ -190,5 +204,4 @@ const styles = StyleSheet.create({
     marginTop: 20,
     fontWeight: "bold",
   },
-  
 });

@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import {
   View,
-  Button,
   StyleSheet,
   Text,
   Modal,
@@ -11,13 +10,14 @@ import {
   Easing,
 } from "react-native";
 import MapView, { Marker, Polyline } from "react-native-maps";
-import * as Location from "expo-location";
-import axios from "axios";
-import polyline from "polyline";
-import { deliveryObject } from "../../Components/DataHardCoded/deliveryObject";
+import * as Location from "expo-location"; // For accessing device location
+import axios from "axios"; // For making HTTP requests
+import polyline from "polyline"; // For decoding Google Maps polyline data
+import { deliveryObject } from "../../Components/DataHardCoded/deliveryObject"; // Hardcoded delivery object
 
-const GOOGLE_MAPS_API_KEY = "AIzaSyDtman-i1xVwD90dMS3HgHc_0CoobjBelc";
+const GOOGLE_MAPS_API_KEY = "AIzaSyDtman-i1xVwD90dMS3HgHc_0CoobjBelc"; // Google Maps API key
 
+// Custom Marker component to show a marker with a title and tag on the map
 const CustomMarker = ({ coordinate, title, tag }) => (
   <Marker coordinate={coordinate} title={title}>
     <View style={styles.customMarker}>
@@ -27,36 +27,50 @@ const CustomMarker = ({ coordinate, title, tag }) => (
 );
 
 export default function RouteDisplay() {
+  // State for controlling the visibility of the modals
   const [detailsModalVisible, setDetailsModalVisible] = useState(false); // Modal for "Details"
   const [arrivedModalVisible, setArrivedModalVisible] = useState(false); // Modal for "Arrived"
-  const [currentLocation, setCurrentLocation] = useState(null);
-  const [route, setRoute] = useState([]);
-  const [currentIndex, setCurrentIndex] = useState(1);
-  const [region, setRegion] = useState({
-    latitude: deliveryObject.destinations[0].lat,
-    longitude: deliveryObject.destinations[0].lng,
-    latitudeDelta: 0.01,
-    longitudeDelta: 0.01,
-  });
-  const mapViewRef = useRef(null);
-  const zoomedInRef = useRef(false);
 
+  // State for the current location of the user
+  const [currentLocation, setCurrentLocation] = useState(null);
+
+  // State for the route, which is a list of coordinates
+  const [route, setRoute] = useState([]);
+
+  // State to keep track of the current destination index in the delivery route
+  const [currentIndex, setCurrentIndex] = useState(1);
+
+  // Initial region (map zoom level and coordinates)
+  const [region, setRegion] = useState({
+    latitude: deliveryObject.destinations[0].lat, // Initial latitude from deliveryObject
+    longitude: deliveryObject.destinations[0].lng, // Initial longitude from deliveryObject
+    latitudeDelta: 10, // Zoom level latitude
+    longitudeDelta: 5, // Zoom level longitude
+  });
+
+  const mapViewRef = useRef(null); // Reference to the map view component
+  const zoomedInRef = useRef(false); // Boolean to track if the map has zoomed in
+
+  // Animated values for slide-in effect for modals
   const slideAnim = useRef(new Animated.Value(300)).current; // Starts the modal off-screen
   const fadeAnim = useRef(new Animated.Value(0)).current; // Opacity starts at 0 (invisible)
 
+  // UseEffect to request location permissions and start tracking location
   useEffect(() => {
     (async () => {
+      // Request location permissions from the user
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
         console.log("Permission to access location was denied");
         return;
       }
 
+      // Track the user's location at intervals
       Location.watchPositionAsync(
         {
-          accuracy: Location.Accuracy.High,
-          distanceInterval: 10,
-          timeInterval: 5000,
+          accuracy: Location.Accuracy.High, // High accuracy location
+          distanceInterval: 10, // Trigger update every 10 meters
+          timeInterval: 5000, // Trigger update every 5 seconds
         },
         (position) => {
           const { latitude, longitude } = position.coords;
@@ -65,6 +79,7 @@ export default function RouteDisplay() {
             longitude,
           });
 
+          // If the map is not zoomed in yet, zoom in on the user's location
           if (mapViewRef.current && !zoomedInRef.current) {
             mapViewRef.current.animateToRegion({
               latitude,
@@ -72,9 +87,18 @@ export default function RouteDisplay() {
               latitudeDelta: 0.01,
               longitudeDelta: 0.01,
             });
-            zoomedInRef.current = true;
+            zoomedInRef.current = true; // Prevents further zooming
           }
 
+          // Update the map region to follow the user's location
+          setRegion({
+            latitude,
+            longitude,
+            latitudeDelta: 0.2, // Adjust these values to zoom out
+            longitudeDelta: 0.2,
+          });
+
+          // Fetch the route to the next destination
           if (currentLocation) {
             getRoute(
               currentLocation,
@@ -88,15 +112,18 @@ export default function RouteDisplay() {
     })();
   }, [currentLocation]);
 
+  // Function to fetch the route between current location and destination
   const getRoute = async (currentLoc, destinationLoc) => {
-    const origin = `${currentLoc.latitude},${currentLoc.longitude}`;
-    const destination = `${destinationLoc.lat},${destinationLoc.lng}`;
+    const origin = `${currentLoc.latitude},${currentLoc.longitude}`; // Current location as origin
+    const destination = `${destinationLoc.lat},${destinationLoc.lng}`; // Destination
 
     try {
+      // Get directions data from Google Maps API
       const response = await axios.get(
         `https://maps.googleapis.com/maps/api/directions/json?origin=${origin}&destination=${destination}&key=${GOOGLE_MAPS_API_KEY}`
       );
 
+      // If routes are available, decode the polyline and store the coordinates
       if (response.data.routes && response.data.routes.length > 0) {
         const points = polyline.decode(
           response.data.routes[0].overview_polyline.points
@@ -108,7 +135,7 @@ export default function RouteDisplay() {
           };
         });
 
-        setRoute(coords);
+        setRoute(coords); // Set the decoded route
       } else {
         console.log("No routes found");
         console.log(response.data);
@@ -118,6 +145,7 @@ export default function RouteDisplay() {
     }
   };
 
+  // UseEffect to update the route whenever the current index changes
   useEffect(() => {
     if (currentLocation && currentIndex < deliveryObject.visitOrder.length) {
       getRoute(
@@ -127,14 +155,16 @@ export default function RouteDisplay() {
     }
   }, [currentIndex]);
 
+  // Function to move to the next destination
   const nextDestination = () => {
     if (currentIndex < deliveryObject.visitOrder.length - 1) {
-      setCurrentIndex(currentIndex + 1);
+      setCurrentIndex(currentIndex + 1); // Increment destination index
     } else if (currentIndex === deliveryObject.visitOrder.length - 1) {
-      setRoute([]);
+      setRoute([]); // Clear route when all destinations are reached
     }
   };
 
+  // Function to open modal with sliding and fading animations
   const openModal = (setVisible) => {
     setVisible(true);
     Animated.parallel([
@@ -152,6 +182,7 @@ export default function RouteDisplay() {
     ]).start();
   };
 
+  // Function to close modal with sliding and fading animations
   const closeModal = (setVisible) => {
     Animated.parallel([
       Animated.timing(slideAnim, {
@@ -170,43 +201,49 @@ export default function RouteDisplay() {
 
   return (
     <View style={styles.container}>
+      {/* Map View */}
       <MapView
         style={styles.map}
         ref={mapViewRef}
         region={region}
-        showsUserLocation={true}
-        followsUserLocation={true}
+        showsUserLocation={true} // Show user's location on the map
+        followsUserLocation={true} // Map follows the user's location
       >
-        {deliveryObject.destinations.map((location, index) => (
-          <CustomMarker
-            key={index}
-            coordinate={{ latitude: location.lat, longitude: location.lng }}
-            title={`Location ${index + 1}`}
-            tag={String(index + 1)}
-          />
-        ))}
+        {/* Add markers for each destination */}
+        {deliveryObject.visitOrder.map((orderIndex, index) => {
+          const location = deliveryObject.destinations[orderIndex];
+          return (
+            <CustomMarker
+              key={index}
+              coordinate={{ latitude: location.lat, longitude: location.lng }}
+              title={`Location ${index + 1}`}
+              tag={String(index + 1)}
+            />
+          );
+        })}
+      
+        {/* Draw the route polyline if available */}
         {route.length > 0 && (
           <Polyline coordinates={route} strokeWidth={8} strokeColor="#4285F4" />
         )}
       </MapView>
 
-      {/* Buttons */}
-
+      {/* Buttons at the bottom */}
       <View style={styles.buttonContainer}>
         <View style={styles.firstbuttoncontainer}>
-          <Text style={styles.currentpositionnumber}>1</Text>
+          {/* Display the current destination index */}
+          <Text style={styles.currentpositionnumber}>{currentIndex}</Text>
 
           <TouchableOpacity
             style={styles.viewDetailsButton}
-            
             onPress={() => openModal(setDetailsModalVisible)}
-          > 
-          <Text style={styles.detailbuttontext}>Details</Text>
-          
-           </TouchableOpacity>
+          >
+            <Text style={styles.detailbuttontext}>Details</Text>
+          </TouchableOpacity>
         </View>
 
         <View style={styles.secondbuttoncontainer}>
+          {/* Arrived button */}
           <TouchableOpacity
             style={styles.arrivedButtonContainer}
             title="Arrived"
@@ -215,6 +252,7 @@ export default function RouteDisplay() {
             <Text style={styles.arrievedtext}>Arrived</Text>
           </TouchableOpacity>
 
+          {/* Next Destination button */}
           <TouchableOpacity
             style={styles.nextLocationButton}
             title="Next Dest"
@@ -281,9 +319,9 @@ export default function RouteDisplay() {
               <TouchableOpacity style={styles.deliveredButton}>
                 <Text style={styles.buttonText}>Delivered</Text>
               </TouchableOpacity>
-                <TouchableOpacity style={styles.undeliveredButton}>
-                  <Text style={styles.buttonText}>Undelivered</Text>
-                </TouchableOpacity>
+              <TouchableOpacity style={styles.undeliveredButton}>
+                <Text style={styles.buttonText}>Undelivered</Text>
+              </TouchableOpacity>
             </View>
 
             <View style={styles.confirmCancelButtons}>
@@ -307,6 +345,7 @@ export default function RouteDisplay() {
   );
 }
 
+// Styles for the component
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -327,27 +366,19 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   buttonContainer: {
-    marginTop:3,
+    marginTop: 3,
     flexDirection: "row",
     justifyContent: "flex-start", // Distribute space between buttons
-   backgroundColor:"#e8daef",
+    backgroundColor: "#e8daef",
     borderRadius: 30,
-    // shadowColor: "#000",
-    // shadowOffset: { width: 0, height: 2 },
-    // shadowOpacity: 0.3,
-    // shadowRadius: 4,
     padding: 10,
     marginHorizontal: 10, // Adds spacing between screen edges and the buttons
     alignItems: "center", // Align buttons vertically in the center to prevent stretching
-
   },
-
   firstbuttoncontainer: {
     flexDirection: "column",
   },
-
   currentpositionnumber: {
-   
     borderRadius: 10,
     fontSize: 30,
     fontWeight: "bold",
@@ -361,69 +392,48 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     marginLeft: 15,
   },
-  // Smaller Details Button (Reduced size)
   viewDetailsButton: {
-   
-    marginTop:5,
+    marginTop: 5,
     backgroundColor: "#c3cdce",
     borderRadius: 5,
-    paddingVertical: 16, // Reduced padding to make it smaller
-    paddingHorizontal: 16, // Smaller padding for a more compact look
+    paddingVertical: 16,
+    paddingHorizontal: 16,
     alignItems: "center",
     borderWidth: 1,
     borderColor: "#ccc",
-
-    // shadowColor: "#000",/
-    //  / /shadowOffset: { width: 0, height: 1 },
-    //   shadowOpacity: 0.2,
-    //   shadowRadius: 2,
-    // width: 100, // Explicitly set the width to make it smaller
   },
-  detailbuttontext:{
-      fontWeight: "bold",
-      fontSize: 15,
+  detailbuttontext: {
+    fontWeight: "bold",
+    fontSize: 15,
   },
-
   secondbuttoncontainer: {
-    marginLeft:10,
+    marginLeft: 10,
     flexDirection: "row", // Align buttons horizontally
-    
     alignItems: "center", // Vertically center the buttons
-    marginTop: 10, // Adjust margin as neede
-   
+    marginTop: 10, // Adjust margin as needed
   },
-
-  // Arrived Button
   arrivedButtonContainer: {
- 
     backgroundColor: "#4CAF50", // Button color
     paddingVertical: 20, // Adjust vertical padding
     borderRadius: 10, // Rounded corners
-   
     justifyContent: "center",
     alignItems: "center", // Center the button text
-    paddingHorizontal:35,
+    paddingHorizontal: 35,
   },
-  arrievedtext:{
+  arrievedtext: {
     fontWeight: "bold",
-      fontSize: 17,
+    fontSize: 17,
   },
-
-  // Next Destination Button
   nextLocationButton: {
-    
     backgroundColor: "#c6cf11", // Button color
     paddingVertical: 20, // Adjust vertical padding
     borderRadius: 10, // Rounded corners
     justifyContent: "center",
     alignItems: "center", // Center the button text
     marginLeft: 10, // Spacing between the buttons
-    paddingHorizontal:10,
-    // borderWidth: 1, 
-    // borderColor:"black",
+    paddingHorizontal: 10,
   },
-
-  nextlocationtext:{
+  nextlocationtext: {
     fontWeight: "bold",
     fontSize: 17,
   },
@@ -453,7 +463,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   statusButtons: {
-
     flexDirection: "column",
     justifyContent: "space-around",
     marginBottom: 20,
@@ -463,7 +472,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,
-    marginBottom:10,
+    marginBottom: 10,
   },
   undeliveredButton: {
     backgroundColor: "#d32f2f",
@@ -482,7 +491,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   cancelButton: {
-    backgroundColor: "#f44336",
+    backgroundColor: "#f33",
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,
