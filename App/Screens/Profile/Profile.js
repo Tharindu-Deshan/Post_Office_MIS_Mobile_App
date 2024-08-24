@@ -22,8 +22,8 @@ export default function Profile() {
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.profileContainer}>
         <Image source={imageUser} style={styles.profileImage} />
-        <Text style={styles.profileName}>John Doe</Text>
-        <Text style={styles.profileEmail}>john.doe@example.com</Text>
+        <Text style={styles.profileName}>Tharindu</Text>
+        <Text style={styles.profileEmail}>tharindudeshan@example.com</Text>
 
         {/* Edit Profile Button below the email */}
         <TouchableOpacity style={styles.updateProfileButton} onPress={{}}>

@@ -1,1 +1,11 @@
 Redux or Zustand, which allow you to manage global state effectively.
+every component in react native must be started with capital letters
+
+
+
+
+useEffect
+
+when your component renders or when certain data changes. 
+Think of it as a way to tell React to do something after your component has been displayed 
+on the screen or when some specific values are updated.

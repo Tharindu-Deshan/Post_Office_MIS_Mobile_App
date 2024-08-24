@@ -40,7 +40,7 @@ export const deliveryObject = {
         lng: 80.1553
       }
     ],
-    visitOrder: [0, 5, 4, 3, 2, 1],
+    visitOrder: [0, 5, 4, 3, 2, 1,0],
     zone: "Pallansena South",
     status: "Assigned",
     deliveredCount: 8,

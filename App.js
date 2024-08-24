@@ -9,7 +9,7 @@ import LoginScreen from "./App/Screens/LoginPage/LoginScreen";
 
 
 export default function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userId,setUserId] = useState("4");  //setUserId method stores the userid in that
   const [deliveryDetails,setDeliveryDetails] = useState(null);
   const [userName,setUserName] = useState("tharindu");

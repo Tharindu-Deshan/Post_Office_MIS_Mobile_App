@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useNavigation } from "@react-navigation/native";
 import {
   View,
   StyleSheet,
@@ -14,6 +15,8 @@ import * as Location from "expo-location"; // For accessing device location
 import axios from "axios"; // For making HTTP requests
 import polyline from "polyline"; // For decoding Google Maps polyline data
 import { deliveryObject } from "../../Components/DataHardCoded/deliveryObject"; // Hardcoded delivery object
+import { SelectList } from "react-native-dropdown-select-list";
+import { mailData } from "../../Components/DataHardCoded/mailData";
 
 const GOOGLE_MAPS_API_KEY = "AIzaSyDtman-i1xVwD90dMS3HgHc_0CoobjBelc"; // Google Maps API key
 
@@ -34,11 +37,40 @@ export default function RouteDisplay() {
   // State for the current location of the user
   const [currentLocation, setCurrentLocation] = useState(null);
 
+  const navigation = useNavigation();
+
+  const [hideTwoButtons, setHideTwoButtons] = useState(false);
+
   // State for the route, which is a list of coordinates
   const [route, setRoute] = useState([]);
 
   // State to keep track of the current destination index in the delivery route
   const [currentIndex, setCurrentIndex] = useState(1);
+
+  const [mailId, setMailId] = useState(
+    deliveryObject.destinations[deliveryObject.visitOrder[currentIndex]].mailId
+  );
+
+  // Update mailId whenever currentIndex changes
+  useEffect(() => {
+    if (
+      deliveryObject &&
+      deliveryObject.visitOrder &&
+      deliveryObject.destinations[deliveryObject.visitOrder[currentIndex]]
+    ) {
+      const newMailId =
+        deliveryObject.destinations[deliveryObject.visitOrder[currentIndex]]
+          .mailId;
+      setMailId(newMailId); // Update mailId state
+    }
+  }, [currentIndex]);
+
+  // Log mailId when it changes
+  useEffect(() => {
+    console.log(mailId);
+  }, [mailId]);
+
+  // Listen for changes to currentIndex
 
   // Initial region (map zoom level and coordinates)
   const [region, setRegion] = useState({
@@ -54,6 +86,12 @@ export default function RouteDisplay() {
   // Animated values for slide-in effect for modals
   const slideAnim = useRef(new Animated.Value(300)).current; // Starts the modal off-screen
   const fadeAnim = useRef(new Animated.Value(0)).current; // Opacity starts at 0 (invisible)
+
+  const statusOptions = [
+    { key: "1", value: "Undelivered - No Response" },
+    { key: "2", value: "Undelivered - Wrong Address" },
+    { key: "3", value: "Undelivered - Other" },
+  ];
 
   // UseEffect to request location permissions and start tracking location
   useEffect(() => {
@@ -99,69 +137,128 @@ export default function RouteDisplay() {
           });
 
           // Fetch the route to the next destination
-          if (currentLocation) {
-            getRoute(
-              currentLocation,
-              deliveryObject.destinations[
-                deliveryObject.visitOrder[currentIndex]
-              ]
-            );
-          }
+          // if (currentLocation) {
+          //   getRoute(
+          //     currentLocation,
+          //     deliveryObject.destinations[
+          //       deliveryObject.visitOrder[currentIndex]
+          //     ]
+          //   );
+          // }
         }
       );
     })();
   }, [currentLocation]);
 
+  const [completedOrNextDestination, setCompletedOrNextDestination] =
+    useState("Next Destination");
+
   // Function to fetch the route between current location and destination
-  const getRoute = async (currentLoc, destinationLoc) => {
-    const origin = `${currentLoc.latitude},${currentLoc.longitude}`; // Current location as origin
-    const destination = `${destinationLoc.lat},${destinationLoc.lng}`; // Destination
+  // const getRoute = async (currentLoc, destinationLoc) => {
+  //   const origin = `${currentLoc.latitude},${currentLoc.longitude}`; // Current location as origin
+  //   const destination = `${destinationLoc.lat},${destinationLoc.lng}`; // Destination
 
-    try {
-      // Get directions data from Google Maps API
-      const response = await axios.get(
-        `https://maps.googleapis.com/maps/api/directions/json?origin=${origin}&destination=${destination}&key=${GOOGLE_MAPS_API_KEY}`
-      );
+  //   try {
+  //     // Get directions data from Google Maps API
+  //     const response = await axios.get(
+  //       `https://maps.googleapis.com/maps/api/directions/json?origin=${origin}&destination=${destination}&key=${GOOGLE_MAPS_API_KEY}`
+  //     );
 
-      // If routes are available, decode the polyline and store the coordinates
-      if (response.data.routes && response.data.routes.length > 0) {
-        const points = polyline.decode(
-          response.data.routes[0].overview_polyline.points
-        );
-        const coords = points.map((point) => {
-          return {
-            latitude: point[0],
-            longitude: point[1],
-          };
-        });
+  //     // If routes are available, decode the polyline and store the coordinates
+  //     if (response.data.routes && response.data.routes.length > 0) {
+  //       const points = polyline.decode(
+  //         response.data.routes[0].overview_polyline.points
+  //       );
+  //       const coords = points.map((point) => {
+  //         return {
+  //           latitude: point[0],
+  //           longitude: point[1],
+  //         };
+  //       });
 
-        setRoute(coords); // Set the decoded route
-      } else {
-        console.log("No routes found");
-        console.log(response.data);
-      }
-    } catch (error) {
-      console.error("Error fetching route:", error);
-    }
-  };
+  //       setRoute(coords); // Set the decoded route
+  //     } else {
+  //       console.log("No routes found");
+  //       console.log(response.data);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching route:", error);
+  //   }
+  // };
 
-  // UseEffect to update the route whenever the current index changes
-  useEffect(() => {
-    if (currentLocation && currentIndex < deliveryObject.visitOrder.length) {
-      getRoute(
-        currentLocation,
-        deliveryObject.destinations[deliveryObject.visitOrder[currentIndex]]
-      );
-    }
-  }, [currentIndex]);
+  // // UseEffect to update the route whenever the current index changes
+  // useEffect(() => {
+  //   if (currentLocation && currentIndex < deliveryObject.visitOrder.length) {
+  //     getRoute(
+  //       currentLocation,
+  //       deliveryObject.destinations[deliveryObject.visitOrder[currentIndex]]
+  //     );
+  //   }
+  // }, [currentIndex]);
 
   // Function to move to the next destination
   const nextDestination = () => {
-    if (currentIndex < deliveryObject.visitOrder.length - 1) {
+    if (currentIndex < deliveryObject.visitOrder.length - 3) {
       setCurrentIndex(currentIndex + 1); // Increment destination index
-    } else if (currentIndex === deliveryObject.visitOrder.length - 1) {
+    } else if (currentIndex === deliveryObject.visitOrder.length - 3) {
+      setCurrentIndex(currentIndex + 1);
+
+      setCompletedOrNextDestination("To Post Office");
+      deliveryObject.status = "Completed";
+      setArrivedModalVisible(false);
+
+      //call the relavant methond thats for completing the delivery..
+    } else if (currentIndex === deliveryObject.visitOrder.length - 2) {
+      setCurrentIndex(currentIndex + 1);
+      setHideTwoButtons(true);
+      setCompletedOrNextDestination("Completed");
       setRoute([]); // Clear route when all destinations are reached
     }
+  };
+
+  const [selectedStatus, setSelectedStatus] = useState("Undelivered");
+
+  const [isUndelivered, setIsUndelivered] = useState(false);
+
+  const [isDeliveryReasonSelected, setIsDeliveryReasonSelected] = useState(false);
+
+  const [finalReason, setFinalReasonSelected] = useState("");
+
+  // useEffect(() => {
+  //   setFinalReasonSelected(mailData.status);
+  //   console.log(finalReason);
+  // }, [finalReason]);
+
+  const handleConfirm = () => {
+    mailData.status = finalReason;
+    closeModal(setArrivedModalVisible)
+    
+  };
+
+  const handleUndelivered = () => {
+    setIsUndelivered(true);
+    setIsDeliveryReasonSelected(true);
+    setIsDeliveryReasonSelected(true);
+  };
+
+  const handleDelivered = () => {
+    setFinalReasonSelected("Delivered")
+    alert("Mail Delivered!");
+
+
+   
+   setIsDeliveryReasonSelected(true);
+ 
+  };
+
+  const handleUpdateStatusCancel = () => {
+    setIsUndelivered(false);
+    setIsDeliveryReasonSelected(true);
+    closeModal(setArrivedModalVisible);
+  };
+
+  const handleDetailsCloseButton = () => {
+    closeModal(setDetailsModalVisible);
   };
 
   // Function to open modal with sliding and fading animations
@@ -221,7 +318,7 @@ export default function RouteDisplay() {
             />
           );
         })}
-      
+
         {/* Draw the route polyline if available */}
         {route.length > 0 && (
           <Polyline coordinates={route} strokeWidth={8} strokeColor="#4285F4" />
@@ -243,30 +340,40 @@ export default function RouteDisplay() {
         </View>
 
         <View style={styles.secondbuttoncontainer}>
-          {/* Arrived button */}
-          <TouchableOpacity
-            style={styles.arrivedButtonContainer}
-            title="Arrived"
-            onPress={() => openModal(setArrivedModalVisible)}
-          >
-            <Text style={styles.arrievedtext}>Arrived</Text>
-          </TouchableOpacity>
-
-          {/* Next Destination button */}
-          <TouchableOpacity
-            style={styles.nextLocationButton}
-            title="Next Dest"
-            onPress={nextDestination}
-          >
-            <Text style={styles.nextlocationtext}>Next Destination</Text>
-          </TouchableOpacity>
+          {hideTwoButtons ? (
+            <TouchableOpacity
+              style={styles.finalbuttoncompleted}
+              title="Completed"
+              onPress={() => navigation.navigate("Home")}
+            >
+              <Text style={styles.finalbuttontext}>Today Task Completed</Text>
+            </TouchableOpacity>
+          ) : (
+            <>
+              <TouchableOpacity
+                style={styles.arrivedButtonContainer}
+                title="Arrived"
+                onPress={() => openModal(setArrivedModalVisible)}
+              >
+                <Text style={styles.arrievedtext}>Arrived</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.nextLocationButton}
+                title="Next Dest"
+                onPress={nextDestination}
+              >
+                <Text style={styles.nextlocationtext}>
+                  {completedOrNextDestination}
+                </Text>
+              </TouchableOpacity>
+            </>
+          )}
         </View>
       </View>
 
-      {/* Modal for "Details" Button */}
       <Modal
         visible={detailsModalVisible}
-        animationType="none"
+        animationType="fade"
         transparent={true}
       >
         <Animated.View style={[styles.modalContainer, { opacity: fadeAnim }]}>
@@ -277,23 +384,31 @@ export default function RouteDisplay() {
             ]}
           >
             <Text style={styles.modalTitle}>Mail Details</Text>
-            <ScrollView>
+            <ScrollView style={styles.scrollView}>
               <Text style={[styles.modalText, { lineHeight: 30 }]}>
-                <Text style={{ fontWeight: "bold" }}>Sender : </Text>John Doe
+                <Text style={{ fontWeight: "bold" }}>Receiver: </Text>
+                <Text>{mailData.recipientName}</Text>
                 {"\n"}
-                <Text style={{ fontWeight: "bold" }}>Receiver : </Text>Jane
-                Smith{"\n"}
-                <Text style={{ fontWeight: "bold" }}>Address : </Text>123
-                Example Street, City{"\n"}
-                <Text style={{ fontWeight: "bold" }}>Status : </Text>Pending
+
+                <Text style={{ fontWeight: "bold" }}>Address: </Text>
+                <Text>{mailData.destinationAddress}</Text>
                 {"\n"}
-                <Text style={{ fontWeight: "bold" }}>Expected Delivery : </Text>
-                15th August 2024{"\n"}
+
+                <Text style={{ fontWeight: "bold" }}>Mail Type: </Text>
+                <Text>{mailData.mailType}</Text>
+                {"\n"}
+
+                <Text style={{ fontWeight: "bold" }}>Status: </Text>
+                <Text>{mailData.status}</Text>
+                {"\n"}
               </Text>
             </ScrollView>
+
             <TouchableOpacity
               style={styles.closeButton}
-              onPress={() => closeModal(setDetailsModalVisible)}
+              onPress={() => {
+                handleDetailsCloseButton;
+              }}
             >
               <Text style={styles.detailsclosebuttonText}>Close</Text>
             </TouchableOpacity>
@@ -316,24 +431,44 @@ export default function RouteDisplay() {
           >
             <Text style={styles.modalTitle}>Update Mail Status</Text>
             <View style={styles.statusButtons}>
-              <TouchableOpacity style={styles.deliveredButton}>
+              <TouchableOpacity
+                style={styles.deliveredButton}
+                onPress={() => {
+                  handleDelivered;
+                }}
+              >
                 <Text style={styles.buttonText}>Delivered</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.undeliveredButton}>
-                <Text style={styles.buttonText}>Undelivered</Text>
+
+              <TouchableOpacity
+                style={styles.deliveredButton}
+                onPress={handleUndelivered}
+              >
+                <Text style={styles.buttonText}>{selectedStatus}</Text>
               </TouchableOpacity>
+
+              {/* Dropdown for selecting Undelivered reason */}
+              {isUndelivered && (
+                <SelectList
+                  setSelected={setSelectedStatus}
+                  data={statusOptions}
+                  save="value"
+                  placeholder="Select Reason for Undelivered"
+                />
+              )}
             </View>
 
             <View style={styles.confirmCancelButtons}>
               <TouchableOpacity
+                 disabled={isDeliveryReasonSelected}
                 style={styles.confirmButton}
-                onPress={() => closeModal(setArrivedModalVisible)}
+                onPress={handleConfirm}
               >
                 <Text style={styles.buttonText}>Confirm</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.cancelButton}
-                onPress={() => closeModal(setArrivedModalVisible)}
+                onPress={handleUpdateStatusCancel}
               >
                 <Text style={styles.buttonText}>Cancel</Text>
               </TouchableOpacity>
@@ -485,13 +620,13 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
   },
   confirmButton: {
-    backgroundColor: "#4CAF50",
+    backgroundColor: "#f33",
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,
   },
   cancelButton: {
-    backgroundColor: "#f33",
+    backgroundColor: "#4CAF50",
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,
@@ -512,5 +647,29 @@ const styles = StyleSheet.create({
   },
   modalText: {
     padding: 10,
+  },
+
+  finalbuttoncompleted: {
+    backgroundColor: "#008080", // Button color
+    paddingVertical: 20, // Adjust vertical padding
+    borderRadius: 10, // Rounded corners
+    justifyContent: "center",
+    alignItems: "center", // Center the button text
+    paddingHorizontal: 35,
+    paddingLeft: 40,
+    marginLeft: 20,
+  },
+  finalbuttontext: {
+    color: "black",
+    fontWeight: "bold",
+    textAlign: "center",
+    fontSize: 17,
+  },
+  scrollView: {
+    paddingHorizontal: 20, // Padding on left and right for better spacing
+    paddingVertical: 10, // Padding on top and bottom for better readability
+    backgroundColor: "#f9f9f9", // Light background color for better text contrast
+    borderRadius: 10, // Rounded corners for a more polished look
+    marginBottom: 20, // Margin to create space between ScrollView and other components
   },
 });

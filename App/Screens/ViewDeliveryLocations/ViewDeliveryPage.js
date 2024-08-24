@@ -65,6 +65,7 @@ export default function ViewDeliveryPage() {
                   <View style={styles.numberOverlay}>
                     <Text style={styles.markerText}>{index + 1}</Text>
                   </View>
+                  
                   {/* Callout component to show info when marker is clicked */}
                   <Callout>
                     <Text>{`Marker ${index + 1}`}</Text>

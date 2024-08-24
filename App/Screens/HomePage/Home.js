@@ -23,8 +23,8 @@ const backgroundimage = require("../HomePage/e03b2bf1-678e-49f1-998d-d5b03fb09a9
 
 export default function Home() {
   const navigation = useNavigation();
-  const [status, setStatus] = useState("Unassigned");
-  const [name, setName] = useState(null);
+  const [status, setStatus] = useState("");
+  const [name, setName] = useState("Tharindu");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [delivery, setDelivery] = useState(null);
@@ -43,11 +43,8 @@ export default function Home() {
           console.log(response.data);
           setDelivery(response.data);
           setStatus(response.data.status);
-          setName(userName)
-          
-         
-          
-       
+          //setName(response.data.userName)
+                
         } else {
           console.error(`Error: Received status ${response.status}`);
         }
