@@ -1,15 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, Dimensions, StyleSheet, Button as RNButton } from 'react-native';
-
 import { Provider as PaperProvider, Button } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 import * as Location from 'expo-location';
-
-
 import Dropdown from '../commonLayout/dropDown';
 import CommonLayout from '../commonLayout/CommonLayout';
-
 
 export default function DeliveryRootDisplayMaps() {
   const navigation = useNavigation();
@@ -17,7 +13,7 @@ export default function DeliveryRootDisplayMaps() {
   const [region, setRegion] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const mapRef = useRef(null);
-
+  
   useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();

@@ -36,34 +36,40 @@ export default function ViewDeliveryPage() {
     <CommonLayout>
       <View style={styles.container}>
         <Text style={styles.title}>View Delivery Locations</Text>
-        {/* <Header /> */}
-        <View style={styles.mapContainer}>
-          <GoogleMapView />
-        </View>
-        <Text>Mail Id:={data.date}</Text>
-        <SafeAreaView style={styles.tableContainer}>
-          <DisplayTable tableHead={tableHead} tableData={tableData} />
-        </SafeAreaView>
       </View>
+      <View style={styles.mapContainer}>
+          <GoogleMapView />
+      </View>
+        {/* <Header /> */}
+        
+        {/* <Text>Mail Id:={data.date}</Text>  we have to remove this comment and make this as uncomment*/}
+        {/* <SafeAreaView style={styles.tableContainer}>
+          <DisplayTable tableHead={tableHead} tableData={tableData} />
+        </SafeAreaView> */}
     </CommonLayout>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    padding: 10,
+    flex: 0,
+    padding: 1,
+    height: '7%',
   },
   title: {
-    padding: 10,
+    padding: 0,
     fontWeight: "bold",
     textAlign: "center",
   },
   mapContainer: {
-    flex: 1, // Take up half of the screen
+    flex: 0,
+    height: '70%',
+    width: '100%',
+    alignItems: "center",
+    alignContent: "center",
   },
   tableContainer: {
-    flex: 1, // Take up the other half of the screen
-    paddingTop: 10,
+    flex: 1,
+    paddingTop: 1,
   },
 });

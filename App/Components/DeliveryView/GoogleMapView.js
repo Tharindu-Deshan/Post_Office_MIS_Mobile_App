@@ -10,6 +10,8 @@ export default function GoogleMapView() {
   const [region, setRegion] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const mapRef = useRef(null);
+  // const [mapHeight, setMapHeight] = useState(height);
+  // const [mapWidth, setMapWidth] = useState(width);
 
   useEffect(() => {
     (async () => {
@@ -54,6 +56,9 @@ export default function GoogleMapView() {
     console.log(markers); // Log markers only once when component mounts
   }, []);
 
+  
+  
+
   return (
     <View style={{  }}>
       <MapView 
@@ -94,16 +99,18 @@ export default function GoogleMapView() {
 
 const styles = StyleSheet.create({
   map: {
-    width: Dimensions.get("screen").width * 0.89,
-    height: Dimensions.get("screen").height * 0.23,
+    width: Dimensions.get("screen").width * 1.0,
+    height: Dimensions.get("screen").height * 0.58,
     display: "flex",
     alignContent: "center",
   },
   zoomContainer: {
     flexDirection: "row",
     justifyContent: "space-around",
+    alignContent: "center",
     position: "relative",
     bottom: 0,
     width: "100%",
   },
 });
+
