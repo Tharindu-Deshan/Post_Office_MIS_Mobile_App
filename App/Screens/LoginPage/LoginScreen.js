@@ -1,4 +1,5 @@
 import React, { useContext, useState } from "react";
+
 import {
   View,
   Text,
@@ -9,13 +10,15 @@ import {
   StyleSheet,
 
 } from "react-native";
-import AuthContext from "../../context/AuthContext";
+import AuthContext from "../../context/AuthContextProvider";
+import TabNavigation from "../../Navigations/TabNavigation";
 
 // Import the local image
 const backgroundImage = require("../LoginPage/07cfeb9c-421d-4ae1-b95f-73c60c97efbb.jpg");
 
 const LoginScreen = () => {
-  let { handleLogin,UserId, ...other } = useContext(AuthContext);
+
+  const { handleLogin, isLoggedIn  } = useContext(AuthContext);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -23,51 +26,66 @@ const LoginScreen = () => {
   const authenticateUser = () => {
     // Replace this with your actual authentication logic
     if (email && password) {
-      handleLogin(UserId); // Trigger login callback to update isLoggedIn state
+      const trialUserID = "4"
+      const trialUserPassword = "password"
+      console.log("Authentication", trialUserID, trialUserPassword)
+      handleLogin(trialUserID,trialUserPassword); // Trigger login callback to update isLoggedIn state
     } else {
       alert("Please enter your email and password");
     }
   };
 
   return (
-    <View style={styles.container}>
-   
-    
-      <ImageBackground source={backgroundImage} style={styles.image}>
-        <View style={styles.loginContainer}>
-          <Text style={styles.welcomeText}>Welcome back</Text>
-          <Text style={styles.subText}>Login to your account</Text>
 
-          <TextInput
-            style={styles.input}
-            placeholder="Email"
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-            autoCapitalize="none"
-          />
-
-          <TextInput
-            style={styles.input}
-            placeholder="Password"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-          />
-
-          <TouchableOpacity
-            style={styles.loginButton}
-            onPress={authenticateUser}
-          >
-            <Text style={styles.loginButtonText}>Login</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.forgotPassword}>
-            <Text style={styles.forgotPasswordText}>Forgot your password?</Text>
-          </TouchableOpacity>
+    <>
+    {
+      isLoggedIn ? (
+        <TabNavigation />
+      ) : (
+        <View style={styles.container}>
+          <ImageBackground source={backgroundImage} style={styles.image}>
+            <View style={styles.loginContainer}>
+              <Text style={styles.welcomeText}>Welcome back</Text>
+              <Text style={styles.subText}>Login to your account</Text>
+  
+              <TextInput
+                style={styles.input}
+                placeholder="Email"
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
+              />
+  
+              <TextInput
+                style={styles.input}
+                placeholder="Password"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+              />
+  
+              <TouchableOpacity
+                style={styles.loginButton}
+                onPress={authenticateUser}
+              >
+                <Text style={styles.loginButtonText}>Login</Text>
+              </TouchableOpacity>
+  
+              <TouchableOpacity style={styles.forgotPassword}>
+                <Text style={styles.forgotPasswordText}>Forgot your password?</Text>
+              </TouchableOpacity>
+            </View>
+          </ImageBackground>
         </View>
-      </ImageBackground>
-    </View>
+      )
+    }
+  </>
+  
+
+
+    
+  
   );
 };
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef,useContext } from "react";
 import { useNavigation } from "@react-navigation/native";
 import {
   View,
@@ -14,11 +14,14 @@ import MapView, { Marker, Polyline } from "react-native-maps";
 import * as Location from "expo-location"; // For accessing device location
 import axios from "axios"; // For making HTTP requests
 import polyline from "polyline"; // For decoding Google Maps polyline data
-import { deliveryObject } from "../../Components/DataHardCoded/deliveryObject"; // Hardcoded delivery object
+//import { deliveryDetails } from "../../Components/DataHardCoded/deliveryDetails"; // Hardcoded delivery object
 import { SelectList } from "react-native-dropdown-select-list";
 import { mailData } from "../../Components/DataHardCoded/mailData";
+import AuthContext from "../../context/AuthContextProvider";
 
-const GOOGLE_MAPS_API_KEY = "AIzaSyDtman-i1xVwD90dMS3HgHc_0CoobjBelc"; // Google Maps API key
+
+
+const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY; // Google Maps API key
 
 // Custom Marker component to show a marker with a title and tag on the map
 const CustomMarker = ({ coordinate, title, tag }) => (
@@ -30,6 +33,7 @@ const CustomMarker = ({ coordinate, title, tag }) => (
 );
 
 export default function RouteDisplay() {
+  const {deliveryDetails, ...other } =useContext(AuthContext);
   // State for controlling the visibility of the modals
   const [detailsModalVisible, setDetailsModalVisible] = useState(false); // Modal for "Details"
   const [arrivedModalVisible, setArrivedModalVisible] = useState(false); // Modal for "Arrived"
@@ -39,8 +43,6 @@ export default function RouteDisplay() {
 
   const navigation = useNavigation();
 
-  const [hideTwoButtons, setHideTwoButtons] = useState(false);
-
   // State for the route, which is a list of coordinates
   const [route, setRoute] = useState([]);
 
@@ -48,18 +50,18 @@ export default function RouteDisplay() {
   const [currentIndex, setCurrentIndex] = useState(1);
 
   const [mailId, setMailId] = useState(
-    deliveryObject.destinations[deliveryObject.visitOrder[currentIndex]].mailId
+    deliveryDetails.destinations[deliveryDetails.visitOrder[currentIndex]].mailId
   );
 
   // Update mailId whenever currentIndex changes
   useEffect(() => {
     if (
-      deliveryObject &&
-      deliveryObject.visitOrder &&
-      deliveryObject.destinations[deliveryObject.visitOrder[currentIndex]]
+      deliveryDetails &&
+      deliveryDetails.visitOrder &&
+      deliveryDetails.destinations[deliveryDetails.visitOrder[currentIndex]]
     ) {
       const newMailId =
-        deliveryObject.destinations[deliveryObject.visitOrder[currentIndex]]
+        deliveryDetails.destinations[deliveryDetails.visitOrder[currentIndex]]
           .mailId;
       setMailId(newMailId); // Update mailId state
     }
@@ -74,8 +76,8 @@ export default function RouteDisplay() {
 
   // Initial region (map zoom level and coordinates)
   const [region, setRegion] = useState({
-    latitude: deliveryObject.destinations[0].lat, // Initial latitude from deliveryObject
-    longitude: deliveryObject.destinations[0].lng, // Initial longitude from deliveryObject
+    latitude: deliveryDetails.destinations[0].lat, // Initial latitude from deliveryDetails
+    longitude: deliveryDetails.destinations[0].lng, // Initial longitude from deliveryDetails
     latitudeDelta: 10, // Zoom level latitude
     longitudeDelta: 5, // Zoom level longitude
   });
@@ -136,15 +138,15 @@ export default function RouteDisplay() {
             longitudeDelta: 0.2,
           });
 
-          // Fetch the route to the next destination
-          // if (currentLocation) {
-          //   getRoute(
-          //     currentLocation,
-          //     deliveryObject.destinations[
-          //       deliveryObject.visitOrder[currentIndex]
-          //     ]
-          //   );
-          // }
+        //  Fetch the route to the next destination
+          if (currentLocation) {
+            getRoute(
+              currentLocation,
+              deliveryDetails.destinations[
+                deliveryDetails.visitOrder[currentIndex]
+              ]
+            );
+          }
         }
       );
     })();
@@ -154,64 +156,66 @@ export default function RouteDisplay() {
     useState("Next Destination");
 
   // Function to fetch the route between current location and destination
-  // const getRoute = async (currentLoc, destinationLoc) => {
-  //   const origin = `${currentLoc.latitude},${currentLoc.longitude}`; // Current location as origin
-  //   const destination = `${destinationLoc.lat},${destinationLoc.lng}`; // Destination
+  const getRoute = async (currentLoc, destinationLoc) => {
+    const origin = `${currentLoc.latitude},${currentLoc.longitude}`; // Current location as origin
+    const destination = `${destinationLoc.lat},${destinationLoc.lng}`; // Destination
 
-  //   try {
-  //     // Get directions data from Google Maps API
-  //     const response = await axios.get(
-  //       `https://maps.googleapis.com/maps/api/directions/json?origin=${origin}&destination=${destination}&key=${GOOGLE_MAPS_API_KEY}`
-  //     );
+    try {
+      // Get directions data from Google Maps API
+      const response = await axios.get(
+        `https://maps.googleapis.com/maps/api/directions/json?origin=${origin}&destination=${destination}&key=${GOOGLE_MAPS_API_KEY}`
+      );
 
-  //     // If routes are available, decode the polyline and store the coordinates
-  //     if (response.data.routes && response.data.routes.length > 0) {
-  //       const points = polyline.decode(
-  //         response.data.routes[0].overview_polyline.points
-  //       );
-  //       const coords = points.map((point) => {
-  //         return {
-  //           latitude: point[0],
-  //           longitude: point[1],
-  //         };
-  //       });
+      // If routes are available, decode the polyline and store the coordinates
+      if (response.data.routes && response.data.routes.length > 0) {
+        const points = polyline.decode(
+          response.data.routes[0].overview_polyline.points
+        );
+        const coords = points.map((point) => {
+          return {
+            latitude: point[0],
+            longitude: point[1],
+          };
+        });
 
-  //       setRoute(coords); // Set the decoded route
-  //     } else {
-  //       console.log("No routes found");
-  //       console.log(response.data);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error fetching route:", error);
-  //   }
-  // };
+        setRoute(coords); // Set the decoded route
+      } else {
+        console.log("No routes found");
+        console.log(response.data);
+      }
+    } catch (error) {
+      console.error("Error fetching route:", error);
+    }
+  };
 
-  // // UseEffect to update the route whenever the current index changes
-  // useEffect(() => {
-  //   if (currentLocation && currentIndex < deliveryObject.visitOrder.length) {
-  //     getRoute(
-  //       currentLocation,
-  //       deliveryObject.destinations[deliveryObject.visitOrder[currentIndex]]
-  //     );
-  //   }
-  // }, [currentIndex]);
+  // UseEffect to update the route whenever the current index changes
+  useEffect(() => {
+    if (currentLocation && currentIndex < deliveryDetails.visitOrder.length) {
+      getRoute(
+        currentLocation,
+        deliveryDetails.destinations[deliveryDetails.visitOrder[currentIndex]]
+      );
+    }
+  }, [currentIndex]);
+
+  const [hideTwoButtons, setHideTwoButtons] = useState(false);
 
   // Function to move to the next destination
   const nextDestination = () => {
-    if (currentIndex < deliveryObject.visitOrder.length - 3) {
+    if (currentIndex < deliveryDetails.visitOrder.length - 3) {
       setCurrentIndex(currentIndex + 1); // Increment destination index
-    } else if (currentIndex === deliveryObject.visitOrder.length - 3) {
+    } else if (currentIndex === deliveryDetails.visitOrder.length - 3) {
       setCurrentIndex(currentIndex + 1);
 
       setCompletedOrNextDestination("To Post Office");
-      deliveryObject.status = "Completed";
+      deliveryDetails.status = "Completed";
       setArrivedModalVisible(false);
 
       //call the relavant methond thats for completing the delivery..
-    } else if (currentIndex === deliveryObject.visitOrder.length - 2) {
+    } else if (currentIndex === deliveryDetails.visitOrder.length - 2) {
       setCurrentIndex(currentIndex + 1);
       setHideTwoButtons(true);
-      setCompletedOrNextDestination("Completed");
+
       setRoute([]); // Clear route when all destinations are reached
     }
   };
@@ -220,7 +224,7 @@ export default function RouteDisplay() {
 
   const [isUndelivered, setIsUndelivered] = useState(false);
 
-  const [isDeliveryReasonSelected, setIsDeliveryReasonSelected] = useState(false);
+  const [isDeliveryReasonSelected, setIsDeliveryReasonSelected] =  useState(false);
 
   const [finalReason, setFinalReasonSelected] = useState("");
 
@@ -231,35 +235,47 @@ export default function RouteDisplay() {
 
   const handleConfirm = () => {
     mailData.status = finalReason;
-    closeModal(setArrivedModalVisible)
-    
+
+    console.log(mailData.status);
+
+    setIsUndelivered(false);
+    setSelectedStatus("Undelivered")
+    setIsDeliveryReasonSelected(false)
+
+
+    closeModal(setArrivedModalVisible);
   };
 
   const handleUndelivered = () => {
+    
     setIsUndelivered(true);
+   
     setIsDeliveryReasonSelected(true);
-    setIsDeliveryReasonSelected(true);
+  //  setFinalReasonSelected(selectedStatus);
+   // console.log(selectedStatus)
   };
 
   const handleDelivered = () => {
-    setFinalReasonSelected("Delivered")
+    setFinalReasonSelected("Delivered");
+ //   console.log("fhfhfhf"+finalReason)
     alert("Mail Delivered!");
-
-
-   
-   setIsDeliveryReasonSelected(true);
- 
+    setIsDeliveryReasonSelected(true);
   };
 
   const handleUpdateStatusCancel = () => {
     setIsUndelivered(false);
-    setIsDeliveryReasonSelected(true);
+    setIsDeliveryReasonSelected(false);
     closeModal(setArrivedModalVisible);
   };
+
+
 
   const handleDetailsCloseButton = () => {
     closeModal(setDetailsModalVisible);
   };
+  useEffect(()=>{
+    setFinalReasonSelected(selectedStatus)
+  },[selectedStatus])
 
   // Function to open modal with sliding and fading animations
   const openModal = (setVisible) => {
@@ -307,8 +323,8 @@ export default function RouteDisplay() {
         followsUserLocation={true} // Map follows the user's location
       >
         {/* Add markers for each destination */}
-        {deliveryObject.visitOrder.map((orderIndex, index) => {
-          const location = deliveryObject.destinations[orderIndex];
+        {deliveryDetails.visitOrder.map((orderIndex, index) => {
+          const location = deliveryDetails.destinations[orderIndex];
           return (
             <CustomMarker
               key={index}
@@ -406,9 +422,7 @@ export default function RouteDisplay() {
 
             <TouchableOpacity
               style={styles.closeButton}
-              onPress={() => {
-                handleDetailsCloseButton;
-              }}
+              onPress={handleDetailsCloseButton} // This should work since it's just passing the reference
             >
               <Text style={styles.detailsclosebuttonText}>Close</Text>
             </TouchableOpacity>
@@ -433,9 +447,9 @@ export default function RouteDisplay() {
             <View style={styles.statusButtons}>
               <TouchableOpacity
                 style={styles.deliveredButton}
-                onPress={() => {
-                  handleDelivered;
-                }}
+                onPress= { handleDelivered}
+                
+                
               >
                 <Text style={styles.buttonText}>Delivered</Text>
               </TouchableOpacity>
@@ -450,7 +464,7 @@ export default function RouteDisplay() {
               {/* Dropdown for selecting Undelivered reason */}
               {isUndelivered && (
                 <SelectList
-                  setSelected={setSelectedStatus}
+                setSelected={(val) => setSelectedStatus(val)}
                   data={statusOptions}
                   save="value"
                   placeholder="Select Reason for Undelivered"
@@ -460,8 +474,11 @@ export default function RouteDisplay() {
 
             <View style={styles.confirmCancelButtons}>
               <TouchableOpacity
-                 disabled={isDeliveryReasonSelected}
-                style={styles.confirmButton}
+                disabled={!isDeliveryReasonSelected}
+                style={[
+                  styles.confirmButton,
+                  !isDeliveryReasonSelected && styles.disabledButton, // Apply disabled styles
+                ]}
                 onPress={handleConfirm}
               >
                 <Text style={styles.buttonText}>Confirm</Text>
@@ -504,7 +521,7 @@ const styles = StyleSheet.create({
     marginTop: 3,
     flexDirection: "row",
     justifyContent: "flex-start", // Distribute space between buttons
-    backgroundColor: "#e8daef",
+    backgroundColor: "#fff7ed",
     borderRadius: 30,
     padding: 10,
     marginHorizontal: 10, // Adds spacing between screen edges and the buttons
@@ -548,7 +565,7 @@ const styles = StyleSheet.create({
     marginTop: 10, // Adjust margin as needed
   },
   arrivedButtonContainer: {
-    backgroundColor: "#4CAF50", // Button color
+    backgroundColor: "#2c2a42", // Button color
     paddingVertical: 20, // Adjust vertical padding
     borderRadius: 10, // Rounded corners
     justifyContent: "center",
@@ -558,6 +575,7 @@ const styles = StyleSheet.create({
   arrievedtext: {
     fontWeight: "bold",
     fontSize: 17,
+    color:'white',
   },
   nextLocationButton: {
     backgroundColor: "#c6cf11", // Button color
@@ -672,4 +690,17 @@ const styles = StyleSheet.create({
     borderRadius: 10, // Rounded corners for a more polished look
     marginBottom: 20, // Margin to create space between ScrollView and other components
   },
+  confirmButton: {
+    backgroundColor: "#f33", // Regular button color
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+  },
+
+  // Styles for the confirm button when disabled
+  disabledButton: {
+    backgroundColor: "#f33", // Disabled button color (can also be lighter)
+    opacity: 0.5, // Reduce opacity to indicate disabled state
+  },
+
 });

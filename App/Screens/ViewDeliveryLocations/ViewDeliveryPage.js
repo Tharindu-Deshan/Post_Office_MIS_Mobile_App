@@ -6,6 +6,7 @@ import { deliveryObject } from '../../Components/DataHardCoded/deliveryObject'; 
 import { useNavigation } from "@react-navigation/native"; // Navigation hook for moving between screens
 import CommonLayout from '../../Components/commonLayout/CommonLayout'; // Custom layout component
 
+
 export default function ViewDeliveryPage() {
   const navigation = useNavigation(); // Hook to use navigation between screens
   const [location, setLocation] = useState(null); // State for storing the user's current location
@@ -89,9 +90,9 @@ export default function ViewDeliveryPage() {
             </TouchableOpacity>
 
             {/* Button to end the delivery duty (currently not functional) */}
-            <TouchableOpacity style={styles.endButton} onPress={() => {}}>
+            {/* <TouchableOpacity style={styles.endButton} onPress={() => {}}>
               <Text style={styles.buttonText}>End Duty</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
         </View>
       </View>
@@ -120,22 +121,22 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(230, 230, 255, 0.8)',
     padding: 25,
     borderRadius: 10,
-    borderWidth: 2,
-    borderColor: 'black',
+    // borderWidth: 2,
+    // borderColor: 'black',
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#000',
+    // shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
     marginBottom: 40,
   },
   detailText: {
-    fontSize: 18,
+    fontSize: 17,
     color: '#000',
     marginBottom: 10,
     textAlign: 'center',
-    fontWeight: 'bold',
+    // fontWeight: 'bold',
     textShadowColor: '#AAA',
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 1,
@@ -147,9 +148,9 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   startButton: {
-    backgroundColor: 'green',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
+    backgroundColor: '#fbbf24',
+    paddingVertical: 15,
+    paddingHorizontal: 22,
     borderRadius: 5,
     marginHorizontal: 10,
   },
@@ -161,8 +162,8 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
   },
   buttonText: {
-    color: 'white',
-    fontSize: 16,
+    color: 'black',
+    fontSize: 20,
     fontWeight: 'bold',
     textAlign: 'center',
   },

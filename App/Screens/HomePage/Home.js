@@ -17,7 +17,7 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 // import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 // im??port Ionicons from '@expo/vector-icons/Ionicons';
 import Entypo from "@expo/vector-icons/Entypo";
-import AuthContext from "../../context/AuthContext";
+import AuthContext from "../../context/AuthContextProvider";
 
 const backgroundimage = require("../HomePage/e03b2bf1-678e-49f1-998d-d5b03fb09a99.webp");
 
@@ -27,10 +27,9 @@ export default function Home() {
   const [name, setName] = useState("Tharindu");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [delivery, setDelivery] = useState(null);
+  
 
-  const { userId, userName, deliveryDetails, ...other } =
-    useContext(AuthContext);
+  const { userId , userName , deliveryDetails , setDeliveryDetails  } = useContext(AuthContext);
 
     const getPostmanData = async () => {
       console.log("getting postman data");
@@ -41,9 +40,10 @@ export default function Home() {
         if (response.status === 200) {
           console.log("Request successful");
           console.log(response.data);
-          setDelivery(response.data);
+          setDeliveryDetails(response.data);
           setStatus(response.data.status);
           //setName(response.data.userName)
+         
                 
         } else {
           console.error(`Error: Received status ${response.status}`);

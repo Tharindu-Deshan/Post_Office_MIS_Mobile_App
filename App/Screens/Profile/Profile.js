@@ -9,7 +9,7 @@ import {
   StatusBar,
   Platform,
 } from "react-native";
-import AuthContext from "../../context/AuthContext";
+import AuthContext from "../../context/AuthContextProvider";
 import Feather from "@expo/vector-icons/Feather";
 
 const imageUser = require("../Profile/e03b2bf1-678e-49f1-998d-d5b03fb09a99.webp");
@@ -87,7 +87,7 @@ export default function Profile() {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    backgroundColor: "#e8daef", // Softer background color for a calm feel
+    backgroundColor: "white", // Softer background color for a calm feel
     padding: 20,
     paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 40,
   },
