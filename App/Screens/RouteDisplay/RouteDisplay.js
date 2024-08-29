@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef,useContext } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { useNavigation } from "@react-navigation/native";
 import {
   View,
@@ -14,12 +14,14 @@ import MapView, { Marker, Polyline } from "react-native-maps";
 import * as Location from "expo-location"; // For accessing device location
 import axios from "axios"; // For making HTTP requests
 import polyline from "polyline"; // For decoding Google Maps polyline data
+import { ref, set } from 'firebase/database';
+import {db} from '../../../firebase_config.js'
+
 //import { deliveryDetails } from "../../Components/DataHardCoded/deliveryDetails"; // Hardcoded delivery object
+
 import { SelectList } from "react-native-dropdown-select-list";
 import { mailData } from "../../Components/DataHardCoded/mailData";
 import AuthContext from "../../context/AuthContextProvider";
-
-
 
 const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY; // Google Maps API key
 
@@ -33,7 +35,8 @@ const CustomMarker = ({ coordinate, title, tag }) => (
 );
 
 export default function RouteDisplay() {
-  const {deliveryDetails, ...other } =useContext(AuthContext);
+  const { deliveryDetails ,userId} = useContext(AuthContext);
+
   // State for controlling the visibility of the modals
   const [detailsModalVisible, setDetailsModalVisible] = useState(false); // Modal for "Details"
   const [arrivedModalVisible, setArrivedModalVisible] = useState(false); // Modal for "Arrived"
@@ -50,19 +53,24 @@ export default function RouteDisplay() {
   const [currentIndex, setCurrentIndex] = useState(1);
 
   const [mailId, setMailId] = useState(
-    deliveryDetails.destinations[deliveryDetails.visitOrder[currentIndex]].mailId
+    deliveryDetails.destinations[
+      deliveryDetails.visitOrder.split(",").map(Number)[currentIndex]
+    ]
   );
 
   // Update mailId whenever currentIndex changes
   useEffect(() => {
     if (
       deliveryDetails &&
-      deliveryDetails.visitOrder &&
-      deliveryDetails.destinations[deliveryDetails.visitOrder[currentIndex]]
+      deliveryDetails.visitOrder.split(",").map(Number) &&
+      deliveryDetails.destinations[
+        deliveryDetails.visitOrder.split(",").map(Number)[currentIndex]
+      ]
     ) {
       const newMailId =
-        deliveryDetails.destinations[deliveryDetails.visitOrder[currentIndex]]
-          .mailId;
+        deliveryDetails.destinations[
+          deliveryDetails.visitOrder.split(",").map(Number)[currentIndex]
+        ].mailId;
       setMailId(newMailId); // Update mailId state
     }
   }, [currentIndex]);
@@ -71,6 +79,13 @@ export default function RouteDisplay() {
   useEffect(() => {
     console.log(mailId);
   }, [mailId]);
+  useEffect(() => {
+    console.log(
+      deliveryDetails.destinations[
+        deliveryDetails.visitOrder.split(",").map(Number)[currentIndex]
+      ]
+    );
+  }, []);
 
   // Listen for changes to currentIndex
 
@@ -134,16 +149,16 @@ export default function RouteDisplay() {
           setRegion({
             latitude,
             longitude,
-            latitudeDelta: 0.2, // Adjust these values to zoom out
-            longitudeDelta: 0.2,
+            latitudeDelta: 0.01,
+            longitudeDelta: 0.01,
           });
 
-        //  Fetch the route to the next destination
+          //  Fetch the route to the next destination
           if (currentLocation) {
             getRoute(
               currentLocation,
               deliveryDetails.destinations[
-                deliveryDetails.visitOrder[currentIndex]
+                deliveryDetails.visitOrder.split(",").map(Number)[currentIndex]
               ]
             );
           }
@@ -190,10 +205,15 @@ export default function RouteDisplay() {
 
   // UseEffect to update the route whenever the current index changes
   useEffect(() => {
-    if (currentLocation && currentIndex < deliveryDetails.visitOrder.length) {
+    if (
+      currentLocation &&
+      currentIndex < deliveryDetails.visitOrder.split(",").map(Number).length
+    ) {
       getRoute(
         currentLocation,
-        deliveryDetails.destinations[deliveryDetails.visitOrder[currentIndex]]
+        deliveryDetails.destinations[
+          deliveryDetails.visitOrder.split(",").map(Number)[currentIndex]
+        ]
       );
     }
   }, [currentIndex]);
@@ -202,9 +222,15 @@ export default function RouteDisplay() {
 
   // Function to move to the next destination
   const nextDestination = () => {
-    if (currentIndex < deliveryDetails.visitOrder.length - 3) {
+    if (
+      currentIndex <
+      deliveryDetails.visitOrder.split(",").map(Number).length - 3
+    ) {
       setCurrentIndex(currentIndex + 1); // Increment destination index
-    } else if (currentIndex === deliveryDetails.visitOrder.length - 3) {
+    } else if (
+      currentIndex ===
+      deliveryDetails.visitOrder.split(",").map(Number).length - 3
+    ) {
       setCurrentIndex(currentIndex + 1);
 
       setCompletedOrNextDestination("To Post Office");
@@ -212,7 +238,10 @@ export default function RouteDisplay() {
       setArrivedModalVisible(false);
 
       //call the relavant methond thats for completing the delivery..
-    } else if (currentIndex === deliveryDetails.visitOrder.length - 2) {
+    } else if (
+      currentIndex ===
+      deliveryDetails.visitOrder.split(",").map(Number).length - 2
+    ) {
       setCurrentIndex(currentIndex + 1);
       setHideTwoButtons(true);
 
@@ -224,7 +253,8 @@ export default function RouteDisplay() {
 
   const [isUndelivered, setIsUndelivered] = useState(false);
 
-  const [isDeliveryReasonSelected, setIsDeliveryReasonSelected] =  useState(false);
+  const [isDeliveryReasonSelected, setIsDeliveryReasonSelected] =
+    useState(false);
 
   const [finalReason, setFinalReasonSelected] = useState("");
 
@@ -239,25 +269,23 @@ export default function RouteDisplay() {
     console.log(mailData.status);
 
     setIsUndelivered(false);
-    setSelectedStatus("Undelivered")
-    setIsDeliveryReasonSelected(false)
-
+    setSelectedStatus("Undelivered");
+    setIsDeliveryReasonSelected(false);
 
     closeModal(setArrivedModalVisible);
   };
 
   const handleUndelivered = () => {
-    
     setIsUndelivered(true);
-   
+
     setIsDeliveryReasonSelected(true);
-  //  setFinalReasonSelected(selectedStatus);
-   // console.log(selectedStatus)
+    //  setFinalReasonSelected(selectedStatus);
+    // console.log(selectedStatus)
   };
 
   const handleDelivered = () => {
     setFinalReasonSelected("Delivered");
- //   console.log("fhfhfhf"+finalReason)
+    //   console.log("fhfhfhf"+finalReason)
     alert("Mail Delivered!");
     setIsDeliveryReasonSelected(true);
   };
@@ -268,14 +296,12 @@ export default function RouteDisplay() {
     closeModal(setArrivedModalVisible);
   };
 
-
-
   const handleDetailsCloseButton = () => {
     closeModal(setDetailsModalVisible);
   };
-  useEffect(()=>{
-    setFinalReasonSelected(selectedStatus)
-  },[selectedStatus])
+  useEffect(() => {
+    setFinalReasonSelected(selectedStatus);
+  }, [selectedStatus]);
 
   // Function to open modal with sliding and fading animations
   const openModal = (setVisible) => {
@@ -312,6 +338,39 @@ export default function RouteDisplay() {
     ]).start(() => setVisible(false));
   };
 
+// location tracking ...
+//
+//
+//
+//
+//
+
+
+useEffect(() => {
+  if (currentLocation && userId) {
+    updateLocationInDatabase(userId, currentLocation);
+  }
+}, [currentLocation]);
+
+
+const updateLocationInDatabase = (userId, location) => {
+  const postmanRef = ref(db, `PostmanTracker/${userId}`);
+  
+  set(postmanRef, {
+    userId: userId,
+    userLocation: location,
+  })
+  .then(() => {
+   //console.log("Location updated successfully!");
+  })
+  .catch((error) => {
+    console.error("Error updating location:", error);
+  });
+};
+
+
+
+
   return (
     <View style={styles.container}>
       {/* Map View */}
@@ -323,17 +382,20 @@ export default function RouteDisplay() {
         followsUserLocation={true} // Map follows the user's location
       >
         {/* Add markers for each destination */}
-        {deliveryDetails.visitOrder.map((orderIndex, index) => {
-          const location = deliveryDetails.destinations[orderIndex];
-          return (
-            <CustomMarker
-              key={index}
-              coordinate={{ latitude: location.lat, longitude: location.lng }}
-              title={`Location ${index + 1}`}
-              tag={String(index + 1)}
-            />
-          );
-        })}
+        {deliveryDetails.visitOrder
+          .split(",")
+          .map(Number)
+          .map((orderIndex, index) => {
+            const location = deliveryDetails.destinations[orderIndex];
+            return (
+              <CustomMarker
+                key={index}
+                coordinate={{ latitude: location.lat, longitude: location.lng }}
+                title={`Location ${index +1}`}
+                tag={String(index )}
+              />
+            );
+          })}
 
         {/* Draw the route polyline if available */}
         {route.length > 0 && (
@@ -447,9 +509,7 @@ export default function RouteDisplay() {
             <View style={styles.statusButtons}>
               <TouchableOpacity
                 style={styles.deliveredButton}
-                onPress= { handleDelivered}
-                
-                
+                onPress={handleDelivered}
               >
                 <Text style={styles.buttonText}>Delivered</Text>
               </TouchableOpacity>
@@ -464,7 +524,7 @@ export default function RouteDisplay() {
               {/* Dropdown for selecting Undelivered reason */}
               {isUndelivered && (
                 <SelectList
-                setSelected={(val) => setSelectedStatus(val)}
+                  setSelected={(val) => setSelectedStatus(val)}
                   data={statusOptions}
                   save="value"
                   placeholder="Select Reason for Undelivered"
@@ -575,7 +635,7 @@ const styles = StyleSheet.create({
   arrievedtext: {
     fontWeight: "bold",
     fontSize: 17,
-    color:'white',
+    color: "white",
   },
   nextLocationButton: {
     backgroundColor: "#c6cf11", // Button color
@@ -702,5 +762,4 @@ const styles = StyleSheet.create({
     backgroundColor: "#f33", // Disabled button color (can also be lighter)
     opacity: 0.5, // Reduce opacity to indicate disabled state
   },
-
 });

@@ -39,7 +39,7 @@ export default function Home() {
     
         if (response.status === 200) {
           console.log("Request successful");
-          console.log(response.data);
+          console.log(response.data.destinations);
           setDeliveryDetails(response.data);
           setStatus(response.data.status);
           //setName(response.data.userName)
