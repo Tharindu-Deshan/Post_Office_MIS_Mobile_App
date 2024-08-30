@@ -16,6 +16,7 @@ import axios from "axios"; // For making HTTP requests
 import polyline from "polyline"; // For decoding Google Maps polyline data
 import { ref, set } from 'firebase/database';
 import {db} from '../../../firebase_config.js'
+import EvilIcons from '@expo/vector-icons/EvilIcons';
 
 //import { deliveryDetails } from "../../Components/DataHardCoded/deliveryDetails"; // Hardcoded delivery object
 
@@ -23,7 +24,7 @@ import { SelectList } from "react-native-dropdown-select-list";
 import { mailData } from "../../Components/DataHardCoded/mailData";
 import AuthContext from "../../context/AuthContextProvider";
 
-const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY; // Google Maps API key
+//const GOOGLE_MAPS_API_KEY = "AIzaSyC5PDRqf8zfHaA5EVx1PI0fmhntsgUxiT8"; // Google Maps API key
 
 // Custom Marker component to show a marker with a title and tag on the map
 const CustomMarker = ({ coordinate, title, tag }) => (
@@ -388,11 +389,13 @@ const updateLocationInDatabase = (userId, location) => {
           .map((orderIndex, index) => {
             const location = deliveryDetails.destinations[orderIndex];
             return (
+
+              
               <CustomMarker
                 key={index}
                 coordinate={{ latitude: location.lat, longitude: location.lng }}
                 title={`Location ${index +1}`}
-                tag={String(index )}
+                tag={(index === deliveryDetails.destinations.length - 1) ? <EvilIcons name="envelope" size={24} color="black" borderColor="black" borderWidth={5} /> : String(index )}
               />
             );
           })}

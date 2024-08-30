@@ -84,7 +84,7 @@ export default function ViewDeliveryPage() {
                       longitude: location.lng,
                     }}
                     title={`Location ${index + 1}`}
-                    tag={String(index )}
+                    tag={(index === deliveryDetails.destinations.length - 1) ? "Post Office" : String(index )}
                   />
                 );
               })}
@@ -94,7 +94,7 @@ export default function ViewDeliveryPage() {
         {/* Bottom section for displaying total destinations and action buttons */}
         <View style={styles.bottomSection}>
           <Text style={styles.detailText}>
-            Total Destinations: {deliveryDetails.destinations.length}
+            Total Destinations: {deliveryDetails.destinations.length-1}
           </Text>
 
           <View style={styles.buttonContainer}>

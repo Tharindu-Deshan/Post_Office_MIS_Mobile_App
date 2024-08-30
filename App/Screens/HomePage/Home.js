@@ -18,6 +18,7 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 // im??port Ionicons from '@expo/vector-icons/Ionicons';
 import Entypo from "@expo/vector-icons/Entypo";
 import AuthContext from "../../context/AuthContextProvider";
+import BarcodeScanner from "./barcodeScanner";
 
 const backgroundimage = require("../HomePage/e03b2bf1-678e-49f1-998d-d5b03fb09a99.webp");
 
@@ -90,7 +91,7 @@ export default function Home() {
 
         <View style={styles.blockContainer}>
           <View style={styles.rowContainer}>
-            <TouchableOpacity style={styles.buttonBlock} onPress={() => ({})}>
+            <TouchableOpacity style={styles.buttonBlock} onPress={() => {BarcodeScanner}}>
               <MaterialCommunityIcons
                 name="qrcode-scan"
                 size={60}
