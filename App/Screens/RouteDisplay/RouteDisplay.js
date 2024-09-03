@@ -18,13 +18,13 @@ import { ref, set } from 'firebase/database';
 import {db} from '../../../firebase_config.js'
 import EvilIcons from '@expo/vector-icons/EvilIcons';
 
-//import { deliveryDetails } from "../../Components/DataHardCoded/deliveryDetails"; // Hardcoded delivery object
+
 
 import { SelectList } from "react-native-dropdown-select-list";
 import { mailData } from "../../Components/DataHardCoded/mailData";
 import AuthContext from "../../context/AuthContextProvider";
 
-//const GOOGLE_MAPS_API_KEY = "AIzaSyC5PDRqf8zfHaA5EVx1PI0fmhntsgUxiT8"; // Google Maps API key
+const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY; // Google Maps API key
 
 // Custom Marker component to show a marker with a title and tag on the map
 const CustomMarker = ({ coordinate, title, tag }) => (
@@ -80,6 +80,7 @@ export default function RouteDisplay() {
   useEffect(() => {
     console.log(mailId);
   }, [mailId]);
+
   useEffect(() => {
     console.log(
       deliveryDetails.destinations[
@@ -112,66 +113,132 @@ export default function RouteDisplay() {
   ];
 
   // UseEffect to request location permissions and start tracking location
+  // useEffect(() => {
+  //   (async () => {
+  //     // Request location permissions from the user
+  //     let { status } = await Location.requestForegroundPermissionsAsync();
+  //     if (status !== "granted") {
+  //       console.log("Permission to access location was denied");
+  //       return;
+  //     }
+
+  //     // Track the user's location at intervals
+  //     Location.watchPositionAsync(
+  //       {
+  //         accuracy: Location.Accuracy.High, // High accuracy location
+  //         distanceInterval: 10, // Trigger update every 10 meters
+  //         timeInterval: 5000, // Trigger update every 5 seconds
+  //       },
+  //       (position) => {
+  //         const { latitude, longitude } = position.coords;
+  //         setCurrentLocation({
+  //           latitude,
+  //           longitude,
+  //         });
+
+  //         // If the map is not zoomed in yet, zoom in on the user's location
+  //         if (mapViewRef.current && !zoomedInRef.current) {
+  //           mapViewRef.current.animateToRegion({
+  //             latitude,
+  //             longitude,
+  //             latitudeDelta: 0.01,
+  //             longitudeDelta: 0.01,
+  //           });
+  //           zoomedInRef.current = true; // Prevents further zooming
+  //         }
+
+  //         // Update the map region to follow the user's location
+  //         setRegion({
+  //           latitude,
+  //           longitude,
+  //           latitudeDelta: 0.01,
+  //           longitudeDelta: 0.01,
+  //         });
+
+  //         //  Fetch the route to the next destination
+  //         if (currentLocation) {
+  //           getRoute(
+  //             currentLocation,
+  //             deliveryDetails.destinations[
+  //               deliveryDetails.visitOrder.split(",").map(Number)[currentIndex]
+  //             ]
+  //           );
+  //         }
+  //       }
+  //     );
+  //   })();
+  // }, [currentLocation]);
+
+  //updating current location  and the route in every five secounds
+
   useEffect(() => {
-    (async () => {
+    let intervalId;
+  
+    const startLocationTracking = async () => {
       // Request location permissions from the user
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
         console.log("Permission to access location was denied");
         return;
       }
-
-      // Track the user's location at intervals
-      Location.watchPositionAsync(
-        {
+  
+      // Start tracking the user's location every 5 seconds
+      intervalId = setInterval(async () => {
+        const location = await Location.getCurrentPositionAsync({
           accuracy: Location.Accuracy.High, // High accuracy location
-          distanceInterval: 10, // Trigger update every 10 meters
-          timeInterval: 5000, // Trigger update every 5 seconds
-        },
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          setCurrentLocation({
-            latitude,
-            longitude,
-          });
-
-          // If the map is not zoomed in yet, zoom in on the user's location
-          if (mapViewRef.current && !zoomedInRef.current) {
-            mapViewRef.current.animateToRegion({
-              latitude,
-              longitude,
-              latitudeDelta: 0.01,
-              longitudeDelta: 0.01,
-            });
-            zoomedInRef.current = true; // Prevents further zooming
-          }
-
-          // Update the map region to follow the user's location
-          setRegion({
+        });
+  
+        const { latitude, longitude } = location.coords;
+        setCurrentLocation({ latitude, longitude });
+  
+        // If the map is not zoomed in yet, zoom in on the user's location
+        if (mapViewRef.current && !zoomedInRef.current) {
+          mapViewRef.current.animateToRegion({
             latitude,
             longitude,
             latitudeDelta: 0.01,
             longitudeDelta: 0.01,
           });
-
-          //  Fetch the route to the next destination
-          if (currentLocation) {
-            getRoute(
-              currentLocation,
-              deliveryDetails.destinations[
-                deliveryDetails.visitOrder.split(",").map(Number)[currentIndex]
-              ]
-            );
-          }
+          zoomedInRef.current = true; // Prevents further zooming
         }
-      );
-    })();
-  }, [currentLocation]);
+  
+        // Update the map region to follow the user's location
+        setRegion({
+          latitude,
+          longitude,
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.01,
+        });
+  
+        // Fetch the route to the next destination
+        getRoute(
+          { latitude, longitude }, // Pass the updated location
+          deliveryDetails.destinations[
+            deliveryDetails.visitOrder.split(",").map(Number)[currentIndex]
+          ]
+        );
+      }, 5000); // 5 seconds interval
+    };
+  
+    startLocationTracking();
+  
+    // Cleanup function to clear the interval when the component unmounts
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
+  }, []); // Re-run if currentIndex or deliveryDetails changes
+  
+
+
 
   const [completedOrNextDestination, setCompletedOrNextDestination] =
     useState("Next Destination");
 
   // Function to fetch the route between current location and destination
+
+  
   const getRoute = async (currentLoc, destinationLoc) => {
     const origin = `${currentLoc.latitude},${currentLoc.longitude}`; // Current location as origin
     const destination = `${destinationLoc.lat},${destinationLoc.lng}`; // Destination
@@ -362,7 +429,7 @@ const updateLocationInDatabase = (userId, location) => {
     userLocation: location,
   })
   .then(() => {
-   //console.log("Location updated successfully!");
+   console.log("Location updated successfully!");
   })
   .catch((error) => {
     console.error("Error updating location:", error);

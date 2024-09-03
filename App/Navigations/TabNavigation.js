@@ -13,6 +13,7 @@ import ViewDeliveryPage from '../Screens/ViewDeliveryLocations/ViewDeliveryPage'
 import RouteDisplay from '../Screens/RouteDisplay/RouteDisplay';
 
 
+
 export default function TabNavigation() {
   const Tab = createBottomTabNavigator();
 
@@ -69,7 +70,7 @@ export default function TabNavigation() {
           tabBarLabel: 'Route',
         }}
       />
-      
+   
       <Tab.Screen
         name="Profile"
         component={Profile}
