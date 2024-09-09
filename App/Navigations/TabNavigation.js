@@ -4,13 +4,13 @@ import { Ionicons } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
 import { FontAwesome5 } from '@expo/vector-icons';
-import Home from '../Screens/HomePage/Home';
-
+// import Home from '../Screens/HomePage/Home';
 
 
 import Profile from '../Screens/Profile/Profile';
 import ViewDeliveryPage from '../Screens/ViewDeliveryLocations/ViewDeliveryPage';
 import RouteDisplay from '../Screens/RouteDisplay/RouteDisplay';
+import StackNavigations from './StackNavigations';
 
 
 
@@ -18,7 +18,7 @@ export default function TabNavigation() {
   const Tab = createBottomTabNavigator();
 
   return (
-    <Tab.Navigator
+    <Tab.Navigator  
       screenOptions={({ route }) => ({
         headerShown: false,
         tabBarStyle: {
@@ -26,6 +26,7 @@ export default function TabNavigation() {
           paddingBottom: 10,  // Add padding to ensure the icons are centered
           paddingTop: 10,  // Add padding to adjust icon position
           backgroundColor: '#fff',  // You can set a custom background color
+          
         },
         tabBarLabelStyle: {
           fontSize: 14,  // Increase the font size of the labels
@@ -33,7 +34,7 @@ export default function TabNavigation() {
         tabBarIcon: ({ color, size }) => {
           let iconName;
 
-          if (route.name === 'Home') {
+          if (route.name === 'Main') {
             iconName = 'home';
             return <Ionicons name={iconName} size={size + 5} color={color} />;
           } else if (route.name === 'ViewDeliveryPage') {
@@ -50,8 +51,8 @@ export default function TabNavigation() {
       })}
     >
       <Tab.Screen
-        name="Home"
-        component={Home}
+        name="Main"
+        component={StackNavigations}
         options={{
           tabBarLabel: 'Home',
         }}
@@ -63,13 +64,13 @@ export default function TabNavigation() {
           tabBarLabel: 'View Delivery',
         }}
       />
-      <Tab.Screen
+      {/* <Tab.Screen
         name="RouteDisplay"
         component={RouteDisplay}
         options={{
           tabBarLabel: 'Route',
         }}
-      />
+      /> */}
    
       <Tab.Screen
         name="Profile"

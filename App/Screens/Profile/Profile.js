@@ -26,10 +26,10 @@ export default function Profile() {
         <Text style={styles.profileEmail}>tharindudeshan@example.com</Text>
 
         {/* Edit Profile Button below the email */}
-        <TouchableOpacity style={styles.updateProfileButton} onPress={{}}>
+        {/* <TouchableOpacity style={styles.updateProfileButton} onPress={{}}>
           <Feather name="edit" size={24} color="#fff" />
           <Text style={styles.buttonTexthelp}>Edit Profile</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
 
       <View style={styles.detailsSection}>
@@ -87,7 +87,7 @@ export default function Profile() {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    backgroundColor: "white", // Softer background color for a calm feel
+    backgroundColor: "#f0f8ff", // Softer background color for a calm feel
     padding: 20,
     paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 40,
   },

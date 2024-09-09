@@ -18,12 +18,12 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 // im??port Ionicons from '@expo/vector-icons/Ionicons';
 import Entypo from "@expo/vector-icons/Entypo";
 import AuthContext from "../../context/AuthContextProvider";
-import BarcodeScanner from "./barcodeScanner";
+
 
 const backgroundimage = require("../HomePage/e03b2bf1-678e-49f1-998d-d5b03fb09a99.webp");
 
-export default function Home() {
-  const navigation = useNavigation();
+export default function Home({navigation}) {
+  const tabnavigation = useNavigation();
   const [status, setStatus] = useState("");
   const [name, setName] = useState("Tharindu");
   const [loading, setLoading] = useState(true);
@@ -91,7 +91,7 @@ export default function Home() {
 
         <View style={styles.blockContainer}>
           <View style={styles.rowContainer}>
-            <TouchableOpacity style={styles.buttonBlock} onPress={() => {BarcodeScanner}}>
+            <TouchableOpacity style={styles.buttonBlock} onPress={() => navigation.navigate('BarCodeScanner')}>
               <MaterialCommunityIcons
                 name="qrcode-scan"
                 size={60}
@@ -102,7 +102,7 @@ export default function Home() {
 
             <TouchableOpacity
               style={styles.buttonBlock}
-              onPress={() => navigation.navigate("ViewDeliveryPage")}
+              onPress={() => tabnavigation.navigate("ViewDeliveryPage")}
             >
               <MaterialCommunityIcons
                 name="map-marker-multiple"
@@ -114,12 +114,12 @@ export default function Home() {
           </View>
 
           <View style={styles.rowContainer}>
-            <TouchableOpacity style={styles.buttonBlock} onPress={() => ({})}>
+            <TouchableOpacity style={styles.buttonBlock} onPress={() => navigation.navigate('AddPerson')}>
               <Ionicons name="person-add" size={60} color="#fff" />
               <Text style={styles.buttonText}>Add Person</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.buttonBlock} onPress={() => ({})}>
+            <TouchableOpacity style={styles.buttonBlock} onPress={() => navigation.navigate('AddAddress')}>
               <Entypo name="new-message" size={60} color="#fff" />
               <Text style={styles.buttonText}>Add Address</Text>
             </TouchableOpacity>
@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
   container: {
     ...StyleSheet.absoluteFillObject,
     padding: 20,
-    backgroundColor: "#e8daef",
+    backgroundColor: "#f0f8ff",
     justifyContent: "space-between",
   },
   profileContainer: {
