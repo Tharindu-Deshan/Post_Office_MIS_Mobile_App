@@ -64,13 +64,13 @@ export default function TabNavigation() {
           tabBarLabel: 'View Delivery',
         }}
       />
-      {/* <Tab.Screen
+      <Tab.Screen
         name="RouteDisplay"
         component={RouteDisplay}
         options={{
           tabBarLabel: 'Route',
         }}
-      /> */}
+      />
    
       <Tab.Screen
         name="Profile"

@@ -8,7 +8,6 @@ import {
 } from "react-native";
 import MapView, { PROVIDER_GOOGLE, Marker, Callout } from "react-native-maps";
 import * as Location from "expo-location"; // Import for handling location services
-//import { deliveryObject } from "../../Components/DataHardCoded/deliveryObject"; // Importing the delivery object data
 import { useNavigation } from "@react-navigation/native"; // Navigation hook for moving between screens
 import CommonLayout from "../../Components/commonLayout/CommonLayout"; // Custom layout component
 import AuthContext from "../../context/AuthContextProvider";
@@ -23,38 +22,16 @@ const CustomMarker = ({ coordinate, title, tag }) => (
 
 export default function ViewDeliveryPage() {
   const navigation = useNavigation(); // Hook to use navigation between screens
-  const [location, setLocation] = useState(null); // State for storing the user's current location
+  // const [location, setLocation] = useState(null); // State for storing the user's current location
   const [region, setRegion] = useState(null); // State for storing the map region
-  const [errorMsg, setErrorMsg] = useState(null); // State for storing any location permission error
+ /// const [errorMsg, setErrorMsg] = useState(null); // State for storing any location permission error
   const mapRef = useRef(null); // Ref to control the MapView programmatically
 
   const { deliveryDetails } = useContext(AuthContext);
 
  
 
-  //const markers = deliveryObject.destinations; // Get destinations from deliveryObject
-  // const visitOrder = deliveryObject.visitOrder; // Get visiting order from deliveryObject
-
-  useEffect(() => {
-    // Fetch user's current location and request permissions on component mount
-    (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        setErrorMsg("Permission to access location was denied"); // Set error message if permissions are denied
-        return;
-      }
-
-      // Get the user's current location
-      let location = await Location.getCurrentPositionAsync({});
-      setLocation(location); // Update state with user's location
-      setRegion({
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
-        latitudeDelta: 50,
-        longitudeDelta: 100,
-      }); // Set initial region to focus on user's location
-    })();
-  }, []); // Empty dependency array to run once on component mount
+ 
 
   return (
     <CommonLayout>

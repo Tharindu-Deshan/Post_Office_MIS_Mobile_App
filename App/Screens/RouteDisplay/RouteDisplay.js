@@ -14,38 +14,23 @@ import MapView, { Marker, Polyline } from "react-native-maps";
 import * as Location from "expo-location"; // For accessing device location
 import axios from "axios"; // For making HTTP requests
 import polyline from "polyline"; // For decoding Google Maps polyline data
-import { ref, set } from 'firebase/database';
-import {db} from '../../../firebase_config.js'
-import EvilIcons from '@expo/vector-icons/EvilIcons';
-
-
+import { ref, set } from "firebase/database";
+import { db } from "../../../firebase_config.js";
+import EvilIcons from "@expo/vector-icons/EvilIcons";
 
 import { SelectList } from "react-native-dropdown-select-list";
 import { mailData } from "../../Components/DataHardCoded/mailData";
 import AuthContext from "../../context/AuthContextProvider";
 
-const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY; // Google Maps API key
-
-// Custom Marker component to show a marker with a title and tag on the map
-const CustomMarker = ({ coordinate, title, tag }) => (
-  <Marker coordinate={coordinate} title={title}>
-    <View style={styles.customMarker}>
-      <Text style={styles.tag}>{tag}</Text>
-    </View>
-  </Marker>
-);
-
 export default function RouteDisplay() {
-  const { deliveryDetails ,userId} = useContext(AuthContext);
+  const { deliveryDetails, userId } = useContext(AuthContext);
 
-  // State for controlling the visibility of the modals
-  const [detailsModalVisible, setDetailsModalVisible] = useState(false); // Modal for "Details"
-  const [arrivedModalVisible, setArrivedModalVisible] = useState(false); // Modal for "Arrived"
+  const navigation = useNavigation();
+  // Google Maps API key
+  const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY;
 
   // State for the current location of the user
   const [currentLocation, setCurrentLocation] = useState(null);
-
-  const navigation = useNavigation();
 
   // State for the route, which is a list of coordinates
   const [route, setRoute] = useState([]);
@@ -53,43 +38,47 @@ export default function RouteDisplay() {
   // State to keep track of the current destination index in the delivery route
   const [currentIndex, setCurrentIndex] = useState(1);
 
+  //----------------------------update status--------------------------------
+
+  const [completedOrNextDestination, setCompletedOrNextDestination] =
+    useState("Next Destination");
+
+  const [hideTwoButtons, setHideTwoButtons] = useState(false);
+
+  const [isUndelivered, setIsUndelivered] = useState(false);
+
+  const [selectedStatus, setSelectedStatus] = useState("Undelivered");
+
+  const [isDeliveryReasonSelected, setIsDeliveryReasonSelected] =
+    useState(false);
+
+  const [finalReason, setFinalReasonSelected] = useState("");
+
+  // mail id usestate--
   const [mailId, setMailId] = useState(
     deliveryDetails.destinations[
       deliveryDetails.visitOrder.split(",").map(Number)[currentIndex]
-    ]
+    ].mailId
   );
 
-  // Update mailId whenever currentIndex changes
   useEffect(() => {
-    if (
-      deliveryDetails &&
-      deliveryDetails.visitOrder.split(",").map(Number) &&
-      deliveryDetails.destinations[
-        deliveryDetails.visitOrder.split(",").map(Number)[currentIndex]
-      ]
-    ) {
-      const newMailId =
-        deliveryDetails.destinations[
-          deliveryDetails.visitOrder.split(",").map(Number)[currentIndex]
-        ].mailId;
-      setMailId(newMailId); // Update mailId state
-    }
+    console.log("mailid...............", mailId);
   }, [currentIndex]);
 
-  // Log mailId when it changes
-  useEffect(() => {
-    console.log(mailId);
-  }, [mailId]);
+  //ref eken krnne mkkhri dyk krnkot eken thw component ekak wenas wenn hdnn... anith component eka ekka
+  //connection ekk thiygnn wage.actions denn plwn anith object ekt
+  const mapViewRef = useRef(null); // Reference to the map view component//
+  const zoomedInRef = useRef(false); // Boolean to track if the map has zoomed in
 
-  useEffect(() => {
-    console.log(
-      deliveryDetails.destinations[
-        deliveryDetails.visitOrder.split(",").map(Number)[currentIndex]
-      ]
-    );
-  }, []);
+  //--------------------------------------------------------------------------------------------
+  // State for controlling the visibility of the modals
+  const [detailsModalVisible, setDetailsModalVisible] = useState(false); // Modal for "Details"
+  const [arrivedModalVisible, setArrivedModalVisible] = useState(false); // Modal for "Arrived"
 
-  // Listen for changes to currentIndex
+  // Animated values for slide-in effect for modals
+  const slideAnim = useRef(new Animated.Value(300)).current; // Starts the modal off-screen
+  const fadeAnim = useRef(new Animated.Value(0)).current; // Opacity starts at 0 (invisible)
+  //---------------------------------------------------------------------------------------------
 
   // Initial region (map zoom level and coordinates)
   const [region, setRegion] = useState({
@@ -99,12 +88,14 @@ export default function RouteDisplay() {
     longitudeDelta: 5, // Zoom level longitude
   });
 
-  const mapViewRef = useRef(null); // Reference to the map view component
-  const zoomedInRef = useRef(false); // Boolean to track if the map has zoomed in
-
-  // Animated values for slide-in effect for modals
-  const slideAnim = useRef(new Animated.Value(300)).current; // Starts the modal off-screen
-  const fadeAnim = useRef(new Animated.Value(0)).current; // Opacity starts at 0 (invisible)
+  // Custom Marker component to show a marker with a title and tag on the map
+  const CustomMarker = ({ coordinate, title, tag }) => (
+    <Marker coordinate={coordinate} title={title}>
+      <View style={styles.customMarker}>
+        <Text style={styles.tag}>{tag}</Text>
+      </View>
+    </Marker>
+  );
 
   const statusOptions = [
     { key: "1", value: "Undelivered - No Response" },
@@ -112,249 +103,44 @@ export default function RouteDisplay() {
     { key: "3", value: "Undelivered - Other" },
   ];
 
-  // UseEffect to request location permissions and start tracking location
-  // useEffect(() => {
-  //   (async () => {
-  //     // Request location permissions from the user
-  //     let { status } = await Location.requestForegroundPermissionsAsync();
-  //     if (status !== "granted") {
-  //       console.log("Permission to access location was denied");
-  //       return;
-  //     }
+  //--------------------HANDLING BUTTON PRESSES -------------------------
 
-  //     // Track the user's location at intervals
-  //     Location.watchPositionAsync(
-  //       {
-  //         accuracy: Location.Accuracy.High, // High accuracy location
-  //         distanceInterval: 10, // Trigger update every 10 meters
-  //         timeInterval: 5000, // Trigger update every 5 seconds
-  //       },
-  //       (position) => {
-  //         const { latitude, longitude } = position.coords;
-  //         setCurrentLocation({
-  //           latitude,
-  //           longitude,
-  //         });
-
-  //         // If the map is not zoomed in yet, zoom in on the user's location
-  //         if (mapViewRef.current && !zoomedInRef.current) {
-  //           mapViewRef.current.animateToRegion({
-  //             latitude,
-  //             longitude,
-  //             latitudeDelta: 0.01,
-  //             longitudeDelta: 0.01,
-  //           });
-  //           zoomedInRef.current = true; // Prevents further zooming
-  //         }
-
-  //         // Update the map region to follow the user's location
-  //         setRegion({
-  //           latitude,
-  //           longitude,
-  //           latitudeDelta: 0.01,
-  //           longitudeDelta: 0.01,
-  //         });
-
-  //         //  Fetch the route to the next destination
-  //         if (currentLocation) {
-  //           getRoute(
-  //             currentLocation,
-  //             deliveryDetails.destinations[
-  //               deliveryDetails.visitOrder.split(",").map(Number)[currentIndex]
-  //             ]
-  //           );
-  //         }
-  //       }
-  //     );
-  //   })();
-  // }, [currentLocation]);
-
-  //updating current location  and the route in every five secounds
-
-  useEffect(() => {
-    let intervalId;
-  
-    const startLocationTracking = async () => {
-      // Request location permissions from the user
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        console.log("Permission to access location was denied");
-        return;
-      }
-  
-      // Start tracking the user's location every 5 seconds
-      intervalId = setInterval(async () => {
-        const location = await Location.getCurrentPositionAsync({
-          accuracy: Location.Accuracy.High, // High accuracy location
-        });
-  
-        const { latitude, longitude } = location.coords;
-        setCurrentLocation({ latitude, longitude });
-  
-        // If the map is not zoomed in yet, zoom in on the user's location
-        if (mapViewRef.current && !zoomedInRef.current) {
-          mapViewRef.current.animateToRegion({
-            latitude,
-            longitude,
-            latitudeDelta: 0.01,
-            longitudeDelta: 0.01,
-          });
-          zoomedInRef.current = true; // Prevents further zooming
-        }
-  
-        // Update the map region to follow the user's location
-        setRegion({
-          latitude,
-          longitude,
-          latitudeDelta: 0.01,
-          longitudeDelta: 0.01,
-        });
-  
-        // Fetch the route to the next destination
-        getRoute(
-          { latitude, longitude }, // Pass the updated location
-          deliveryDetails.destinations[
-            deliveryDetails.visitOrder.split(",").map(Number)[currentIndex]
-          ]
-        );
-      }, 5000); // 5 seconds interval
-    };
-  
-    startLocationTracking();
-  
-    // Cleanup function to clear the interval when the component unmounts
-    return () => {
-      if (intervalId) {
-        clearInterval(intervalId);
-      }
-    };
-  }, []); // Re-run if currentIndex or deliveryDetails changes
-  
-
-
-
-  const [completedOrNextDestination, setCompletedOrNextDestination] =
-    useState("Next Destination");
-
-  // Function to fetch the route between current location and destination
-
-  
-  const getRoute = async (currentLoc, destinationLoc) => {
-    const origin = `${currentLoc.latitude},${currentLoc.longitude}`; // Current location as origin
-    const destination = `${destinationLoc.lat},${destinationLoc.lng}`; // Destination
-
+  const handleConfirm = async () => {
     try {
-      // Get directions data from Google Maps API
-      const response = await axios.get(
-        `https://maps.googleapis.com/maps/api/directions/json?origin=${origin}&destination=${destination}&key=${GOOGLE_MAPS_API_KEY}`
+      // Define the request payload
+      const payload = {
+        mailId: mailId,
+        status: finalReason,
+      };
+
+      // Send the POST request to the backend using axios
+      const response = await axios.put(
+        "http://10.0.2.2:8083/api/postman/update-status",
+        payload
       );
 
-      // If routes are available, decode the polyline and store the coordinates
-      if (response.data.routes && response.data.routes.length > 0) {
-        const points = polyline.decode(
-          response.data.routes[0].overview_polyline.points
-        );
-        const coords = points.map((point) => {
-          return {
-            latitude: point[0],
-            longitude: point[1],
-          };
-        });
-
-        setRoute(coords); // Set the decoded route
-      } else {
-        console.log("No routes found");
-        console.log(response.data);
-      }
+      // Handle the response
+      console.log("Status updated successfully:", response.data);
     } catch (error) {
-      console.error("Error fetching route:", error);
+      console.error("Error updating status:", error);
     }
-  };
-
-  // UseEffect to update the route whenever the current index changes
-  useEffect(() => {
-    if (
-      currentLocation &&
-      currentIndex < deliveryDetails.visitOrder.split(",").map(Number).length
-    ) {
-      getRoute(
-        currentLocation,
-        deliveryDetails.destinations[
-          deliveryDetails.visitOrder.split(",").map(Number)[currentIndex]
-        ]
-      );
-    }
-  }, [currentIndex]);
-
-  const [hideTwoButtons, setHideTwoButtons] = useState(false);
-
-  // Function to move to the next destination
-  const nextDestination = () => {
-    if (
-      currentIndex <
-      deliveryDetails.visitOrder.split(",").map(Number).length - 3
-    ) {
-      setCurrentIndex(currentIndex + 1); // Increment destination index
-    } else if (
-      currentIndex ===
-      deliveryDetails.visitOrder.split(",").map(Number).length - 3
-    ) {
-      setCurrentIndex(currentIndex + 1);
-
-      setCompletedOrNextDestination("To Post Office");
-      deliveryDetails.status = "Completed";
-      setArrivedModalVisible(false);
-
-      //call the relavant methond thats for completing the delivery..
-    } else if (
-      currentIndex ===
-      deliveryDetails.visitOrder.split(",").map(Number).length - 2
-    ) {
-      setCurrentIndex(currentIndex + 1);
-      setHideTwoButtons(true);
-
-      setRoute([]); // Clear route when all destinations are reached
-    }
-  };
-
-  const [selectedStatus, setSelectedStatus] = useState("Undelivered");
-
-  const [isUndelivered, setIsUndelivered] = useState(false);
-
-  const [isDeliveryReasonSelected, setIsDeliveryReasonSelected] =
-    useState(false);
-
-  const [finalReason, setFinalReasonSelected] = useState("");
-
-  // useEffect(() => {
-  //   setFinalReasonSelected(mailData.status);
-  //   console.log(finalReason);
-  // }, [finalReason]);
-
-  const handleConfirm = () => {
-    mailData.status = finalReason;
-
-    console.log(mailData.status);
 
     setIsUndelivered(false);
     setSelectedStatus("Undelivered");
     setIsDeliveryReasonSelected(false);
-
     closeModal(setArrivedModalVisible);
   };
 
   const handleUndelivered = () => {
     setIsUndelivered(true);
-
     setIsDeliveryReasonSelected(true);
-    //  setFinalReasonSelected(selectedStatus);
+    // setFinalReasonSelected(selectedStatus);
     // console.log(selectedStatus)
   };
 
   const handleDelivered = () => {
     setFinalReasonSelected("Delivered");
-    //   console.log("fhfhfhf"+finalReason)
-    alert("Mail Delivered!");
+
     setIsDeliveryReasonSelected(true);
   };
 
@@ -367,9 +153,6 @@ export default function RouteDisplay() {
   const handleDetailsCloseButton = () => {
     closeModal(setDetailsModalVisible);
   };
-  useEffect(() => {
-    setFinalReasonSelected(selectedStatus);
-  }, [selectedStatus]);
 
   // Function to open modal with sliding and fading animations
   const openModal = (setVisible) => {
@@ -406,38 +189,244 @@ export default function RouteDisplay() {
     ]).start(() => setVisible(false));
   };
 
-// location tracking ...
-//
-//
-//
-//
-//
+  const [mailDetails, setMailDetails] = useState([]);
 
+  const getMailDetails = async () => {
+    //console.log("getting postman data");
+    try {
+      const response = await axios.get(
+        `http://10.0.2.2:8083/api/postman/mail/get-details?mailId=${mailId}`
+      );
 
-useEffect(() => {
-  if (currentLocation && userId) {
-    updateLocationInDatabase(userId, currentLocation);
-  }
-}, [currentLocation]);
+      if (response.status === 200) {
+      
+        setMailDetails(response.data);
+        console.log("Mail details", mailDetails);
+      } else {
+        console.error(`Error: Received status ${response.status}`);
+      }
+    } catch (error) {
+      console.error("Error fetching Mail data", error.message);
+    }
+  };
+  useEffect(() => {
+    getMailDetails();
+  }, [currentIndex]);
 
+  // Function to fetch the route between current location and destination
 
-const updateLocationInDatabase = (userId, location) => {
-  const postmanRef = ref(db, `PostmanTracker/${userId}`);
-  
-  set(postmanRef, {
-    userId: userId,
-    userLocation: location,
-  })
-  .then(() => {
-   console.log("Location updated successfully!");
-  })
-  .catch((error) => {
-    console.error("Error updating location:", error);
-  });
-};
+  const getRoute = async (currentLoc, destinationLoc) => {
+    const origin = `${currentLoc.latitude},${currentLoc.longitude}`; // Current location as origin
+    const destination = `${destinationLoc.lat},${destinationLoc.lng}`; // Destination
 
+    try {
+      // Get directions data from Google Maps API
+      const response = await axios.get(
+        `https://maps.googleapis.com/maps/api/directions/json?origin=${origin}&destination=${destination}&key=${GOOGLE_MAPS_API_KEY}`
+      );
 
+      // If routes are available, decode the polyline and store the coordinates
+      if (response.data.routes && response.data.routes.length > 0) {
+        const points = polyline.decode(
+          response.data.routes[0].overview_polyline.points
+        );
+        const coords = points.map((point) => {
+          return {
+            latitude: point[0],
+            longitude: point[1],
+          };
+        });
 
+        setRoute(coords); // Set the decoded route
+      } else {
+        console.log("No routes found");
+        console.log(response.data);
+      }
+    } catch (error) {
+      console.error("Error fetching route:", error);
+    }
+  };
+
+  //Function to move to the next destination----------------------------------------------------------------
+  const nextDestination = () => {
+    if (
+      currentIndex <
+      deliveryDetails.visitOrder.split(",").map(Number).length - 2
+    ) {
+      setCurrentIndex((prevIndex) => {
+        const newIndex = prevIndex + 1;
+
+        // Set the mailId with the updated currentIndex
+        setMailId(
+          deliveryDetails.destinations[
+            deliveryDetails.visitOrder.split(",").map(Number)[newIndex]
+          ].mailId
+        );
+
+        return newIndex;
+      });
+    } else if (
+      currentIndex ===
+      deliveryDetails.visitOrder.split(",").map(Number).length - 2
+    ) {
+      setCurrentIndex((prevIndex) => {
+        const newIndex = prevIndex + 1;
+
+        // Set the mailId with the updated currentIndex
+        setMailId(
+          deliveryDetails.destinations[
+            deliveryDetails.visitOrder.split(",").map(Number)[newIndex]
+          ].mailId
+        );
+
+        return newIndex;
+      });
+
+      setCompletedOrNextDestination("To Post Office");
+      deliveryDetails.status = "Completed";
+      setArrivedModalVisible(false);
+
+      //call the relavant methond thats for completing the delivery..
+    } else if (
+      currentIndex ===
+      deliveryDetails.visitOrder.split(",").map(Number).length - 1
+    ) {
+      //  setCurrentIndex(currentIndex + 1);
+      setHideTwoButtons(true);
+
+      setMailId("");
+      setRoute([]); // Clear route when all destinations are reached
+    }
+  };
+
+  // -------------Update mailId whenever currentIndex changes---------------------------------------
+  // useEffect(() => {
+  //   if (
+  //     deliveryDetails &&
+  //     deliveryDetails.visitOrder.split(",").map(Number) &&
+  //     deliveryDetails.destinations[
+  //       deliveryDetails.visitOrder.split(",").map(Number)[currentIndex]
+  //     ]
+  //   ) {
+  //     const newMailId =
+  //       deliveryDetails.destinations[
+  //         deliveryDetails.visitOrder.split(",").map(Number)[currentIndex]
+  //       ].mailId;
+  //     setMailId(newMailId); // Update mailId state
+  //   }
+  // }, [currentIndex]);
+
+  //-------------------------------------------------------------------------------------------------
+
+  //------------get current location in every 5 secounds and store it in a use state----------------------
+  useEffect(() => {
+    let intervalId;
+
+    const startLocationTracking = async () => {
+      // Request location permissions from the user
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        console.log("Permission to access location was denied");
+        return;
+      }
+
+      // Start tracking the user's location every 5 seconds
+      intervalId = setInterval(async () => {
+        const location = await Location.getCurrentPositionAsync({
+          accuracy: Location.Accuracy.High, // High accuracy location
+        });
+
+        const { latitude, longitude } = location.coords;
+        setCurrentLocation({ latitude, longitude });
+
+        // If the map is not zoomed in yet, zoom in on the user's location
+        if (mapViewRef.current && !zoomedInRef.current) {
+          mapViewRef.current.animateToRegion({
+            latitude,
+            longitude,
+            latitudeDelta: 0.01,
+            longitudeDelta: 0.01,
+          });
+          zoomedInRef.current = true; // Prevents further zooming
+        }
+
+        // Update the map region to follow the user's location
+        setRegion({
+          latitude,
+          longitude,
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.01,
+        });
+
+        // -------Fetch the route to the next destination
+        // getRoute(
+        //   { latitude, longitude }, // Pass the updated location
+        //   deliveryDetails.destinations[
+        //     deliveryDetails.visitOrder.split(",").map(Number)[currentIndex]
+        //   ]
+        // );
+      }, 5000); // 5 seconds interval
+    };
+
+    startLocationTracking();
+
+    // Cleanup function to clear the interval when the component unmounts
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
+  }, []); // Re-run if currentIndex or deliveryDetails changes
+
+  //-----------------------------------------------------------------------------------------
+
+  //--------------- UseEffect to update the route whenever the current index changes
+
+  // useEffect(() => {
+  //   if (
+  //     currentLocation &&
+  //     currentIndex < deliveryDetails.visitOrder.split(",").map(Number).length
+  //   ) {
+  //     getRoute(
+  //       currentLocation,
+  //       deliveryDetails.destinations[
+  //         deliveryDetails.visitOrder.split(",").map(Number)[currentIndex]
+  //       ]
+  //     );
+  //   }
+  // }, [currentIndex]);
+
+  //setting the final reason --- works when confirm button pressed
+  useEffect(() => {
+    setFinalReasonSelected(selectedStatus);
+  }, [selectedStatus]);
+  //------------------------------FIREBASE--------------------------
+
+  // location tracking ...
+  // and updating in firebase
+
+  useEffect(() => {
+    if (currentLocation && userId) {
+      updateLocationInDatabase(userId, currentLocation);
+    }
+  }, [currentLocation]);
+
+  const updateLocationInDatabase = (userId, location) => {
+    const postmanRef = ref(db, `PostmanTracker/${userId}`);
+
+    set(postmanRef, {
+      userId: userId,
+      userLocation: location,
+    })
+      .then(() => {
+        console.log("Location updated successfully!");
+      })
+      .catch((error) => {
+        console.error("Error updating location:", error);
+      });
+  };
+
+  //------------------------------------------------------------------
 
   return (
     <View style={styles.container}>
@@ -456,13 +445,23 @@ const updateLocationInDatabase = (userId, location) => {
           .map((orderIndex, index) => {
             const location = deliveryDetails.destinations[orderIndex];
             return (
-
-              
               <CustomMarker
                 key={index}
                 coordinate={{ latitude: location.lat, longitude: location.lng }}
-                title={`Location ${index +1}`}
-                tag={(index === deliveryDetails.destinations.length - 1) ? <EvilIcons name="envelope" size={24} color="black" borderColor="black" borderWidth={5} /> : String(index )}
+                title={`Location ${index + 1}`}
+                tag={
+                  index === deliveryDetails.destinations.length - 1 ? (
+                    <EvilIcons
+                      name="envelope"
+                      size={24}
+                      color="black"
+                      borderColor="black"
+                      borderWidth={5}
+                    />
+                  ) : (
+                    String(index)
+                  )
+                }
               />
             );
           })}
@@ -534,20 +533,29 @@ const updateLocationInDatabase = (userId, location) => {
             <Text style={styles.modalTitle}>Mail Details</Text>
             <ScrollView style={styles.scrollView}>
               <Text style={[styles.modalText, { lineHeight: 30 }]}>
-                <Text style={{ fontWeight: "bold" }}>Receiver: </Text>
-                <Text>{mailData.recipientName}</Text>
+                <Text style={{ fontWeight: "bold" }}>Recipient Name: </Text>
+                <Text>{mailDetails.recipientName}</Text>
                 {"\n"}
 
-                <Text style={{ fontWeight: "bold" }}>Address: </Text>
-                <Text>{mailData.destinationAddress}</Text>
-                {"\n"}
-
-                <Text style={{ fontWeight: "bold" }}>Mail Type: </Text>
-                <Text>{mailData.mailType}</Text>
+                <Text style={{ fontWeight: "bold" }}>
+                  Destination Address:{" "}
+                </Text>
+                <Text>{mailDetails.destinationAddress}</Text>
                 {"\n"}
 
                 <Text style={{ fontWeight: "bold" }}>Status: </Text>
-                <Text>{mailData.status}</Text>
+                <Text>{mailDetails.status}</Text>
+                {"\n"}
+
+                <Text style={{ fontWeight: "bold" }}>Mail Type: </Text>
+                <Text>{mailDetails.mailType}</Text>
+                {"\n"}
+
+                <Text style={{ fontWeight: "bold" }}>Zone: </Text>
+                <Text>{mailDetails.zone}</Text>
+                {"\n"}
+                <Text style={{ fontWeight: "bold" }}>City: </Text>
+                <Text>{mailDetails.city}</Text>
                 {"\n"}
               </Text>
             </ScrollView>

@@ -25,7 +25,7 @@ const backgroundimage = require("../HomePage/e03b2bf1-678e-49f1-998d-d5b03fb09a9
 export default function Home({navigation}) {
   const tabnavigation = useNavigation();
   const [status, setStatus] = useState("");
-  const [name, setName] = useState("Tharindu");
+  //const [name, setName] = useState("Tharindu");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
@@ -40,7 +40,7 @@ export default function Home({navigation}) {
     
         if (response.status === 200) {
           console.log("Request successful");
-          console.log(response.data.destinations);
+       
           setDeliveryDetails(response.data);
           setStatus(response.data.status);
           //setName(response.data.userName)
@@ -79,7 +79,7 @@ export default function Home({navigation}) {
             source={backgroundimage} // Replace with actual user profile image
             style={styles.profileImage}
           />
-          <Text style={styles.welcomeMessage}>Welcome, {name}!</Text>
+          <Text style={styles.welcomeMessage}>Welcome, {userName}!</Text>
           <Text style={styles.subWelcomeMessage}>
             You're logged in as a Postman
           </Text>

@@ -14,8 +14,8 @@ const AuthContext = createContext({
 
 export const AuthContextProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userId, setUserId] = useState(null);
-  const [userName, setUserName] = useState(null);
+  const [userId, setUserId] = useState(4);
+  const [userName, setUserName] = useState("Tharindu");
   const [deliveryDetails, setDeliveryDetails] = useState(null);
   
 
