@@ -28,8 +28,9 @@ const LoginScreen = () => {
     if (email && password) {
       const trialUserID = "4"
       const trialUserPassword = "password"
+      const trialUserName="Tharindu"
       console.log("Authentication", trialUserID, trialUserPassword)
-      handleLogin(trialUserID,trialUserPassword); // Trigger login callback to update isLoggedIn state
+      handleLogin(trialUserID,trialUserName); // Trigger login callback to update isLoggedIn state
     } else {
       alert("Please enter your email and password");
     }
