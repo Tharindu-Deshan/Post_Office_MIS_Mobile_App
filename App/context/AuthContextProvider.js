@@ -13,7 +13,7 @@ const AuthContext = createContext({
 });
 
 export const AuthContextProvider = ({ children }) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
   const [userId, setUserId] = useState(4);
   const [userName, setUserName] = useState("Tharindu");
   const [deliveryDetails, setDeliveryDetails] = useState(null);

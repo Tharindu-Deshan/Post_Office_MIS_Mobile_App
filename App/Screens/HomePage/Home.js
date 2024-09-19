@@ -30,13 +30,14 @@ export default function Home({navigation}) {
   const [error, setError] = useState(null);
   
 
-  const { userId , userName , deliveryDetails , setDeliveryDetails  } = useContext(AuthContext);
+  const { userId , userName ,  setDeliveryDetails  } = useContext(AuthContext);
 
     const getPostmanData = async () => {
       console.log("getting postman data");
       try {
-        const response = await axios.get(`http://10.0.2.2:8083/api/postman/route-display/get-delivery?postmanId=${userId}`);
-
+        const response = await axios.get(`http://192.168.83.191:8083/api/postman/route-display/get-delivery?postmanId=${userId}`);
+//connected usb --> ipconfig -->ipv4-->192.168.83.191
+//emu -->10.0.2.2
     
         if (response.status === 200) {
           console.log("Request successful");

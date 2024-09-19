@@ -59,7 +59,7 @@ export default function Profile() {
         </View>
       </View>
 
-      {/* Feedback and Help & Support Section */}
+      {/* Feedback and Help & Support Section  */}
       <View style={styles.supportSection}>
         <TouchableOpacity
           style={styles.supportButton}

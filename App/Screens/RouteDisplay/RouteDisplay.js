@@ -24,6 +24,7 @@ import AuthContext from "../../context/AuthContextProvider";
 
 export default function RouteDisplay() {
   const { deliveryDetails, userId } = useContext(AuthContext);
+  const [x , setX] = useState(0);
 
   const navigation = useNavigation();
   // Google Maps API key
@@ -61,9 +62,7 @@ export default function RouteDisplay() {
     ].mailId
   );
 
-  useEffect(() => {
-    console.log("mailid...............", mailId);
-  }, [currentIndex]);
+ 
 
   //ref eken krnne mkkhri dyk krnkot eken thw component ekak wenas wenn hdnn... anith component eka ekka
   //connection ekk thiygnn wage.actions denn plwn anith object ekt
@@ -115,7 +114,9 @@ export default function RouteDisplay() {
 
       // Send the POST request to the backend using axios
       const response = await axios.put(
-        "http://10.0.2.2:8083/api/postman/update-status",
+        //connected usb --> ipconfig -->ipv4-->192.168.83.191
+        //emu -->10.0.2.2
+        "http://192.168.83.191:8083/api/postman/update-status",
         payload
       );
 
@@ -134,8 +135,7 @@ export default function RouteDisplay() {
   const handleUndelivered = () => {
     setIsUndelivered(true);
     setIsDeliveryReasonSelected(true);
-    // setFinalReasonSelected(selectedStatus);
-    // console.log(selectedStatus)
+ 
   };
 
   const handleDelivered = () => {
@@ -192,16 +192,19 @@ export default function RouteDisplay() {
   const [mailDetails, setMailDetails] = useState([]);
 
   const getMailDetails = async () => {
-    //console.log("getting postman data");
+   
     try {
       const response = await axios.get(
-        `http://10.0.2.2:8083/api/postman/mail/get-details?mailId=${mailId}`
+
+        //connected usb --> ipconfig -->ipv4-->192.168.83.191
+        //emu -->10.0.2.2
+        `http://192.168.83.191:8083/api/postman/mail/get-details?mailId=${mailId}`
       );
 
       if (response.status === 200) {
       
         setMailDetails(response.data);
-        console.log("Mail details", mailDetails);
+
       } else {
         console.error(`Error: Received status ${response.status}`);
       }
@@ -212,6 +215,11 @@ export default function RouteDisplay() {
   useEffect(() => {
     getMailDetails();
   }, [currentIndex]);
+
+  useEffect(() => {
+    console.log("Mail Id", mailId);
+    console.log("Mail details", mailDetails);
+  }, [mailDetails]);
 
   // Function to fetch the route between current location and destination
 
@@ -333,7 +341,7 @@ export default function RouteDisplay() {
       // Start tracking the user's location every 5 seconds
       intervalId = setInterval(async () => {
         const location = await Location.getCurrentPositionAsync({
-          accuracy: Location.Accuracy.High, // High accuracy location
+          accuracy: Location.Accuracy.Low, // High accuracy location
         });
 
         const { latitude, longitude } = location.coords;
@@ -365,7 +373,7 @@ export default function RouteDisplay() {
         //     deliveryDetails.visitOrder.split(",").map(Number)[currentIndex]
         //   ]
         // );
-      }, 5000); // 5 seconds interval
+      }, 500000); // 5 seconds interval
     };
 
     startLocationTracking();
@@ -420,6 +428,8 @@ export default function RouteDisplay() {
     })
       .then(() => {
         console.log("Location updated successfully!");
+        setX(x+1);
+        console.log(x)
       })
       .catch((error) => {
         console.error("Error updating location:", error);
