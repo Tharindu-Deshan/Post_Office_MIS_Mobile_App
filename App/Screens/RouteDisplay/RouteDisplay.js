@@ -251,7 +251,7 @@ export default function RouteDisplay() {
         const response = await axios.get(
           //connected usb --> ipconfig -->ipv4-->192.168.83.191
           //emu -->10.0.2.2
-          `http://192.168.83.191:8083/api/postman/mail/get-details?mailId=${mailId}`
+          `http://192.168.83.191:8081/api/postman/mail/get-details?mailId=${mailId}`
         );
 
         if (response.status === 200) {
@@ -314,7 +314,7 @@ export default function RouteDisplay() {
   const updateDeliveryStatus = async (deliveryId, status) => {
     try {
       const response = await axios.put(
-        "http://192.168.83.191:8083/api/postman/route-display/update-delivery-status",
+        "http://192.168.83.191:8081/api/postman/route-display/update-delivery-status",
         { deliveryId, status }
       );
 

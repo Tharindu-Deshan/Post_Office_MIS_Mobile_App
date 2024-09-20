@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext,useState,useEffect } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -19,7 +19,22 @@ import { TouchableOpacity } from 'react-native';
 export default function TabNavigation() {
   const Tab = createBottomTabNavigator();
   const {deliveryDetails} = useContext(AuthContext);
-  const isDisabled = deliveryDetails?.status === "Completed" || deliveryDetails?.status === "Not Assigned" ;
+
+  const [notFetched,setNotFetched] = useState("");
+ useEffect(() => {
+  if (deliveryDetails && deliveryDetails.status) {
+    setNotFetched(""); // Clear the "Not Assigned" message if there's a status
+  } else {
+    setNotFetched("Not Assigned"); // Set "Not Assigned" if there's no delivery status
+  }
+}, [deliveryDetails]);
+
+
+  const isDisabled =
+    deliveryDetails?.status === "Completed" ||
+    deliveryDetails?.status === "Not Assigned" ||
+    notFetched === "Not Assigned"
+    ;
   return (
     <Tab.Navigator  
       screenOptions={({ route }) => ({
