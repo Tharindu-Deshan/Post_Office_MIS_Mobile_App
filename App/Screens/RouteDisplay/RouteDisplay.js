@@ -19,12 +19,21 @@ import { db } from "../../../firebase_config.js";
 import EvilIcons from "@expo/vector-icons/EvilIcons";
 
 import { SelectList } from "react-native-dropdown-select-list";
-import { mailData } from "../../Components/DataHardCoded/mailData";
+
 import AuthContext from "../../context/AuthContextProvider";
+import { MaterialIcons } from "@expo/vector-icons";
+import {
+  storeCurrentIndex,
+  getCurrentIndex,
+  removeCurrentIndex,
+} from "../../Services/StorageService.js";
 
 export default function RouteDisplay() {
-  const { deliveryDetails, userId } = useContext(AuthContext);
-  const [x , setX] = useState(0);
+  const { deliveryDetails, userId, setDeliveryDetails } =
+    useContext(AuthContext);
+
+  //testingpurpose
+  const [x, setX] = useState(0);
 
   const navigation = useNavigation();
   // Google Maps API key
@@ -39,10 +48,21 @@ export default function RouteDisplay() {
   // State to keep track of the current destination index in the delivery route
   const [currentIndex, setCurrentIndex] = useState(1);
 
+  useEffect(() => {
+    const fetchCurrentIndex = async () => {
+      const savedIndex = await getCurrentIndex();
+      if (savedIndex !== null) {
+        setCurrentIndex(savedIndex);
+      }
+    };
+
+    fetchCurrentIndex();
+  }, []);
+
   //----------------------------update status--------------------------------
 
   const [completedOrNextDestination, setCompletedOrNextDestination] =
-    useState("Next Destination");
+    useState(" Next  Stop ");
 
   const [hideTwoButtons, setHideTwoButtons] = useState(false);
 
@@ -61,8 +81,6 @@ export default function RouteDisplay() {
       deliveryDetails.visitOrder.split(",").map(Number)[currentIndex]
     ].mailId
   );
-
- 
 
   //ref eken krnne mkkhri dyk krnkot eken thw component ekak wenas wenn hdnn... anith component eka ekka
   //connection ekk thiygnn wage.actions denn plwn anith object ekt
@@ -135,7 +153,6 @@ export default function RouteDisplay() {
   const handleUndelivered = () => {
     setIsUndelivered(true);
     setIsDeliveryReasonSelected(true);
- 
   };
 
   const handleDelivered = () => {
@@ -192,24 +209,29 @@ export default function RouteDisplay() {
   const [mailDetails, setMailDetails] = useState([]);
 
   const getMailDetails = async () => {
-   
-    try {
-      const response = await axios.get(
+    if (
+      deliveryDetails.destinations[
+        deliveryDetails.visitOrder.split(",").map(Number)[currentIndex]
+      ].mailId
+    ) {
+      try {
+        const response = await axios.get(
+          //connected usb --> ipconfig -->ipv4-->192.168.83.191
+          //emu -->10.0.2.2
+          `http://192.168.83.191:8083/api/postman/mail/get-details?mailId=${mailId}`
+        );
 
-        //connected usb --> ipconfig -->ipv4-->192.168.83.191
-        //emu -->10.0.2.2
-        `http://192.168.83.191:8083/api/postman/mail/get-details?mailId=${mailId}`
-      );
-
-      if (response.status === 200) {
-      
-        setMailDetails(response.data);
-
-      } else {
-        console.error(`Error: Received status ${response.status}`);
+        if (response.status === 200) {
+          setMailDetails(response.data);
+        } else {
+          console.error(`Error: Received status ${response.status}`);
+          setMailDetails([]);
+        }
+      } catch (error) {
+        console.error("Error fetching Mail data", error.message);
       }
-    } catch (error) {
-      console.error("Error fetching Mail data", error.message);
+    } else {
+      setMailDetails([]);
     }
   };
   useEffect(() => {
@@ -255,24 +277,47 @@ export default function RouteDisplay() {
     }
   };
 
+  //Function update Delivery Status ------------------------
+  const updateDeliveryStatus = async (deliveryId, status) => {
+    try {
+      const response = await axios.put(
+        "http://192.168.83.191:8083/api/postman/route-display/update-delivery-status",
+        { deliveryId, status }
+      );
+
+      if (response.status === 200) {
+        console.log("Delivery status updated successfully");
+      } else {
+        console.error(`Error: Received status ${response.status}`);
+      }
+    } catch (error) {
+      console.error("Error updating delivery status", error.message);
+    }
+  };
+
   //Function to move to the next destination----------------------------------------------------------------
-  const nextDestination = () => {
+  const nextDestination = async () => {
     if (
       currentIndex <
       deliveryDetails.visitOrder.split(",").map(Number).length - 2
     ) {
-      setCurrentIndex((prevIndex) => {
-        const newIndex = prevIndex + 1;
+      setCurrentIndex(
+        (prevIndex) => {
+          const newIndex = prevIndex + 1;
 
-        // Set the mailId with the updated currentIndex
-        setMailId(
-          deliveryDetails.destinations[
-            deliveryDetails.visitOrder.split(",").map(Number)[newIndex]
-          ].mailId
-        );
+          // Set the mailId with the updated currentIndex
+          setMailId(
+            deliveryDetails.destinations[
+              deliveryDetails.visitOrder.split(",").map(Number)[newIndex]
+            ].mailId
+          );
 
-        return newIndex;
-      });
+          return newIndex;
+        }
+       
+      );
+     
+
     } else if (
       currentIndex ===
       deliveryDetails.visitOrder.split(",").map(Number).length - 2
@@ -290,8 +335,9 @@ export default function RouteDisplay() {
         return newIndex;
       });
 
+     
+
       setCompletedOrNextDestination("To Post Office");
-      deliveryDetails.status = "Completed";
       setArrivedModalVisible(false);
 
       //call the relavant methond thats for completing the delivery..
@@ -301,11 +347,51 @@ export default function RouteDisplay() {
     ) {
       //  setCurrentIndex(currentIndex + 1);
       setHideTwoButtons(true);
+      // deliveryDetails.status = "Completed";
+      // Update the delivery details in AuthContext
+      setDeliveryDetails((prevDetails) => ({
+        ...prevDetails,
+        status: "Completed", // Update the status to Completed
+      }));
+      // Update the status in the database(put it in the db)
+      await updateDeliveryStatus(deliveryDetails.deliveryId, "Completed");
+
+      //delete the current index from async storage
+      await removeCurrentIndex();
 
       setMailId("");
       setRoute([]); // Clear route when all destinations are reached
     }
   };
+
+  const handlePreviousLocation = async() => {
+    if (currentIndex > 0) {
+      setCurrentIndex((prevIndex) => {
+        const newIndex = prevIndex - 1;
+
+        // Set the mailId with the updated currentIndex
+        setMailId(
+          deliveryDetails.destinations[
+            deliveryDetails.visitOrder.split(",").map(Number)[newIndex]
+          ].mailId
+        );
+
+        return newIndex;
+      });
+      
+    }
+  };
+
+useEffect(() => {
+  const updateIndexInStorage = async () => {
+    await storeCurrentIndex(currentIndex);
+  };
+
+  
+    updateIndexInStorage(); // Call the async function
+  
+}, [currentIndex]);
+
 
   // -------------Update mailId whenever currentIndex changes---------------------------------------
   // useEffect(() => {
@@ -428,8 +514,8 @@ export default function RouteDisplay() {
     })
       .then(() => {
         console.log("Location updated successfully!");
-        setX(x+1);
-        console.log(x)
+        setX(x + 1);
+        console.log(x);
       })
       .catch((error) => {
         console.error("Error updating location:", error);
@@ -482,6 +568,26 @@ export default function RouteDisplay() {
         )}
       </MapView>
 
+      {/* //--------------------------------------------------------------------------------------------------------------?>>>>>>>>>>>>>? */}
+      <TouchableOpacity
+        style={[
+          styles.floatingBackButton,
+          (currentIndex === 0 ||
+            currentIndex === deliveryDetails.destinations.length) &&
+            styles.disabledButton, // Disable when at the first location
+        ]}
+        onPress={handlePreviousLocation}
+        disabled={
+          currentIndex === 0 ||
+          currentIndex === deliveryDetails.destinations.length
+        } // Disable the button at the first location
+      >
+        <MaterialIcons name="arrow-back" size={24} color="white" />
+        <Text style={styles.prevButtonText}>Prev</Text>
+      </TouchableOpacity>
+
+      {/* ?-------------------------------------------------------------------------------------------------- */}
+
       {/* Buttons at the bottom */}
       <View style={styles.buttonContainer}>
         <View style={styles.firstbuttoncontainer}>
@@ -503,17 +609,20 @@ export default function RouteDisplay() {
               title="Completed"
               onPress={() => navigation.navigate("Home")}
             >
-              <Text style={styles.finalbuttontext}>Today Task Completed</Text>
+              <Text style={styles.finalbuttontext}>Task Completed</Text>
             </TouchableOpacity>
           ) : (
             <>
-              <TouchableOpacity
-                style={styles.arrivedButtonContainer}
-                title="Arrived"
-                onPress={() => openModal(setArrivedModalVisible)}
-              >
-                <Text style={styles.arrievedtext}>Arrived</Text>
-              </TouchableOpacity>
+              {currentIndex < deliveryDetails.destinations.length ? (
+                <TouchableOpacity
+                  style={styles.arrivedButtonContainer}
+                  title="Arrived"
+                  onPress={() => openModal(setArrivedModalVisible)}
+                >
+                  <Text style={styles.arrievedtext}>Arrived</Text>
+                </TouchableOpacity>
+              ) : null}
+
               <TouchableOpacity
                 style={styles.nextLocationButton}
                 title="Next Dest"
@@ -541,34 +650,40 @@ export default function RouteDisplay() {
             ]}
           >
             <Text style={styles.modalTitle}>Mail Details</Text>
-            <ScrollView style={styles.scrollView}>
-              <Text style={[styles.modalText, { lineHeight: 30 }]}>
-                <Text style={{ fontWeight: "bold" }}>Recipient Name: </Text>
-                <Text>{mailDetails.recipientName}</Text>
-                {"\n"}
+            {mailDetails && mailDetails.recipientName ? (
+              <ScrollView style={styles.scrollView}>
+                <Text style={[styles.modalText, { lineHeight: 30 }]}>
+                  <Text style={{ fontWeight: "bold" }}>Recipient Name: </Text>
+                  <Text>{mailId}</Text>
+                  {"\n"}
 
-                <Text style={{ fontWeight: "bold" }}>
-                  Destination Address:{" "}
+                  <Text style={{ fontWeight: "bold" }}>
+                    Destination Address:{" "}
+                  </Text>
+                  <Text>{mailDetails.destinationAddress}</Text>
+                  {"\n"}
+
+                  <Text style={{ fontWeight: "bold" }}>Status: </Text>
+                  <Text>{mailDetails.status}</Text>
+                  {"\n"}
+
+                  <Text style={{ fontWeight: "bold" }}>Mail Type: </Text>
+                  <Text>{mailDetails.mailType}</Text>
+                  {"\n"}
+
+                  <Text style={{ fontWeight: "bold" }}>Zone: </Text>
+                  <Text>{mailDetails.zone}</Text>
+                  {"\n"}
+                  <Text style={{ fontWeight: "bold" }}>City: </Text>
+                  <Text>{mailDetails.city}</Text>
+                  {"\n"}
                 </Text>
-                <Text>{mailDetails.destinationAddress}</Text>
-                {"\n"}
-
-                <Text style={{ fontWeight: "bold" }}>Status: </Text>
-                <Text>{mailDetails.status}</Text>
-                {"\n"}
-
-                <Text style={{ fontWeight: "bold" }}>Mail Type: </Text>
-                <Text>{mailDetails.mailType}</Text>
-                {"\n"}
-
-                <Text style={{ fontWeight: "bold" }}>Zone: </Text>
-                <Text>{mailDetails.zone}</Text>
-                {"\n"}
-                <Text style={{ fontWeight: "bold" }}>City: </Text>
-                <Text>{mailDetails.city}</Text>
-                {"\n"}
+              </ScrollView>
+            ) : (
+              <Text style={{ fontWeight: "bold" }}>
+                No Mail details available
               </Text>
-            </ScrollView>
+            )}
 
             <TouchableOpacity
               style={styles.closeButton}
@@ -649,6 +764,7 @@ export default function RouteDisplay() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    position: "relative",
   },
   map: {
     flex: 10,
@@ -718,7 +834,7 @@ const styles = StyleSheet.create({
     borderRadius: 10, // Rounded corners
     justifyContent: "center",
     alignItems: "center", // Center the button text
-    paddingHorizontal: 35,
+    paddingHorizontal: 30,
   },
   arrievedtext: {
     fontWeight: "bold",
@@ -785,12 +901,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
   },
-  confirmButton: {
-    backgroundColor: "#f33",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 5,
-  },
+  // confirmButton: {
+  //   backgroundColor: "#f33",
+  //   paddingVertical: 10,
+  //   paddingHorizontal: 20,
+  //   borderRadius: 5,
+  // },
   cancelButton: {
     backgroundColor: "#4CAF50",
     paddingVertical: 10,
@@ -849,5 +965,30 @@ const styles = StyleSheet.create({
   disabledButton: {
     backgroundColor: "#f33", // Disabled button color (can also be lighter)
     opacity: 0.5, // Reduce opacity to indicate disabled state
+  },
+  floatingBackButton: {
+    position: "absolute", // Floating effect to stay on top
+    width: 70,
+    height: 60,
+    backgroundColor: "#006666", // A nice soft blue color for the previous button
+    borderRadius: 9, // Circular button
+    justifyContent: "center", // Center the icon inside the button
+    alignItems: "center", // Center the icon horizontally
+    left: 270, // Distance from the left edge
+    bottom: 110, // Distance from the bottom edge
+    elevation: 0, // Shadow for Android
+
+    // shadowOffset: { width: 0, height: 4 }, // Deeper shadow for more dimension
+    shadowOpacity: 0.3, // Softer shadow opacity
+    shadowRadius: 4, // Softer shadow radius
+    borderWidth: 2, // Add subtle border
+    borderColor: "#ffffff", // White border for contrast
+    zIndex: 100, // Ensure the button stays on top of all other elements
+  },
+
+  prevButtonText: {
+    color: "#fff", // White text for contrast
+    fontWeight: "bold", // Bold text for emphasis
+    fontSize: 16, // Text size
   },
 });

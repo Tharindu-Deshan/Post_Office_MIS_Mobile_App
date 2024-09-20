@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -11,12 +11,15 @@ import Profile from '../Screens/Profile/Profile';
 import ViewDeliveryPage from '../Screens/ViewDeliveryLocations/ViewDeliveryPage';
 import RouteDisplay from '../Screens/RouteDisplay/RouteDisplay';
 import StackNavigations from './StackNavigations';
+import AuthContext from '../context/AuthContextProvider';
+import { TouchableOpacity } from 'react-native';
 
 
 
 export default function TabNavigation() {
   const Tab = createBottomTabNavigator();
-
+  const {deliveryDetails} = useContext(AuthContext);
+  const isDisabled = deliveryDetails?.status === "Completed" || deliveryDetails?.status === "Not Assigned" ;
   return (
     <Tab.Navigator  
       screenOptions={({ route }) => ({
@@ -30,13 +33,14 @@ export default function TabNavigation() {
         },
         tabBarLabelStyle: {
           fontSize: 14,  // Increase the font size of the labels
+          fontWeight: 'bold',
         },
         tabBarIcon: ({ color, size }) => {
           let iconName;
 
           if (route.name === 'Main') {
             iconName = 'home';
-            return <Ionicons name={iconName} size={size + 5} color={color} />;
+            return <Ionicons name={iconName} size={size + 5} color={color}  />;
           } else if (route.name === 'ViewDeliveryPage') {
             iconName = 'google-maps';
             return <MaterialCommunityIcons name={iconName} size={size + 5} color={color} />;
@@ -62,6 +66,9 @@ export default function TabNavigation() {
         component={ViewDeliveryPage}
         options={{
           tabBarLabel: 'View Delivery',
+          tabBarButton: (props) => (
+            <TouchableOpacity {...props} disabled={isDisabled} style={[props.style, { opacity: isDisabled ? 0.5 : 1 }]}  />
+          ),  // Disable the tab based on the status
         }}
       />
       <Tab.Screen
@@ -69,6 +76,9 @@ export default function TabNavigation() {
         component={RouteDisplay}
         options={{
           tabBarLabel: 'Route',
+          tabBarButton: (props) => (
+            <TouchableOpacity {...props} disabled={isDisabled} style={[props.style, { opacity: isDisabled ? 0.5 : 1 }]}  />
+          ),  // Disable the tab based on the status
         }}
       />
    

@@ -24,13 +24,16 @@ const backgroundimage = require("../HomePage/e03b2bf1-678e-49f1-998d-d5b03fb09a9
 
 export default function Home({navigation}) {
   const tabnavigation = useNavigation();
-  const [status, setStatus] = useState("");
+  // const [status, setStatus] = useState("");
   //const [name, setName] = useState("Tharindu");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
+  
 
-  const { userId , userName ,  setDeliveryDetails  } = useContext(AuthContext);
+  const { userId , userName ,  setDeliveryDetails,deliveryDetails  } = useContext(AuthContext);
+  const isDisabled = deliveryDetails?.status === "Completed" || deliveryDetails?.status === "Not Assigned";
+
 
     const getPostmanData = async () => {
       console.log("getting postman data");
@@ -43,7 +46,7 @@ export default function Home({navigation}) {
           console.log("Request successful");
        
           setDeliveryDetails(response.data);
-          setStatus(response.data.status);
+          // setStatus(response.data.status);
           //setName(response.data.userName)
          
                 
@@ -61,6 +64,7 @@ export default function Home({navigation}) {
 
   useEffect(() => {
     getPostmanData();
+    console.log("Postman")
   }, []);
 
   if (loading) {
@@ -87,7 +91,7 @@ export default function Home({navigation}) {
         </View>
 
         <View style={styles.statusContainer}>
-          <Text style={styles.statusText}>Current Status: {status}</Text>
+          <Text style={styles.statusText}>Current Status: {deliveryDetails?.status || "Pending" }</Text>
         </View>
 
         <View style={styles.blockContainer}>
@@ -101,8 +105,11 @@ export default function Home({navigation}) {
               <Text style={styles.buttonText}>Scan</Text>
             </TouchableOpacity>
 
+{/* //------------------------------------------------------------------------------------------------------------------- */}
+
             <TouchableOpacity
-              style={styles.buttonBlock}
+              style={[styles.buttonBlock, isDisabled && styles.disabledButtonExpolreMap]}  // Apply conditional opacity
+              disabled={isDisabled}
               onPress={() => tabnavigation.navigate("ViewDeliveryPage")}
             >
               <MaterialCommunityIcons
@@ -203,4 +210,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
     fontWeight: "bold",
   },
+  disabledButtonExpolreMap:{
+opacity:0.5,
+  }
 });
