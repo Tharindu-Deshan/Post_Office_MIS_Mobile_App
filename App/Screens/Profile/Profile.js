@@ -16,14 +16,15 @@ const imageUser = require("../Profile/e03b2bf1-678e-49f1-998d-d5b03fb09a99.webp"
 
 export default function Profile() {
   
-  const { handleLogout, ...others } = useContext(AuthContext);
+  const { userId, userName, email, handleLogout, ...others } =
+    useContext(AuthContext);
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.profileContainer}>
         <Image source={imageUser} style={styles.profileImage} />
-        <Text style={styles.profileName}>Tharindu</Text>
-        <Text style={styles.profileEmail}>tharindudeshan@example.com</Text>
+        <Text style={styles.profileName}>{userName}</Text>
+        <Text style={styles.profileEmail}>POSTMAN</Text>
 
         {/* Edit Profile Button below the email */}
         {/* <TouchableOpacity style={styles.updateProfileButton} onPress={{}}>
@@ -34,29 +35,41 @@ export default function Profile() {
 
       <View style={styles.detailsSection}>
         <View style={styles.detailsContainer}>
+          <Feather name="user" size={20} color="#4a4a4a" style={styles.icon} />
+          <Text style={styles.detailsText}>
+            User Name : <Text style={styles.detailsItem}>{userName}</Text>
+          </Text>
+        </View>
+        <View style={styles.detailsContainer}>
           <Feather name="hash" size={20} color="#4a4a4a" style={styles.icon} />
           <Text style={styles.detailsText}>
-            Employee ID  :  <Text style={styles.detailsItem}>EMP123456</Text>
+            Postman ID : <Text style={styles.detailsItem}>{userId}</Text>
           </Text>
         </View>
         <View style={styles.detailsContainer}>
           <Feather name="phone" size={20} color="#4a4a4a" style={styles.icon} />
           <Text style={styles.detailsText}>
-            Contact  :  <Text style={styles.detailsItem}>076 551 6789</Text>
+            Contact : <Text style={styles.detailsItem}>076 551 6789</Text>
           </Text>
         </View>
         <View style={styles.detailsContainer}>
+          <Feather name="mail" size={20} color="#4a4a4a" style={styles.icon} />
+          <Text style={styles.detailsText}>
+            Email : <Text style={styles.detailsItem}>{email}</Text>
+          </Text>
+        </View>
+        {/* <View style={styles.detailsContainer}>
           <Feather name="sun" size={20} color="#4a4a4a" style={styles.icon} />
           <Text style={styles.detailsText}>
-            Theme Selection  :  <Text style={styles.detailsItem}>Light Mode</Text>
+            Theme Selection : <Text style={styles.detailsItem}>Light Mode</Text>
           </Text>
-        </View>
-        <View style={styles.detailsContainer}>
+        </View> */}
+        {/* <View style={styles.detailsContainer}>
           <Feather name="lock" size={20} color="#4a4a4a" style={styles.icon} />
           <Text style={styles.detailsText}>
-            Password  :  <Text style={styles.detailsItem}>***********</Text>
+            Password : <Text style={styles.detailsItem}>***********</Text>
           </Text>
-        </View>
+        </View> */}
       </View>
 
       {/* Feedback and Help & Support Section  */}

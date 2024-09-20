@@ -1,4 +1,5 @@
-
+import { API_BASE_URL } from "@env";
+import { APP_PORT } from "@env";
 import React, { useState, useEffect, useContext } from "react";
 import {
   View,
@@ -11,9 +12,10 @@ import {
 } from "react-native";
 import * as Location from "expo-location";
 import AuthContext from "../../context/AuthContextProvider";
+import axios from "axios";
 
 const AddAddress = () => {
-  const {deliveryDetails} =useContext(AuthContext);
+  const { deliveryDetails } = useContext(AuthContext);
 
   const [city, setCity] = useState("Kochchikade");
   const zone = deliveryDetails.zone;
@@ -32,7 +34,7 @@ const AddAddress = () => {
     setMembers([...members, { customerId: nextCustomerId, name: "" }]);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (city && zone && houseNumber && members.every((member) => member.name)) {
       const address = {
         city,
@@ -42,12 +44,21 @@ const AddAddress = () => {
         location, // includes longitude and latitude
       };
 
-      
-
-      Alert.alert(
-        "Form Submitted",
-        `Address: ${JSON.stringify(address, null, 2)}`
-      );
+      try {
+        const response = await axios.post(
+          `${API_BASE_URL}:${APP_PORT}/api/postman/address/add-address`,
+          address
+        );
+        if (response.status === 200) {
+          console.log("Address added successfully");
+          Alert.alert(
+            "Form Submitted",
+            `Address: ${JSON.stringify(address, null, 2)}`
+          );
+        }
+      } catch (error) {
+        console.error(error);
+      }
     } else {
       Alert.alert("Error", "Please fill all the fields");
     }
@@ -86,7 +97,7 @@ const AddAddress = () => {
         style={styles.input}
         placeholder="Enter zone"
         value={zone}
-       // onChangeText={(text) => setZone(text)}
+        // onChangeText={(text) => setZone(text)}
       />
 
       <Text style={styles.label}>City</Text>
@@ -101,8 +112,8 @@ const AddAddress = () => {
       <View style={styles.locationContainer}>
         {location ? (
           <>
-            <Text>Longitude:   {location.longitude}</Text>
-            <Text>Latitude    :   {location.latitude}</Text>
+            <Text>Longitude: {location.longitude}</Text>
+            <Text>Latitude : {location.latitude}</Text>
           </>
         ) : (
           <Text>Fetching location...</Text>

@@ -1,3 +1,5 @@
+import { API_BASE_URL } from "@env";
+import { APP_PORT } from "@env";
 import {
   View,
   Text,
@@ -28,22 +30,19 @@ export default function Home({ navigation }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const { userId, userName, setDeliveryDetails, deliveryDetails } =
+  const { userId, email, userName, setDeliveryDetails, deliveryDetails } =
     useContext(AuthContext);
 
-   const [noDeliveryObjectFetched,setNoDeliveryObjectFetched] = useState("")
+  const [noDeliveryObjectFetched, setNoDeliveryObjectFetched] = useState("");
   const isDisabled =
     deliveryDetails?.status === "Completed" ||
-    deliveryDetails?.status === "Not Assigned"||
-    noDeliveryObjectFetched === "Not Assigned"
-    ;
-
-    // getting postman data
-    // LOG  Postman
-    // LOG  logged in true
-    // LOG  true
-    // LOG  Request successful
-   
+    deliveryDetails?.status === "Not Assigned" ||
+    noDeliveryObjectFetched === "Not Assigned";
+  // getting postman data
+  // LOG  Postman
+  // LOG  logged in true
+  // LOG  true
+  // LOG  Request successful
 
   // const getPostmanData = async () => {
   //   // console.log("getting postman data");
@@ -79,11 +78,12 @@ export default function Home({ navigation }) {
   // };
 
   const getPostmanData = async () => {
+    console.log("LOG ", "Postman");
     try {
       const response = await axios.get(
-        `http://192.168.83.191:8081/api/postman/route-display/get-delivery?postmanId=${userId}`
+        `${API_BASE_URL}:${APP_PORT}/api/postman/route-display/get-delivery?postmanId=4`
       );
-  
+
       // If the response is successful (200), set the delivery details
       if (response.status === 200) {
         console.log("Request successful");
@@ -129,14 +129,13 @@ export default function Home({ navigation }) {
             style={styles.profileImage}
           />
           <Text style={styles.welcomeMessage}>Welcome, {userName}!</Text>
-          <Text style={styles.subWelcomeMessage}>
-            You're logged in as a Postman
-          </Text>
+          <Text style={styles.subWelcomeMessage}> Email: {email}</Text>
         </View>
 
         <View style={styles.statusContainer}>
           <Text style={styles.statusText}>
-            Current Status: {deliveryDetails?.status || noDeliveryObjectFetched ||"Pending"}
+            Current Status:{" "}
+            {deliveryDetails?.status || noDeliveryObjectFetched || "Pending"}
           </Text>
         </View>
 

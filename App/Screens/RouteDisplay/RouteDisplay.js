@@ -1,3 +1,5 @@
+import { API_BASE_URL } from "@env";
+import { APP_PORT } from "@env";
 import React, { useState, useEffect, useRef, useContext } from "react";
 import { useNavigation } from "@react-navigation/native";
 import {
@@ -30,11 +32,11 @@ import {
 
 export default function RouteDisplay() {
   const { deliveryDetails, userId, setDeliveryDetails } =
-  useContext(AuthContext);
+    useContext(AuthContext);
   // const updateDeliveryStatus = async (deliveryId, status) => {
   //   try {
   //     const response = await axios.put(
-  //       "http://192.168.83.191:8083/api/postman/route-display/update-delivery-status",
+  //       `${API_BASE_URL}:${APP_PORT}/api/postman/route-display/update-delivery-status`,
   //       { deliveryId, status }
   //     );
 
@@ -48,10 +50,9 @@ export default function RouteDisplay() {
   //   }
   // };
 
-  
   useEffect(() => {
     const updatedeliverystatusstarted = async () => {
-      await updateDeliveryStatus(deliveryDetails.deliveryId,"Started");
+      await updateDeliveryStatus(deliveryDetails.deliveryId, "Started");
       setDeliveryDetails((prevDetails) => ({
         ...prevDetails,
         status: "Started",
@@ -59,25 +60,17 @@ export default function RouteDisplay() {
     };
 
     updatedeliverystatusstarted();
-
   }, []);
-
-
- 
 
   //testingpurpose
   const [x, setX] = useState(0);
-
   const navigation = useNavigation();
   // Google Maps API key
   const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY;
-
   // State for the current location of the user
   const [currentLocation, setCurrentLocation] = useState(null);
-
   // State for the route, which is a list of coordinates
   const [route, setRoute] = useState([]);
-
   // State to keep track of the current destination index in the delivery route
   const [currentIndex, setCurrentIndex] = useState(1);
 
@@ -98,38 +91,29 @@ export default function RouteDisplay() {
     useState(" Next  Stop ");
 
   const [hideTwoButtons, setHideTwoButtons] = useState(false);
-
   const [isUndelivered, setIsUndelivered] = useState(false);
-
   const [selectedStatus, setSelectedStatus] = useState("Undelivered");
-
   const [isDeliveryReasonSelected, setIsDeliveryReasonSelected] =
     useState(false);
-
   const [finalReason, setFinalReasonSelected] = useState("");
-
   // mail id usestate--
   const [mailId, setMailId] = useState(
     deliveryDetails.destinations[
       deliveryDetails.visitOrder.split(",").map(Number)[currentIndex]
     ].mailId
   );
-
   //ref eken krnne mkkhri dyk krnkot eken thw component ekak wenas wenn hdnn... anith component eka ekka
   //connection ekk thiygnn wage.actions denn plwn anith object ekt
   const mapViewRef = useRef(null); // Reference to the map view component//
   const zoomedInRef = useRef(false); // Boolean to track if the map has zoomed in
-
   //--------------------------------------------------------------------------------------------
   // State for controlling the visibility of the modals
   const [detailsModalVisible, setDetailsModalVisible] = useState(false); // Modal for "Details"
   const [arrivedModalVisible, setArrivedModalVisible] = useState(false); // Modal for "Arrived"
-
   // Animated values for slide-in effect for modals
   const slideAnim = useRef(new Animated.Value(300)).current; // Starts the modal off-screen
   const fadeAnim = useRef(new Animated.Value(0)).current; // Opacity starts at 0 (invisible)
   //---------------------------------------------------------------------------------------------
-
   // Initial region (map zoom level and coordinates)
   const [region, setRegion] = useState({
     latitude: deliveryDetails.destinations[0].lat, // Initial latitude from deliveryDetails
@@ -167,7 +151,7 @@ export default function RouteDisplay() {
       const response = await axios.put(
         //connected usb --> ipconfig -->ipv4-->192.168.83.191
         //emu -->10.0.2.2
-        "http://192.168.83.191:8083/api/postman/update-status",
+        `${API_BASE_URL}:${APP_PORT}/api/postman/update-status`,
         payload
       );
 
@@ -251,7 +235,7 @@ export default function RouteDisplay() {
         const response = await axios.get(
           //connected usb --> ipconfig -->ipv4-->192.168.83.191
           //emu -->10.0.2.2
-          `http://192.168.83.191:8081/api/postman/mail/get-details?mailId=${mailId}`
+          `${API_BASE_URL}:${APP_PORT}/api/postman/mail/get-details?mailId=${mailId}`
         );
 
         if (response.status === 200) {
@@ -314,7 +298,7 @@ export default function RouteDisplay() {
   const updateDeliveryStatus = async (deliveryId, status) => {
     try {
       const response = await axios.put(
-        "http://192.168.83.191:8081/api/postman/route-display/update-delivery-status",
+        `${API_BASE_URL}:${APP_PORT}/api/postman/route-display/update-delivery-status`,
         { deliveryId, status }
       );
 
@@ -334,23 +318,18 @@ export default function RouteDisplay() {
       currentIndex <
       deliveryDetails.visitOrder.split(",").map(Number).length - 2
     ) {
-      setCurrentIndex(
-        (prevIndex) => {
-          const newIndex = prevIndex + 1;
+      setCurrentIndex((prevIndex) => {
+        const newIndex = prevIndex + 1;
 
-          // Set the mailId with the updated currentIndex
-          setMailId(
-            deliveryDetails.destinations[
-              deliveryDetails.visitOrder.split(",").map(Number)[newIndex]
-            ].mailId
-          );
+        // Set the mailId with the updated currentIndex
+        setMailId(
+          deliveryDetails.destinations[
+            deliveryDetails.visitOrder.split(",").map(Number)[newIndex]
+          ].mailId
+        );
 
-          return newIndex;
-        }
-       
-      );
-     
-
+        return newIndex;
+      });
     } else if (
       currentIndex ===
       deliveryDetails.visitOrder.split(",").map(Number).length - 2
@@ -368,8 +347,6 @@ export default function RouteDisplay() {
         return newIndex;
       });
 
-     
-
       setCompletedOrNextDestination("To Post Office");
       setArrivedModalVisible(false);
 
@@ -378,9 +355,8 @@ export default function RouteDisplay() {
       currentIndex ===
       deliveryDetails.visitOrder.split(",").map(Number).length - 1
     ) {
-    
       setHideTwoButtons(true);
-    
+
       // Update the delivery details in AuthContext
       setDeliveryDetails((prevDetails) => ({
         ...prevDetails,
@@ -397,7 +373,7 @@ export default function RouteDisplay() {
     }
   };
 
-  const handlePreviousLocation = async() => {
+  const handlePreviousLocation = async () => {
     if (currentIndex > 0) {
       setCurrentIndex((prevIndex) => {
         const newIndex = prevIndex - 1;
@@ -411,20 +387,16 @@ export default function RouteDisplay() {
 
         return newIndex;
       });
-      
     }
   };
 
-useEffect(() => {
-  const updateIndexInStorage = async () => {
-    await storeCurrentIndex(currentIndex);
-  };
+  useEffect(() => {
+    const updateIndexInStorage = async () => {
+      await storeCurrentIndex(currentIndex);
+    };
 
-  
     updateIndexInStorage(); // Call the async function
-  
-}, [currentIndex]);
-
+  }, [currentIndex]);
 
   // -------------Update mailId whenever currentIndex changes---------------------------------------
   // useEffect(() => {

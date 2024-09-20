@@ -2,34 +2,33 @@
 import { createContext, useState , useEffect } from "react";
 
 const AuthContext = createContext({
-  isLoggedIn: true,
+  isLoggedIn: false,
   userId: null,
   userName: null,
+  email: null,
   handleLogin: () => {},
   handleLogout: () => {},
-  deliveryDetails: null, 
+  deliveryDetails: null,
   setDeliveryDetails: () => {},
-  
 });
 
 export const AuthContextProvider = ({ children }) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
-  const [userId, setUserId] = useState(4);
-  const [userName, setUserName] = useState("Tharindu");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userId, setUserId] = useState("");
+  const [userName, setUserName] = useState("");
   const [deliveryDetails, setDeliveryDetails] = useState(null);
-  
+  const [email, setEmail] = useState("");
 
-
-  const handleLogin = (userId, userName) => {
- 
+  const handleLogin = (username, postmanId, email) => {
     setIsLoggedIn(true);
-    setUserId(userId);
-    setUserName(userName);
+    setUserId(postmanId);
+    setUserName(username);
+    setEmail(email);
   };
 
   useEffect(() => {
-    console.log(isLoggedIn)
-  }, [isLoggedIn])
+    console.log(isLoggedIn);
+  }, [isLoggedIn]);
 
   const handleLogout = () => {
     setIsLoggedIn(false);
@@ -37,11 +36,21 @@ export const AuthContextProvider = ({ children }) => {
     setUserName(null);
   };
 
-  
-
   return (
     <AuthContext.Provider
-      value={{ isLoggedIn, userId, userName, handleLogin, handleLogout , setIsLoggedIn, setUserId, setUserName , deliveryDetails , setDeliveryDetails }}
+      value={{
+        isLoggedIn,
+        userId,
+        userName,
+        email,
+        handleLogin,
+        handleLogout,
+        setIsLoggedIn,
+        setUserId,
+        setUserName,
+        deliveryDetails,
+        setDeliveryDetails,
+      }}
     >
       {children}
     </AuthContext.Provider>

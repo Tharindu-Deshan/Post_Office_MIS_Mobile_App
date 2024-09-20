@@ -1,46 +1,67 @@
 import React, { useContext, useState } from "react";
-
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { API_BASE_URL } from "@env";
+import { APP_PORT } from "@env";
 import {
   View,
   Text,
   TextInput,
-  
   ImageBackground,
   TouchableOpacity,
   StyleSheet,
-
 } from "react-native";
 import AuthContext from "../../context/AuthContextProvider";
 import TabNavigation from "../../Navigations/TabNavigation";
+import axios from "axios";
 
 // Import the local image
 const backgroundImage = require("../LoginPage/07cfeb9c-421d-4ae1-b95f-73c60c97efbb.jpg");
 
 const LoginScreen = () => {
-
-  const { handleLogin, isLoggedIn  } = useContext(AuthContext);
+  const { handleLogin, isLoggedIn } = useContext(AuthContext);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const authenticateUser = () => {
-    // Replace this with your actual authentication logic
-    if (email && password) {
-      const trialUserID = "4"
-      const trialUserPassword = "password"
-      const trialUserName="Tharindu"
-      console.log("Authentication", trialUserID, trialUserPassword)
-      handleLogin(trialUserID,trialUserName); // Trigger login callback to update isLoggedIn state
-    } else {
+  const authenticateUser = async () => {
+    if (!email || !password) {
       alert("Please enter your email and password");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const response = await axios.post(
+        `${API_BASE_URL}:${APP_PORT}/mobile/authenticate`,
+        {
+          username: email,
+          password: password,
+        }
+      );
+
+      if (response.status === 200) {
+        const { username, postmanId, email, token } = response.data;
+        console.log("Authentication successful");
+
+        await AsyncStorage.setItem("userToken", token);
+
+        handleLogin(username, postmanId, email); // Trigger login callback to update isLoggedIn state
+      } else {
+        alert("Authentication failed. Please check your credentials.");
+      }
+    } catch (error) {
+      console.error("Error authenticating user", error.message);
+      alert("Authentication failed. Please check your credentials.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-
     <>
-    {
-      isLoggedIn ? (
+      {isLoggedIn ? (
         <TabNavigation />
       ) : (
         <View style={styles.container}>
@@ -48,7 +69,7 @@ const LoginScreen = () => {
             <View style={styles.loginContainer}>
               <Text style={styles.welcomeText}>Welcome back</Text>
               <Text style={styles.subText}>Login to your account</Text>
-  
+
               <TextInput
                 style={styles.input}
                 placeholder="Email"
@@ -57,7 +78,7 @@ const LoginScreen = () => {
                 keyboardType="email-address"
                 autoCapitalize="none"
               />
-  
+
               <TextInput
                 style={styles.input}
                 placeholder="Password"
@@ -65,28 +86,27 @@ const LoginScreen = () => {
                 onChangeText={setPassword}
                 secureTextEntry
               />
-  
+
               <TouchableOpacity
                 style={styles.loginButton}
                 onPress={authenticateUser}
+                disabled={loading}
               >
-                <Text style={styles.loginButtonText}>Login</Text>
+                <Text style={styles.loginButtonText}>
+                  {loading ? "Logging in..." : "Login"}
+                </Text>
               </TouchableOpacity>
-  
+
               <TouchableOpacity style={styles.forgotPassword}>
-                <Text style={styles.forgotPasswordText}>Forgot your password?</Text>
+                <Text style={styles.forgotPasswordText}>
+                  Forgot your password?
+                </Text>
               </TouchableOpacity>
             </View>
           </ImageBackground>
         </View>
-      )
-    }
-  </>
-  
-
-
-    
-  
+      )}
+    </>
   );
 };
 
