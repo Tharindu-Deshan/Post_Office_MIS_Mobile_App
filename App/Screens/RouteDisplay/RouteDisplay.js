@@ -30,7 +30,40 @@ import {
 
 export default function RouteDisplay() {
   const { deliveryDetails, userId, setDeliveryDetails } =
-    useContext(AuthContext);
+  useContext(AuthContext);
+  // const updateDeliveryStatus = async (deliveryId, status) => {
+  //   try {
+  //     const response = await axios.put(
+  //       "http://192.168.83.191:8083/api/postman/route-display/update-delivery-status",
+  //       { deliveryId, status }
+  //     );
+
+  //     if (response.status === 200) {
+  //       console.log("Delivery status updated successfully");
+  //     } else {
+  //       console.error(`Error: Received status ${response.status}`);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error updating delivery status", error.message);
+  //   }
+  // };
+
+  
+  useEffect(() => {
+    const updatedeliverystatusstarted = async () => {
+      await updateDeliveryStatus(deliveryDetails.deliveryId,"Started");
+      setDeliveryDetails((prevDetails) => ({
+        ...prevDetails,
+        status: "Started",
+      }));
+    };
+
+    updatedeliverystatusstarted();
+
+  }, []);
+
+
+ 
 
   //testingpurpose
   const [x, setX] = useState(0);
@@ -345,9 +378,9 @@ export default function RouteDisplay() {
       currentIndex ===
       deliveryDetails.visitOrder.split(",").map(Number).length - 1
     ) {
-      //  setCurrentIndex(currentIndex + 1);
+    
       setHideTwoButtons(true);
-      // deliveryDetails.status = "Completed";
+    
       // Update the delivery details in AuthContext
       setDeliveryDetails((prevDetails) => ({
         ...prevDetails,
