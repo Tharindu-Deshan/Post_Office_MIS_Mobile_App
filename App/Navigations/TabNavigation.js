@@ -82,7 +82,8 @@ export default function TabNavigation() {
         options={{
           tabBarLabel: 'View Delivery',
           tabBarButton: (props) => (
-            <TouchableOpacity {...props} disabled={isDisabled} style={[props.style, { opacity: isDisabled ? 0.5 : 1 }]}  />
+            <TouchableOpacity 
+            {...props} disabled={isDisabled} style={[props.style, { opacity: isDisabled ? 0.5 : 1 }]}  />
           ),  // Disable the tab based on the status
         }}
       />

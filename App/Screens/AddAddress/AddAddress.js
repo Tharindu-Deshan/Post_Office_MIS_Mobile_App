@@ -45,8 +45,10 @@ const AddAddress = () => {
       };
 
       try {
+        const url =`${API_BASE_URL}:${APP_PORT}/api/postman/address/add-address`;
         const response = await axios.post(
-          `${API_BASE_URL}:${APP_PORT}/api/postman/address/add-address`,
+          url
+          ,
           address
         );
         if (response.status === 200) {

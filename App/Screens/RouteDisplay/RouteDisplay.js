@@ -28,7 +28,10 @@ import {
   storeCurrentIndex,
   getCurrentIndex,
   removeCurrentIndex,
+  removeStartDutyStatus,
+  storeStartDutyStatus,
 } from "../../Services/StorageService.js";
+import MarkDestinations from "./MarkDestinations.js";
 
 export default function RouteDisplay() {
   const { deliveryDetails, userId, setDeliveryDetails } =
@@ -53,6 +56,10 @@ export default function RouteDisplay() {
   useEffect(() => {
     const updatedeliverystatusstarted = async () => {
       await updateDeliveryStatus(deliveryDetails.deliveryId, "Started");
+
+      //update asyncstorage telling duty is started
+      await storeStartDutyStatus(true);
+      console.log("Duty started");
       setDeliveryDetails((prevDetails) => ({
         ...prevDetails,
         status: "Started",
@@ -116,20 +123,20 @@ export default function RouteDisplay() {
   //---------------------------------------------------------------------------------------------
   // Initial region (map zoom level and coordinates)
   const [region, setRegion] = useState({
-    latitude: deliveryDetails.destinations[0].lat, // Initial latitude from deliveryDetails
-    longitude: deliveryDetails.destinations[0].lng, // Initial longitude from deliveryDetails
-    latitudeDelta: 10, // Zoom level latitude
-    longitudeDelta: 5, // Zoom level longitude
+    latitude: deliveryDetails.destinations[0].lat,
+    longitude: deliveryDetails.destinations[0].lng,
+    latitudeDelta: 0.015,
+    longitudeDelta: 0.015,
   });
 
-  // Custom Marker component to show a marker with a title and tag on the map
-  const CustomMarker = ({ coordinate, title, tag }) => (
-    <Marker coordinate={coordinate} title={title}>
-      <View style={styles.customMarker}>
-        <Text style={styles.tag}>{tag}</Text>
-      </View>
-    </Marker>
-  );
+  // // Custom Marker component to show a marker with a title and tag on the map
+  // const CustomMarker = ({ coordinate, title, tag }) => (
+  //   <Marker coordinate={coordinate} title={title}>
+  //     <View style={styles.customMarker}>
+  //       <Text style={styles.tag}>{tag}</Text>
+  //     </View>
+  //   </Marker>
+  // );
 
   const statusOptions = [
     { key: "1", value: "Undelivered - No Response" },
@@ -146,12 +153,12 @@ export default function RouteDisplay() {
         mailId: mailId,
         status: finalReason,
       };
-
+      const url = `${API_BASE_URL}:${APP_PORT}/api/postman/update-status`;
       // Send the POST request to the backend using axios
       const response = await axios.put(
         //connected usb --> ipconfig -->ipv4-->192.168.83.191
         //emu -->10.0.2.2
-        `${API_BASE_URL}:${APP_PORT}/api/postman/update-status`,
+        url,
         payload
       );
 
@@ -232,10 +239,11 @@ export default function RouteDisplay() {
       ].mailId
     ) {
       try {
+        const url = `${API_BASE_URL}:${APP_PORT}/api/postman/mail/get-details?mailId=${mailId}`;
         const response = await axios.get(
           //connected usb --> ipconfig -->ipv4-->192.168.83.191
           //emu -->10.0.2.2
-          `${API_BASE_URL}:${APP_PORT}/api/postman/mail/get-details?mailId=${mailId}`
+          url
         );
 
         if (response.status === 200) {
@@ -297,10 +305,8 @@ export default function RouteDisplay() {
   //Function update Delivery Status ------------------------
   const updateDeliveryStatus = async (deliveryId, status) => {
     try {
-      const response = await axios.put(
-        `${API_BASE_URL}:${APP_PORT}/api/postman/route-display/update-delivery-status`,
-        { deliveryId, status }
-      );
+      const url = `${API_BASE_URL}:${APP_PORT}/api/postman/route-display/update-delivery-status`;
+      const response = await axios.put(url, { deliveryId, status });
 
       if (response.status === 200) {
         console.log("Delivery status updated successfully");
@@ -367,6 +373,7 @@ export default function RouteDisplay() {
 
       //delete the current index from async storage
       await removeCurrentIndex();
+      await removeStartDutyStatus();
 
       setMailId("");
       setRoute([]); // Clear route when all destinations are reached
@@ -539,8 +546,10 @@ export default function RouteDisplay() {
         showsUserLocation={true} // Show user's location on the map
         followsUserLocation={true} // Map follows the user's location
       >
-        {/* Add markers for each destination */}
-        {deliveryDetails.visitOrder
+        {/* Add markers for each destination --------------------------------------------------------------------------------*/}
+
+        <MarkDestinations />
+        {/* {deliveryDetails.visitOrder
           .split(",")
           .map(Number)
           .map((orderIndex, index) => {
@@ -565,7 +574,7 @@ export default function RouteDisplay() {
                 }
               />
             );
-          })}
+          })} */}
 
         {/* Draw the route polyline if available */}
         {route.length > 0 && (
@@ -659,12 +668,10 @@ export default function RouteDisplay() {
               <ScrollView style={styles.scrollView}>
                 <Text style={[styles.modalText, { lineHeight: 30 }]}>
                   <Text style={{ fontWeight: "bold" }}>Recipient Name: </Text>
-                  <Text>{mailId}</Text>
+                  <Text>{mailDetails.recipientName}</Text>
                   {"\n"}
 
-                  <Text style={{ fontWeight: "bold" }}>
-                    Destination Address:{" "}
-                  </Text>
+                  <Text style={{ fontWeight: "bold" }}>Address: </Text>
                   <Text>{mailDetails.destinationAddress}</Text>
                   {"\n"}
 
@@ -676,11 +683,11 @@ export default function RouteDisplay() {
                   <Text>{mailDetails.mailType}</Text>
                   {"\n"}
 
-                  <Text style={{ fontWeight: "bold" }}>Zone: </Text>
+                  {/* <Text style={{ fontWeight: "bold" }}>Zone: </Text>
                   <Text>{mailDetails.zone}</Text>
                   {"\n"}
                   <Text style={{ fontWeight: "bold" }}>City: </Text>
-                  <Text>{mailDetails.city}</Text>
+                  <Text>{mailDetails.city}</Text> */}
                   {"\n"}
                 </Text>
               </ScrollView>
@@ -826,6 +833,7 @@ const styles = StyleSheet.create({
   detailbuttontext: {
     fontWeight: "bold",
     fontSize: 15,
+    padding: 0,
   },
   secondbuttoncontainer: {
     marginLeft: 10,
@@ -865,8 +873,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
+  //------------------
   modalContent: {
-    width: 300,
+    width: 310,
+    height: 360,
     padding: 20,
     backgroundColor: "#fff",
     borderRadius: 20,
@@ -979,8 +989,8 @@ const styles = StyleSheet.create({
     borderRadius: 9, // Circular button
     justifyContent: "center", // Center the icon inside the button
     alignItems: "center", // Center the icon horizontally
-    left: 270, // Distance from the left edge
-    bottom: 110, // Distance from the bottom edge
+    right: 335, // Distance from the left edge
+    bottom: 140, // Distance from the bottom edge
     elevation: 0, // Shadow for Android
 
     // shadowOffset: { width: 0, height: 4 }, // Deeper shadow for more dimension

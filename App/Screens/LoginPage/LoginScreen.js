@@ -9,16 +9,29 @@ import {
   ImageBackground,
   TouchableOpacity,
   StyleSheet,
+  Vibration,
+  Modal,
 } from "react-native";
 import AuthContext from "../../context/AuthContextProvider";
 import TabNavigation from "../../Navigations/TabNavigation";
 import axios from "axios";
+import LoginFailedModal from "./LoginFailedModal";
 
 // Import the local image
 const backgroundImage = require("../LoginPage/07cfeb9c-421d-4ae1-b95f-73c60c97efbb.jpg");
 
 const LoginScreen = () => {
   const { handleLogin, isLoggedIn } = useContext(AuthContext);
+
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const openAlert = () => {
+    setModalVisible(true);
+  };
+
+  const closeAlert = () => {
+    setModalVisible(false);
+  };
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -33,13 +46,14 @@ const LoginScreen = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post(
-        `${API_BASE_URL}:${APP_PORT}/mobile/authenticate`,
-        {
-          username: email,
-          password: password,
-        }
-      );
+      const url = `${API_BASE_URL}:${APP_PORT}/mobile/authenticate`;
+      // console.log(API_BASE_URL);
+      // console.log(APP_PORT);
+      // console.log(email, password);
+      const response = await axios.post(url, {
+        username: email,
+        password: password,
+      });
 
       if (response.status === 200) {
         const { username, postmanId, email, token } = response.data;
@@ -52,8 +66,10 @@ const LoginScreen = () => {
         alert("Authentication failed. Please check your credentials.");
       }
     } catch (error) {
-      console.error("Error authenticating user", error.message);
-      alert("Authentication failed. Please check your credentials.");
+      // console.error("Error authenticating user", error.message);
+     // alert("Incorrect Password or Email.");
+      openAlert();
+      Vibration.vibrate(500);
     } finally {
       setLoading(false);
     }
@@ -96,6 +112,28 @@ const LoginScreen = () => {
                   {loading ? "Logging in..." : "Login"}
                 </Text>
               </TouchableOpacity>
+
+              {/* <Modal
+                transparent={true}
+                visible={modalVisible}
+                animationType="fade"
+                onRequestClose={closeAlert}
+              >
+                <View style={styles.modalOverlay}>
+                  <View style={styles.alertBox}>
+                    <Text style={styles.alertText}>
+                      Login Failed!
+                    </Text>
+                    <TouchableOpacity
+                      style={styles.alertButton}
+                      onPress={closeAlert}
+                    >
+                      <Text style={styles.alertButtonText}>OK</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </Modal> */}
+              <LoginFailedModal closeAlert={closeAlert} visible={modalVisible}/>
 
               <TouchableOpacity style={styles.forgotPassword}>
                 <Text style={styles.forgotPasswordText}>
@@ -167,6 +205,37 @@ const styles = StyleSheet.create({
   forgotPasswordText: {
     color: "#666",
     textDecorationLine: "underline",
+  },
+
+  //modal
+  modalOverlay: {
+    flex: 1, // takes up the whole screen
+    justifyContent: 'center', // center the alert vertically
+    alignItems: 'center', // center the alert horizontally
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // semi-transparent background
+  },
+  alertBox: {
+    width: 300, // set a fixed width for the alert box
+    padding: 20, // padding inside the alert box
+    backgroundColor: '#fff', // white background for the alert
+    borderRadius: 10, // rounded corners
+    alignItems: 'center', // center content inside the box
+  },
+  alertText: {
+    fontSize: 18, // text size
+    marginBottom: 20, // space below the text
+    textAlign: 'center', // center the text horizontally
+  },
+  alertButton: {
+    padding: 10, // padding inside the button
+    backgroundColor: '#007bff', // button background color
+    borderRadius: 8, // rounded button corners
+    width: '100%', // button takes full width of the alert box
+    alignItems: 'center', // center the text inside the button
+  },
+  alertButtonText: {
+    color: '#fff', // white text color
+    fontSize: 16, // text size inside the button
   },
 });
 

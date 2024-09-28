@@ -36,46 +36,36 @@ export const removeCurrentIndex = async () => {
 
 
 
-// // Save data to local storage
-// export const storeData = async (key, value) => {
-//   try {
-//     await AsyncStorage.setItem(key, JSON.stringify(value));
-//     console.log(`Data stored under key: ${key}`);
-//   } catch (e) {
-//     console.error('Failed to store data', e);
-//   }
-// };
+// Store the dutystatus
+export const storeStartDutyStatus = async (condition) => {
+  try {
+    await AsyncStorage.setItem('dutystatus', condition.toString());
+  } catch (error) {
+    console.error('Error storing current status', error);
+  }
+};
 
-// // Get data from local storage
-// export const getData = async (key) => {
-//   try {
-//     const value = await AsyncStorage.getItem(key);
-//     if (value !== null) {
-//       console.log(`Data retrieved from key: ${key}`);
-//       return JSON.parse(value);
-//     }
-//     return null;
-//   } catch (e) {
-//     console.error('Failed to retrieve data', e);
-//   }
-// };
+// Retrieve the current index
+export const getStartDutyStatus = async () => {
+  try {
+    const value = await AsyncStorage.getItem('dutystatus');
+    if (value !== null) {
+      return value === 'true'; // Convert the string 'true' or 'false' to a boolean
+    }
+    return null; // Return null if no value is found
+  } catch (error) {
+    console.error('Error retrieving current status:', error.message);
+    return null; // Fallback to null in case of an error
+  }
+};
 
-// // Remove data from local storage
-// export const removeData = async (key) => {
-//   try {
-//     await AsyncStorage.removeItem(key);
-//     console.log(`Data removed from key: ${key}`);
-//   } catch (e) {
-//     console.error('Failed to remove data', e);
-//   }
-// };
+export const removeStartDutyStatus = async () => {
+  try {
+    await AsyncStorage.removeItem('dutystatus');
+    console.log('Duty status removed successfully');
+  } catch (error) {
+    console.error('Error removing duty status:', error.message);
+  }
+};
 
-// // Clear all data from local storage
-// export const clearAllData = async () => {
-//   try {
-//     await AsyncStorage.clear();
-//     console.log('All data cleared');
-//   } catch (e) {
-//     console.error('Failed to clear data', e);
-//   }
-// };
+

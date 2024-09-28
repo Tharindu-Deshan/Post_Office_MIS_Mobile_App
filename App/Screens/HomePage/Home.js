@@ -20,6 +20,7 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 // im??port Ionicons from '@expo/vector-icons/Ionicons';
 import Entypo from "@expo/vector-icons/Entypo";
 import AuthContext from "../../context/AuthContextProvider";
+import { getStartDutyStatus } from "../../Services/StorageService";
 
 const backgroundimage = require("../HomePage/e03b2bf1-678e-49f1-998d-d5b03fb09a99.webp");
 
@@ -80,8 +81,11 @@ export default function Home({ navigation }) {
   const getPostmanData = async () => {
     console.log("LOG ", "Postman");
     try {
+      const url = `${API_BASE_URL}:${APP_PORT}/api/postman/route-display/get-delivery?postmanId=4`;
+      const x= await  getStartDutyStatus();
+      console.log("LOG..... ", x);
       const response = await axios.get(
-        `${API_BASE_URL}:${APP_PORT}/api/postman/route-display/get-delivery?postmanId=4`
+        url
       );
 
       // If the response is successful (200), set the delivery details
@@ -108,7 +112,7 @@ export default function Home({ navigation }) {
 
   useEffect(() => {
     getPostmanData();
-    // console.log("Postman");
+   
   }, []);
 
   if (loading) {
