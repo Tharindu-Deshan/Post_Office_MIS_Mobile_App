@@ -73,17 +73,7 @@ export default function Profile() {
       </View>
 
       {/* Feedback and Help & Support Section  */}
-      <View style={styles.supportSection}>
-        <TouchableOpacity
-          style={styles.supportButton}
-          onPress={() => {
-            /* Navigate to Help & Support page */
-          }}
-        >
-          <Feather name="help-circle" size={24} color="#fff" />
-          <Text style={styles.buttonTexthelp}>Help & Support</Text>
-        </TouchableOpacity>
-      </View>
+    
 
       {/* Centralized Logout Button at the bottom */}
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
@@ -102,11 +92,14 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     backgroundColor: "#f0f8ff", // Softer background color for a calm feel
     padding: 20,
+    // marginTop: 50,
     paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 40,
   },
   profileContainer: {
     alignItems: "center",
     marginBottom: 30,
+    marginTop: 50,
+    // backgroundColor:"#000"
   },
   profileImage: {
     width: 150,
@@ -161,54 +154,14 @@ const styles = StyleSheet.create({
     fontWeight: "normal",
     color: "#666",
   },
-  updateProfileButton: {
-    flexDirection: "row",
-    width: "60%", // Set width so it's well centered
-    paddingVertical: 10,
-    borderRadius: 12,
-    alignItems: "center",
-    justifyContent: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.2,
-    shadowRadius: 6,
-    elevation: 8,
-    backgroundColor: "#4caf50", // Solid green for Edit Profile
-    borderColor: "#46a049",
-    borderWidth: 1,
-    marginTop: 0,
-  },
+  
   supportSection: {
     width: "100%",
     marginBottom: 20, // Add space between the section and the logout button
     paddingHorizontal: 20,
   },
-  supportButton: {
-    flexDirection: "row",
-    width: "90%", // Full width
-    paddingVertical: 12,
-    borderRadius: 12,
-    alignItems: "center",
-    justifyContent: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.2,
-    shadowRadius: 6,
-    elevation: 8,
-    backgroundColor: "#5dade2", // Blue color for Support buttons
-    borderColor: "#3498db",
-    borderWidth: 1,
-    marginBottom: 10, // Spacing between Feedback and Help & Support buttons
-    marginLeft: 20,
-  },
-  buttonTexthelp: {
-    color: "#fff",
-    fontSize: 15,
-    fontWeight: "600",
-    marginLeft: 10,
-    textTransform: "uppercase",
-    letterSpacing: 1,
-  },
+  
+ 
   logoutButton: {
     flexDirection: "row",
     width: "90%", // Centered button at the bottom
@@ -224,7 +177,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#ff4d4d", // Solid red for Logout
     borderColor: "#ff1a1a",
     borderWidth: 1,
-    marginBottom: 20,
+    marginTop: 100,
     marginLeft: 20,
     // Spaced out from the bottom
   },

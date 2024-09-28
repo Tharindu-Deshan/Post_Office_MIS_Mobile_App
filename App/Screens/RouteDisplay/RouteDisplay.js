@@ -11,6 +11,7 @@ import {
   TouchableOpacity,
   Animated,
   Easing,
+  Image,
 } from "react-native";
 import MapView, { Marker, Polyline } from "react-native-maps";
 import * as Location from "expo-location"; // For accessing device location
@@ -19,6 +20,8 @@ import polyline from "polyline"; // For decoding Google Maps polyline data
 import { ref, set } from "firebase/database";
 import { db } from "../../../firebase_config.js";
 import EvilIcons from "@expo/vector-icons/EvilIcons";
+
+// import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 
 import { SelectList } from "react-native-dropdown-select-list";
 
@@ -33,6 +36,9 @@ import {
 } from "../../Services/StorageService.js";
 import MarkDestinations from "./MarkDestinations.js";
 
+const imageTick = require("./done.png"); // Adjust the path as needed
+const whileTick = require("./whiteTick.png"); // Adjust the path as needed
+const blackTick = require("./blackTick.png"); // Adjust the path as needed
 export default function RouteDisplay() {
   const { deliveryDetails, userId, setDeliveryDetails } =
     useContext(AuthContext);
@@ -172,6 +178,7 @@ export default function RouteDisplay() {
     setSelectedStatus("Undelivered");
     setIsDeliveryReasonSelected(false);
     closeModal(setArrivedModalVisible);
+    setFinalReasonSelected("");
   };
 
   const handleUndelivered = () => {
@@ -549,32 +556,6 @@ export default function RouteDisplay() {
         {/* Add markers for each destination --------------------------------------------------------------------------------*/}
 
         <MarkDestinations />
-        {/* {deliveryDetails.visitOrder
-          .split(",")
-          .map(Number)
-          .map((orderIndex, index) => {
-            const location = deliveryDetails.destinations[orderIndex];
-            return (
-              <CustomMarker
-                key={index}
-                coordinate={{ latitude: location.lat, longitude: location.lng }}
-                title={`Location ${index + 1}`}
-                tag={
-                  index === deliveryDetails.destinations.length - 1 ? (
-                    <EvilIcons
-                      name="envelope"
-                      size={24}
-                      color="black"
-                      borderColor="black"
-                      borderWidth={5}
-                    />
-                  ) : (
-                    String(index)
-                  )
-                }
-              />
-            );
-          })} */}
 
         {/* Draw the route polyline if available */}
         {route.length > 0 && (
@@ -726,14 +707,60 @@ export default function RouteDisplay() {
                 style={styles.deliveredButton}
                 onPress={handleDelivered}
               >
-                <Text style={styles.buttonText}>Delivered</Text>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Text
+                    style={{ color: "#fff", fontSize: 14, fontWeight: "bold" }}
+                  >
+                    Delivered
+                  </Text>
+
+                  { finalReason=="Delivered" ?
+                    (<Image
+                    source={whileTick}
+                    style={{
+                      width: 18,
+                      backgroundColor: "fff",
+                      height: 18,
+                      marginLeft: 8,
+                      borderRadius: 10,
+                    }}
+                  />)
+                  : <></>
+                  }
+                </View>
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={styles.deliveredButton}
+                style={styles.undeliveredButton}
                 onPress={handleUndelivered}
               >
+                 <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
                 <Text style={styles.buttonText}>{selectedStatus}</Text>
+               {
+                (finalReason=="Undelivered - No Response" || finalReason=="Undelivered - Wrong Address" || finalReason=="Undelivered - Other" )
+                ?(<Image
+                  source={imageTick}
+                  style={{
+                    width: 21,
+                    backgroundColor: "fff",
+                    height: 21,
+                    marginLeft: 8,
+                  }}
+                />):(null)
+               } 
+                </View>
               </TouchableOpacity>
 
               {/* Dropdown for selecting Undelivered reason */}
@@ -876,9 +903,9 @@ const styles = StyleSheet.create({
   //------------------
   modalContent: {
     width: 310,
-    height: 360,
+    height: 440,
     padding: 20,
-    backgroundColor: "#fff",
+    backgroundColor: "#f3f4f6",
     borderRadius: 20,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
@@ -900,14 +927,14 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   deliveredButton: {
-    backgroundColor: "#32a852",
+    backgroundColor: "#2c2a42",
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,
     marginBottom: 10,
   },
   undeliveredButton: {
-    backgroundColor: "#d32f2f",
+    backgroundColor: "#c6cf11",
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,
@@ -923,22 +950,28 @@ const styles = StyleSheet.create({
   //   borderRadius: 5,
   // },
   cancelButton: {
-    backgroundColor: "#4CAF50",
+    backgroundColor: "#fff",
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,
+    borderColor: "000",
   },
   buttonText: {
+    color: "#000",
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  buttonTextDelivered: {
     color: "#fff",
     fontWeight: "bold",
     textAlign: "center",
   },
   detailsclosebuttonText: {
-    color: "red",
+    // color: "red",
     fontWeight: "bold",
     textAlign: "center",
     borderWidth: 2,
-    borderColor: "red",
+    // borderColor: "red",
     borderRadius: 10,
     padding: 6,
   },
@@ -970,16 +1003,18 @@ const styles = StyleSheet.create({
     marginBottom: 20, // Margin to create space between ScrollView and other components
   },
   confirmButton: {
-    backgroundColor: "#f33", // Regular button color
+    backgroundColor: "#fef2f2", // Regular button color
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 5,
+    borderWidth: 3,
+    borderColor: "red",
   },
 
   // Styles for the confirm button when disabled
   disabledButton: {
-    backgroundColor: "#f33", // Disabled button color (can also be lighter)
-    opacity: 0.5, // Reduce opacity to indicate disabled state
+    // backgroundColor: "#f33", // Disabled button color (can also be lighter)
+    opacity: 0.25, // Reduce opacity to indicate disabled state
   },
   floatingBackButton: {
     position: "absolute", // Floating effect to stay on top

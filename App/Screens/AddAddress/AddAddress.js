@@ -13,9 +13,13 @@ import {
 import * as Location from "expo-location";
 import AuthContext from "../../context/AuthContextProvider";
 import axios from "axios";
+import AddressModal from "./AddAddressModal";
 
 const AddAddress = () => {
   const { deliveryDetails } = useContext(AuthContext);
+  const [newAddress, setNewAddress] = useState({});
+
+  const [modalVisible, setModalVisible] = useState(false);
 
   const [city, setCity] = useState("Kochchikade");
   const zone = deliveryDetails.zone;
@@ -43,23 +47,24 @@ const AddAddress = () => {
         members,
         location, // includes longitude and latitude
       };
+      setNewAddress(address);
+      setModalVisible(true); // Show the modal after setting the address
 
       try {
-        const url =`${API_BASE_URL}:${APP_PORT}/api/postman/address/add-address`;
-        const response = await axios.post(
-          url
-          ,
-          address
-        );
+        const url = `${API_BASE_URL}:${APP_PORT}/api/postman/address/add-address`;
+        const response = await axios.post(url, address);
         if (response.status === 200) {
           console.log("Address added successfully");
-          Alert.alert(
-            "Form Submitted",
-            `Address: ${JSON.stringify(address, null, 2)}`
-          );
+          // Alert.alert(
+          //   "Form Submitted",
+          //   `Address: ${JSON.stringify(address, null, 2)}`
+          // );
         }
       } catch (error) {
         console.error(error);
+      } finally {
+        setHouseNumber("");
+        setMembers([{ customerId: 1, name: "" }]);
       }
     } else {
       Alert.alert("Error", "Please fill all the fields");
@@ -67,12 +72,12 @@ const AddAddress = () => {
   };
 
   const [location, setLocation] = useState({ longitude: 0, latitude: 0 });
-  const [errorMsg, setErrorMsg] = useState(null);
+  
   useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
-        setErrorMsg("Permission to access location was denied");
+        Alert.alert("Permission Denied", "Permission to access location was denied");
         return;
       }
 
@@ -97,9 +102,8 @@ const AddAddress = () => {
       <Text style={styles.label}>Zone</Text>
       <TextInput
         style={styles.input}
-        placeholder="Enter zone"
         value={zone}
-        // onChangeText={(text) => setZone(text)}
+        editable={false} // Zone is directly fetched from deliveryDetails
       />
 
       <Text style={styles.label}>City</Text>
@@ -107,6 +111,7 @@ const AddAddress = () => {
         style={styles.input}
         placeholder="Enter city"
         value={city}
+        editable={false}
         onChangeText={(text) => setCity(text)}
       />
 
@@ -138,6 +143,8 @@ const AddAddress = () => {
       <TouchableOpacity style={styles.addButton} onPress={addMember}>
         <Text style={styles.buttonText}>Add Another Member</Text>
       </TouchableOpacity>
+
+      <AddressModal visible={modalVisible} onClose={() => setModalVisible(false)} address= {newAddress} />
 
       <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
         <Text style={styles.buttonText}>Submit</Text>

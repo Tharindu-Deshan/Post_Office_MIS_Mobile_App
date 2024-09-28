@@ -2,6 +2,7 @@ import AuthContext from '../../context/AuthContextProvider';
 import React, { useContext } from "react";
 import { Marker } from "react-native-maps";
 import { View, Text, StyleSheet } from "react-native";
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 
 export default function MarkDestinations() {
   const { deliveryDetails } = useContext(AuthContext);
@@ -39,7 +40,7 @@ export default function MarkDestinations() {
               }
               tag={
                 index === 0
-                  ? "Post Office"
+                  ? (<FontAwesome6 name="building-columns" size={24} color="black" />)
                   : String(index)
               }
             />
@@ -50,10 +51,13 @@ export default function MarkDestinations() {
   );
 }
 
+
+
 const styles = StyleSheet.create({
   customMarker: {
     backgroundColor: "white",
-    padding: 11,
+    padding: 7,
+    width: 50,
     borderRadius: 5,
     borderColor: "black",
     borderWidth: 1,
@@ -62,5 +66,6 @@ const styles = StyleSheet.create({
   tag: {
     color: "black",
     fontWeight: "bold",
+    fontSize: 18,
   },
 });
