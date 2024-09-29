@@ -164,6 +164,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     padding: 20,
     backgroundColor: "#f0f8ff", // Soothing background color
+    
   },
   label: {
     fontSize: 18,

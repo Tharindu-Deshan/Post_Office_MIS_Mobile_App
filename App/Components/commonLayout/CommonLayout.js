@@ -7,7 +7,8 @@ const CommonLayout = ({ children }) => {
 
 const styles = StyleSheet.create({
   container: {
-    paddingTop:40,
+    paddingTop:28,
+    backgroundColor:"#000",
     flex: 1,
   },
 });

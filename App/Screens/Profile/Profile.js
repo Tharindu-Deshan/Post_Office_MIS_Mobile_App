@@ -5,7 +5,6 @@ import {
   TouchableOpacity,
   StyleSheet,
   Image,
-  ScrollView,
   StatusBar,
   Platform,
 } from "react-native";
@@ -15,75 +14,105 @@ import Feather from "@expo/vector-icons/Feather";
 const imageUser = require("../Profile/e03b2bf1-678e-49f1-998d-d5b03fb09a99.webp");
 
 export default function Profile() {
-  
   const { userId, userName, email, handleLogout, ...others } =
     useContext(AuthContext);
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <View style={styles.profileContainer}>
-        <Image source={imageUser} style={styles.profileImage} />
-        <Text style={styles.profileName}>{userName}</Text>
-        <Text style={styles.profileEmail}>POSTMAN</Text>
+    <>
+      <View
+        style={{
+          backgroundColor: "#000",
+          borderBottomLeftRadius: 50,
+          paddingTop: 40,
+          borderBottomRightRadius: 50,
+        }}
+      >
+        <View style={styles.profileContainer}>
+          <Image source={imageUser} style={styles.profileImage} />
+          <Text style={styles.profileName}>{userName}</Text>
+          <Text style={styles.profileEmail}>POSTMAN</Text>
 
-        {/* Edit Profile Button below the email */}
-        {/* <TouchableOpacity style={styles.updateProfileButton} onPress={{}}>
+          {/* Edit Profile Button below the email */}
+          {/* <TouchableOpacity style={styles.updateProfileButton} onPress={{}}>
           <Feather name="edit" size={24} color="#fff" />
           <Text style={styles.buttonTexthelp}>Edit Profile</Text>
         </TouchableOpacity> */}
+        </View>
       </View>
-
-      <View style={styles.detailsSection}>
-        <View style={styles.detailsContainer}>
-          <Feather name="user" size={20} color="#4a4a4a" style={styles.icon} />
-          <Text style={styles.detailsText}>
-            User Name : <Text style={styles.detailsItem}>{userName}</Text>
-          </Text>
-        </View>
-        <View style={styles.detailsContainer}>
-          <Feather name="hash" size={20} color="#4a4a4a" style={styles.icon} />
-          <Text style={styles.detailsText}>
-            Postman ID : <Text style={styles.detailsItem}>{userId}</Text>
-          </Text>
-        </View>
-        <View style={styles.detailsContainer}>
-          <Feather name="phone" size={20} color="#4a4a4a" style={styles.icon} />
-          <Text style={styles.detailsText}>
-            Contact : <Text style={styles.detailsItem}>076 551 6789</Text>
-          </Text>
-        </View>
-        <View style={styles.detailsContainer}>
-          <Feather name="mail" size={20} color="#4a4a4a" style={styles.icon} />
-          <Text style={styles.detailsText}>
-            Email : <Text style={styles.detailsItem}>{email}</Text>
-          </Text>
-        </View>
-        {/* <View style={styles.detailsContainer}>
+      <View>
+        <View style={styles.detailsSection}>
+          <View style={styles.detailsItemField}>
+            <Feather
+              name="user"
+              size={20}
+              color="#4a4a4a"
+              style={styles.icon}
+            />
+            <Text style={styles.detailsText}>
+              User Name : <Text style={styles.detailsItem}>{userName}</Text>
+            </Text>
+          </View>
+          <View style={styles.detailsItemField}>
+            <Feather
+              name="hash"
+              size={20}
+              color="#4a4a4a"
+              style={styles.icon}
+            />
+            <Text style={styles.detailsText}>
+              Postman ID : <Text style={styles.detailsItem}>{userId}</Text>
+            </Text>
+          </View>
+          <View style={styles.detailsItemField}>
+            <Feather
+              name="phone"
+              size={20}
+              color="#4a4a4a"
+              style={styles.icon}
+            />
+            <Text style={styles.detailsText}>
+              Contact : <Text style={styles.detailsItem}>076 551 6789</Text>
+            </Text>
+          </View>
+          <View style={styles.detailsItemField}>
+            <Feather
+              name="mail"
+              size={20}
+              color="#4a4a4a"
+              style={styles.icon}
+            />
+            <Text style={styles.detailsText}>
+              Email : <Text style={styles.detailsItem}>{email}</Text>
+            </Text>
+          </View>
+          {/* <View style={styles.detailsContainer}>
           <Feather name="sun" size={20} color="#4a4a4a" style={styles.icon} />
           <Text style={styles.detailsText}>
             Theme Selection : <Text style={styles.detailsItem}>Light Mode</Text>
           </Text>
         </View> */}
-        {/* <View style={styles.detailsContainer}>
+          {/* <View style={styles.detailsContainer}>
           <Feather name="lock" size={20} color="#4a4a4a" style={styles.icon} />
           <Text style={styles.detailsText}>
             Password : <Text style={styles.detailsItem}>***********</Text>
           </Text>
         </View> */}
+        </View>
       </View>
 
-      {/* Feedback and Help & Support Section  */}
-    
+      <View contentContainerStyle={styles.container}>
+        {/* Feedback and Help & Support Section  */}
 
-      {/* Centralized Logout Button at the bottom */}
-      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-        <Feather name="log-out" size={25} color="#fff" />
-        <Text style={styles.buttonText}>Logout</Text>
-      </TouchableOpacity>
+        {/* Centralized Logout Button at the bottom */}
+        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+          <Feather name="log-out" size={25} color="#fff" />
+          <Text style={styles.buttonText}>Logout</Text>
+        </TouchableOpacity>
 
-      {/* Spacer View */}
-      <View style={styles.spacer}></View>
-    </ScrollView>
+        {/* Spacer View */}
+        <View style={styles.spacer}></View>
+      </View>
+    </>
   );
 }
 
@@ -120,6 +149,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   detailsSection: {
+    marginTop:30,
     width: "100%",
     marginBottom: 10,
   },
@@ -127,6 +157,28 @@ const styles = StyleSheet.create({
     flexDirection: "row", // Align icon and text in a row
     alignItems: "center",
     backgroundColor: "#fff",
+    marginHorizontal: 20,
+    marginTop: 18,
+    padding: 15,
+    borderRadius: 15, // Increased border-radius for softer corners
+    marginBottom: 15,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 4 }, // Slightly deeper shadow for more depth
+    shadowRadius: 10,
+    elevation: 8,
+    borderWidth: 1,
+    borderColor: "#eee", // Softer border for detail sections
+    paddingVertical: 15,
+    // borderColor: "black", // Custom blue border color
+    // borderWidth: 1, // Adjust the thickness of the border
+    // borderStyle:"dashed"
+  },
+  detailsItemField: {
+    flexDirection: "row", // Align icon and text in a row
+    alignItems: "center",
+    backgroundColor: "#fff",
+    marginHorizontal: 20,
     padding: 15,
     borderRadius: 15, // Increased border-radius for softer corners
     marginBottom: 15,
@@ -154,14 +206,13 @@ const styles = StyleSheet.create({
     fontWeight: "normal",
     color: "#666",
   },
-  
+
   supportSection: {
     width: "100%",
     marginBottom: 20, // Add space between the section and the logout button
     paddingHorizontal: 20,
   },
-  
- 
+
   logoutButton: {
     flexDirection: "row",
     width: "90%", // Centered button at the bottom
@@ -177,7 +228,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#ff4d4d", // Solid red for Logout
     borderColor: "#ff1a1a",
     borderWidth: 1,
-    marginTop: 100,
+    marginTop: 40,
     marginLeft: 20,
     // Spaced out from the bottom
   },

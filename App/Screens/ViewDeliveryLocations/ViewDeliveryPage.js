@@ -246,7 +246,7 @@ export default function ViewDeliveryPage() {
       <Button
         title="Close"
         onPress={() => setModalVisible(false)}
-        color="#2196F3" // Button color
+        color="#2c2a42" // Button color
         style={{
           marginTop: 15, // Space above the button
           borderRadius: 5, // Rounded button corners
@@ -279,7 +279,7 @@ const styles = StyleSheet.create({
     bottom: 20,
     left: "5%",
     width: "90%",
-    backgroundColor: "rgba(230, 230, 255, 0.8)",
+    backgroundColor: "rgba(255, 247, 237, 0.95)",
     padding: 25,
     borderRadius: 10,
     justifyContent: "center",
@@ -302,7 +302,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   startButton: {
-    backgroundColor: "#fbbf24",
+    backgroundColor: "#c6cf11",
     paddingVertical: 15,
     paddingHorizontal: 22,
     borderRadius: 5,

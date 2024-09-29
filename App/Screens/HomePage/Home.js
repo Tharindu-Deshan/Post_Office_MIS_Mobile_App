@@ -82,11 +82,9 @@ export default function Home({ navigation }) {
     console.log("LOG ", "Postman");
     try {
       const url = `${API_BASE_URL}:${APP_PORT}/api/postman/route-display/get-delivery?postmanId=4`;
-      const x= await  getStartDutyStatus();
+      const x = await getStartDutyStatus();
       console.log("LOG..... ", x);
-      const response = await axios.get(
-        url
-      );
+      const response = await axios.get(url);
 
       // If the response is successful (200), set the delivery details
       if (response.status === 200) {
@@ -112,7 +110,6 @@ export default function Home({ navigation }) {
 
   useEffect(() => {
     getPostmanData();
-   
   }, []);
 
   if (loading) {
@@ -134,14 +131,17 @@ export default function Home({ navigation }) {
           />
           <Text style={styles.welcomeMessage}>Welcome, {userName}!</Text>
           <Text style={styles.subWelcomeMessage}> Email: {email}</Text>
+          <View style={{ marginTop: 50, marginBottom: 10 }}>
+            <Text style={styles.statusText}>
+              Current Status:{" "}
+              {deliveryDetails?.status || noDeliveryObjectFetched || "Pending"}
+            </Text>
+          </View>
         </View>
 
-        <View style={styles.statusContainer}>
-          <Text style={styles.statusText}>
-            Current Status:{" "}
-            {deliveryDetails?.status || noDeliveryObjectFetched || "Pending"}
-          </Text>
-        </View>
+        {/* <View style={styles.statusContainer}> */}
+
+        {/* </View> */}
 
         <View style={styles.blockContainer}>
           <View style={styles.rowContainer}>
@@ -161,7 +161,7 @@ export default function Home({ navigation }) {
 
             <TouchableOpacity
               style={[
-                styles.buttonBlock,
+                styles.buttonBlock1,
                 isDisabled && styles.disabledButtonExpolreMap,
               ]} // Apply conditional opacity
               disabled={isDisabled}
@@ -170,19 +170,19 @@ export default function Home({ navigation }) {
               <MaterialCommunityIcons
                 name="map-marker-multiple"
                 size={60}
-                color="#fff"
+                color="#000"
               />
-              <Text style={styles.buttonText}>Explore Map</Text>
+              <Text style={styles.buttonText1}>Explore Map</Text>
             </TouchableOpacity>
           </View>
 
           <View style={styles.rowContainer}>
             <TouchableOpacity
-              style={styles.buttonBlock}
+              style={styles.buttonBlock1}
               onPress={() => navigation.navigate("AddPerson")}
             >
-              <Ionicons name="person-add" size={60} color="#fff" />
-              <Text style={styles.buttonText}>Add Person</Text>
+              <Ionicons name="person-add" size={60} color="#000" />
+              <Text style={styles.buttonText1}>Add Person</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -202,38 +202,77 @@ export default function Home({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     ...StyleSheet.absoluteFillObject,
-    padding: 20,
-    backgroundColor: "#f0f8ff",
-    justifyContent: "space-between",
+    backgroundColor: "#f4f4f5",
   },
   profileContainer: {
     alignItems: "center",
     marginBottom: 20,
-    marginTop: 35,
+
+    backgroundColor: "#000",
+    paddingHorizontal: 30,
+    paddingTop: 70,
+    paddingBottom: 30,
+    borderBottomLeftRadius: 50,
+    borderBottomRightRadius: 50,
+    shadowColor: "#000", // Adds shadow for elevation
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 5, // For Android devices
+    // borderColor: "#ddd", // Light border for separation
+    borderWidth: 1,
   },
   profileImage: {
     width: 100,
     height: 100,
     borderRadius: 50,
     marginBottom: 10,
+    borderWidth: 2, // Adds a border around the image
+    borderColor: "#e0e0e0", // Light border color
   },
   welcomeMessage: {
     fontSize: 28,
     fontWeight: "bold",
-    color: "#4a4a4a",
+    color: "#fff", // Darker gray for better contrast
+    marginBottom: 5, // Adds spacing between the welcome message and email
   },
   subWelcomeMessage: {
-    fontSize: 16,
-    color: "#7a7a7a",
+    fontSize: 14,
+    color: "#666", // Slightly darker gray for readability
+    letterSpacing: 0.5, // Adds subtle spacing between letters for better readability
   },
-  statusContainer: {
-    backgroundColor: "#ff9800",
-    padding: 15,
-    borderRadius: 15,
-    borderColor: "#f57c00",
-    borderWidth: 2,
-    marginBottom: 20,
-  },
+
+  // profileContainer: {
+  //   alignItems: "center",
+  //   marginBottom: 20,
+  //   marginTop: 15,
+  //   backgroundColor: "#fff",
+  //   padding: 30
+
+  // },
+  // profileImage: {
+  //   width: 100,
+  //   height: 100,
+  //   borderRadius: 50,
+  //   marginBottom: 10,
+  // },
+  // welcomeMessage: {
+  //   fontSize: 28,
+  //   fontWeight: "bold",
+  //   color: "#4a4a4a",
+  // },
+  // subWelcomeMessage: {
+  //   fontSize: 16,
+  //   color: "#7a7a7a",
+  // },
+  // statusContainer: {
+  //   backgroundColor: "#f57c00",
+  //   padding: 15,
+  //   borderRadius: 15,
+  //   borderColor: "#f57c00",
+  //   borderWidth: 2,
+  //   marginBottom: 20,
+  // },
   statusText: {
     fontSize: 20,
     fontWeight: "bold",
@@ -241,37 +280,69 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   blockContainer: {
-    padding: 20,
-    backgroundColor: "#fff",
-    borderRadius: 20,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 8,
-    elevation: 5,
-    marginBottom: 30,
+    padding: 35,
+    backgroundColor: "#f4f4f5",
+    // borderRadius: 20,
+    // shadowColor: "#000",
+    // shadowOpacity: 0.15, // Slightly increased shadow opacity for better elevation effect
+    // shadowOffset: { width: 0, height: 4 }, // More prominent shadow
+    // shadowRadius: 10,
+    // elevation: 6, // Slightly increased for a better elevation effect on Android
+    marginBottom: 50,
+    marginTop: 20,
   },
   rowContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 15,
+
+    marginBottom: 20, // Slightly more space between button rows for better spacing
   },
   buttonBlock: {
     width: "45%",
     aspectRatio: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#6200ee",
-    borderRadius: 15,
-    paddingVertical: 10,
+    backgroundColor: "#2c2a42", // Kept the same vibrant color for consistency
+    borderRadius: 20, // Increased border radius for a softer look
+    paddingVertical: 15, // Increased padding for a more balanced feel
+    shadowColor: "#000", // Adding shadow directly to buttons for depth
+    shadowOpacity: 0.2, // Slight shadow effect for the buttons
+    shadowOffset: { width: 0, height: 3 }, // Subtle shadow for buttons
+    shadowRadius: 6,
+    elevation: 3, // Elevation for Android devices
+  },
+  buttonBlock1: {
+    width: "45%",
+    aspectRatio: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#c6cf11", // Kept the same vibrant color for consistency
+    borderRadius: 20, // Increased border radius for a softer look
+    paddingVertical: 15, // Increased padding for a more balanced feel
+    shadowColor: "#000", // Adding shadow directly to buttons for depth
+    shadowOpacity: 0.2, // Slight shadow effect for the buttons
+    shadowOffset: { width: 0, height: 3 }, // Subtle shadow for buttons
+    shadowRadius: 6,
+    elevation: 3, // Elevation for Android devices
   },
   buttonText: {
     color: "#fff",
-    fontSize: 16,
-    marginTop: 20,
+    fontSize: 18, // Slightly increased font size for better readability
+    marginTop: 15, // Reduced margin for a more compact button
     fontWeight: "bold",
+    textAlign: "center", // Ensures text is centered
+    letterSpacing: 1, // Adds slight spacing between characters for a modern look
   },
+  buttonText1: {
+    color: "#000",
+    fontSize: 18, // Slightly increased font size for better readability
+    marginTop: 15, // Reduced margin for a more compact button
+    fontWeight: "bold",
+    textAlign: "center", // Ensures text is centered
+    letterSpacing: 1, // Adds slight spacing between characters for a modern look
+  },
+
   disabledButtonExpolreMap: {
-    opacity: 0.5,
+    opacity: 0.5, // Kept the same for disabled buttons
   },
 });

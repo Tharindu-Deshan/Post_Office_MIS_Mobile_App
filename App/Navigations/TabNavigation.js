@@ -40,10 +40,12 @@ export default function TabNavigation() {
       screenOptions={({ route }) => ({
         headerShown: false,
         tabBarStyle: {
-          height: 70,  // Increase the height of the tab bar
+          height: 72,  // Increase the height of the tab bar
           paddingBottom: 10,  // Add padding to ensure the icons are centered
           paddingTop: 10,  // Add padding to adjust icon position
-          backgroundColor: '#fff',  // You can set a custom background color
+          backgroundColor: '#3f3f46',  // You can set a custom background color
+          borderTopLeftRadius: 20,  // Add a border radius to the tab bar
+          borderTopRightRadius: 20,  // Add a border radius to the tab bar
           
         },
         tabBarLabelStyle: {

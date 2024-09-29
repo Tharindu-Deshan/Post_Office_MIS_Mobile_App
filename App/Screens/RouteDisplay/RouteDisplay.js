@@ -875,6 +875,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center", // Center the button text
     paddingHorizontal: 30,
+    marginLeft: 10, // Spacing between
   },
   arrievedtext: {
     fontWeight: "bold",
