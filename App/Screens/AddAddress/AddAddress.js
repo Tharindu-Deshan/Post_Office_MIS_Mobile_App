@@ -50,6 +50,8 @@ const AddAddress = () => {
       setNewAddress(address);
       setModalVisible(true); // Show the modal after setting the address
 
+      
+
       try {
         const url = `${API_BASE_URL}:${APP_PORT}/api/postman/address/add-address`;
         const response = await axios.post(url, address);
@@ -141,7 +143,7 @@ const AddAddress = () => {
       ))}
 
       <TouchableOpacity style={styles.addButton} onPress={addMember}>
-        <Text style={styles.buttonText}>Add Another Member</Text>
+        <Text style={styles.buttonText1}>Add Another Member</Text>
       </TouchableOpacity>
 
       <AddressModal visible={modalVisible} onClose={() => setModalVisible(false)} address= {newAddress} />
@@ -157,7 +159,7 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     padding: 20,
-    backgroundColor: "#f0f8ff", // Soothing background color
+    backgroundColor: "#fafafa", // Soothing background color
   },
   label: {
     fontSize: 18,
@@ -186,18 +188,23 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   addButton: {
-    backgroundColor: "#4CAF50",
+    backgroundColor: "#c6cf11",
     padding: 15,
     borderRadius: 8,
     alignItems: "center",
     marginVertical: 10,
   },
   submitButton: {
-    backgroundColor: "#2196F3",
+    backgroundColor: "#2c2a42",
     padding: 15,
     borderRadius: 8,
     alignItems: "center",
     marginTop: 20,
+  },
+  buttonText1: {
+    color: "#000",
+    fontSize: 16,
+    fontWeight: "bold",
   },
   buttonText: {
     color: "#fff",

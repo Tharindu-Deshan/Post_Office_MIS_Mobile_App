@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_BASE_URL } from "@env";
 import { APP_PORT } from "@env";
@@ -33,6 +33,8 @@ const LoginScreen = () => {
     setModalVisible(false);
   };
 
+  const passwordRef = useRef(null);
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -60,6 +62,7 @@ const LoginScreen = () => {
         console.log("Authentication successful");
 
         await AsyncStorage.setItem("userToken", token);
+        await AsyncStorage.setItem("postmanId", postmanId);
 
         handleLogin(username, postmanId, email); // Trigger login callback to update isLoggedIn state
       } else {
@@ -93,6 +96,8 @@ const LoginScreen = () => {
                 onChangeText={setEmail}
                 keyboardType="email-address"
                 autoCapitalize="none"
+                returnKeyType="next" // Set return key type to "next"
+                onSubmitEditing={() => passwordRef.current.focus()}
               />
 
               <TextInput
@@ -100,6 +105,9 @@ const LoginScreen = () => {
                 placeholder="Password"
                 value={password}
                 onChangeText={setPassword}
+                ref={passwordRef} // Set ref to password TextInput
+                returnKeyType="go" // Set return key type to "done"
+                onSubmitEditing={authenticateUser}
                 secureTextEntry
               />
 

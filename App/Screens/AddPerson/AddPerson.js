@@ -14,14 +14,15 @@ import {
 import * as Location from "expo-location";
 import AuthContext from "../../context/AuthContextProvider";
 import axios from "axios";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+
 import { getCurrentIndex } from "../../Services/StorageService";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const AddPerson = () => {
   const { deliveryDetails } = useContext(AuthContext);
 
   const [city, setCity] = useState("Kochchikade");
-  const zone = deliveryDetails.zone;
+  const [zone1,setZone1] = useState("Pallansena South");
   const [houseNumber, setHouseNumber] = useState("");
   const [members, setMembers] = useState([{ customerId: 1, name: "" }]);
 
@@ -38,30 +39,36 @@ const AddPerson = () => {
   };
 
   const handleSubmit = async () => {
-    if (city && zone && houseNumber && members.every((member) => member.name)) {
-      const address = {
-        city,
-        zone,
-        houseNumber,
-        members,
-        location, // includes longitude and latitude
-      };
+    if (city && zone1 && houseNumber && members.every((member) => member.name)) {
+      
 
-      // try {
-      //   const response = await axios.post(
-      //     `${API_BASE_URL}:${APP_PORT}/api/postman/address/add-address`,
-      //     address
-      //   );
-      //   if (response.status === 200) {
-      //     console.log("Address added successfully");
-      //     Alert.alert(
-      //       "Form Submitted",
-      //       `Address: ${JSON.stringify(address, null, 2)}`
-      //     );
-      //   }
-      // } catch (error) {
-      //   console.error(error);
-      // }
+      try {
+        const index = await getCurrentIndex();
+        const visitOrderString = deliveryDetails.visitOrder; // Extract visitOrder string
+        const visitArr = visitOrderString.split(",").map(Number); // Convert to number array
+        const x = visitArr[index];
+        const addressId = deliveryDetails.destinations[x].addressId;
+
+        const addressWithMembers = {
+         
+          addressId,
+          members,
+        };
+
+        console.log(addressWithMembers);
+
+//http://localhost:8081/api/postman/add-person/
+        const response = await axios.post(
+          `${API_BASE_URL}:${APP_PORT}/api/postman/add-person/`,
+          addressWithMembers
+        );
+        if (response.status === 200) {
+          console.log("Address added successfully");
+         
+        }
+      } catch (error) {
+        console.error(error);
+      }
     } else {
       Alert.alert("Error", "Please fill all the fields");
     }
@@ -85,76 +92,123 @@ const AddPerson = () => {
     })();
   }, []);
 
-  const handlePress = () => {
-    const index = getCurrentIndex();
-    alert(`House Number: ${index}`);
+  const handlePressCurrentHouse = async () => {
+    try {
+      const index = await getCurrentIndex();
+      const visitOrderString = deliveryDetails.visitOrder; // Extract visitOrder string
+      const visitArr = visitOrderString.split(",").map(Number); // Convert to number array
+      const x = visitArr[index];
+      const mailId = deliveryDetails.destinations[x].mailId;
+
+      if (!mailId) {
+        console.error("Mail ID is missing");
+        return;
+      }
+      console.log(mailId);
+      const url = `${API_BASE_URL}:${APP_PORT}/api/postman/mail/get-details?mailId=${mailId}`;
+      const response = await axios.get(url);
+      const destinationAddress = response.data.destinationAddress;
+      // const housenumber = destinationAddress.split(',')[0].trim();
+      const housenumber = destinationAddress
+        .split(",")[0]
+        .replace(/\s+/g, "")
+        .trim();
+      setHouseNumber(housenumber);
+
+      console.log("Destination Address:", destinationAddress);
+      // You can now use the destinationAddress as needed in your component
+    } catch (error) {
+      console.error("Error fetching mail details:", error);
+    }
   };
+
+const getZone1 = async () => {
+  const postmanId = await AsyncStorage.getItem('postmanId');
+  console.log("Postman Id:", postmanId);
+  const url = `${API_BASE_URL}:${APP_PORT}/api/postman/add-person/get-zone?postmanId=${postmanId}`;
+  console.log("URL:", url);
+  try{
+    const response = await axios.get(url);
+    setZone1(response.data);
+  }catch(error){
+    console.error(error);
+  }
+}
+
+
+useEffect(() => {
+  getZone1();
+},[]);
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.label}>House Number</Text>
+      <View style={{ marginTop: 20 }}>
+        <Text style={styles.label}>House Number</Text>
 
-      <View style={styles.inputRow}>
-        <TextInput
-          style={styles.customInput}
-          placeholder="Enter house number"
-          value={houseNumber}
-          onChangeText={(text) => setHouseNumber(text)}
-        />
-        <View
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignContent: "center",
-            marginBottom: 15,
-            marginRight: 15,
-          }}
-        >
-          <Button
-            color={"#475569"}
-            borderRadius={20}
-            title="Current House"
-            onPress={handlePress}
+        <View style={styles.inputRow}>
+          <TextInput
+            style={styles.customInput}
+            placeholder="Enter house number"
+            value={houseNumber}
+            onChangeText={(text) => setHouseNumber(text)}
           />
+          <View
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignContent: "center",
+              marginBottom: 15,
+              marginRight: 15,
+            }}
+          >
+            <Button
+              color={"#475569"}
+              borderRadius={50}
+              title="Current House"
+              disabled={!deliveryDetails}
+              onPress={handlePressCurrentHouse}
+            />
+          </View>
+        </View>
+
+        <Text style={styles.label}>Zone</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Enter zone"
+          value={zone1}
+          // onChangeText={(text) => setZone(text)}
+          onChangeText={(text) => setZone1(text)} 
+        />
+
+        <Text style={styles.label}>City</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Enter city"
+          value={city}
+          onChangeText={(text) => setCity(text)}
+        />
+
+        <Text style={styles.label}>Members</Text>
+        {members.map((member, index) => (
+          <View key={index} style={styles.memberContainer}>
+            <Text>Member: {member.customerId}</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter member name"
+              value={member.name}
+              onChangeText={(text) => handleMemberChange(index, "name", text)}
+            />
+          </View>
+        ))}
+        <View style={{ marginTop: 100 }}>
+          <TouchableOpacity style={styles.addButton} onPress={addMember}>
+            <Text style={styles.buttonText1}>Add Another Member</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
+            <Text style={styles.buttonText}>Submit</Text>
+          </TouchableOpacity>
         </View>
       </View>
-
-      <Text style={styles.label}>Zone</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter zone"
-        value={zone}
-        // onChangeText={(text) => setZone(text)}
-      />
-
-      <Text style={styles.label}>City</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter city"
-        value={city}
-        onChangeText={(text) => setCity(text)}
-      />
-
-      <Text style={styles.label}>Members</Text>
-      {members.map((member, index) => (
-        <View key={index} style={styles.memberContainer}>
-          <Text>Member: {member.customerId}</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Enter member name"
-            value={member.name}
-            onChangeText={(text) => handleMemberChange(index, "name", text)}
-          />
-        </View>
-      ))}
-
-      <TouchableOpacity style={styles.addButton} onPress={addMember}>
-        <Text style={styles.buttonText}>Add Another Member</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-        <Text style={styles.buttonText}>Submit</Text>
-      </TouchableOpacity>
     </ScrollView>
   );
 };
@@ -163,8 +217,7 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     padding: 20,
-    backgroundColor: "#f0f8ff", // Soothing background color
-    
+    backgroundColor: "#fafafa", // Soothing background color
   },
   label: {
     fontSize: 18,
@@ -205,24 +258,29 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   memberContainer: {
-    marginBottom: 15,
+    mariginTop: 20,
   },
   addButton: {
-    backgroundColor: "#4CAF50",
+    backgroundColor: "#c6cf11",
     padding: 15,
     borderRadius: 8,
     alignItems: "center",
     marginVertical: 10,
   },
   submitButton: {
-    backgroundColor: "#2196F3",
+    backgroundColor: "#2c2a42",
     padding: 15,
     borderRadius: 8,
     alignItems: "center",
-    marginTop: 20,
+    marginTop: 15,
   },
   buttonText: {
     color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  buttonText1: {
+    color: "#000",
     fontSize: 16,
     fontWeight: "bold",
   },
