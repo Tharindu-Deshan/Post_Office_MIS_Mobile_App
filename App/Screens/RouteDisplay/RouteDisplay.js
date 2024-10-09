@@ -19,9 +19,7 @@ import axios from "axios"; // For making HTTP requests
 import polyline from "polyline"; // For decoding Google Maps polyline data
 import { ref, set } from "firebase/database";
 import { db } from "../../../firebase_config.js";
-import EvilIcons from "@expo/vector-icons/EvilIcons";
 
-// import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 
 import { SelectList } from "react-native-dropdown-select-list";
 
@@ -38,26 +36,25 @@ import MarkDestinations from "./MarkDestinations.js";
 
 const imageTick = require("./done.png"); // Adjust the path as needed
 const whileTick = require("./whiteTick.png"); // Adjust the path as needed
-const blackTick = require("./blackTick.png"); // Adjust the path as needed
+// const blackTick = require("./blackTick.png"); // Adjust the path as needed
 export default function RouteDisplay() {
-  const { deliveryDetails, userId, setDeliveryDetails } =
+  const { deliveryDetails, userId, userName, setDeliveryDetails } =
     useContext(AuthContext);
-  // const updateDeliveryStatus = async (deliveryId, status) => {
-  //   try {
-  //     const response = await axios.put(
-  //       `${API_BASE_URL}:${APP_PORT}/api/postman/route-display/update-delivery-status`,
-  //       { deliveryId, status }
-  //     );
 
-  //     if (response.status === 200) {
-  //       console.log("Delivery status updated successfully");
-  //     } else {
-  //       console.error(`Error: Received status ${response.status}`);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error updating delivery status", error.message);
-  //   }
-  // };
+  useEffect(() => {
+    const fetchCurrentIndex = async () => {
+      try {
+        const x = await getCurrentIndex(4);
+        console.log("current index", x);
+      } catch (error) {
+        console.error("Error fetching current index", error);
+      }
+    };
+
+    fetchCurrentIndex();
+  }, []);
+
+ 
 
   useEffect(() => {
     const updatedeliverystatusstarted = async () => {
@@ -80,6 +77,7 @@ export default function RouteDisplay() {
   const navigation = useNavigation();
   // Google Maps API key
   const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY;
+
   // State for the current location of the user
   const [currentLocation, setCurrentLocation] = useState(null);
   // State for the route, which is a list of coordinates
@@ -159,7 +157,9 @@ export default function RouteDisplay() {
         mailId: mailId,
         status: finalReason,
       };
+     
       const url = `${API_BASE_URL}:${APP_PORT}/api/postman/update-status`;
+      console.log(url)
       // Send the POST request to the backend using axios
       const response = await axios.put(
         //connected usb --> ipconfig -->ipv4-->192.168.83.191
@@ -247,20 +247,19 @@ export default function RouteDisplay() {
     ) {
       try {
         const url = `${API_BASE_URL}:${APP_PORT}/api/postman/mail/get-details?mailId=${mailId}`;
-        const response = await axios.get(
-          //connected usb --> ipconfig -->ipv4-->192.168.83.191
-          //emu -->10.0.2.2
-          url
-        );
+        console.log(url)
+        //connected usb --> ipconfig -->ipv4-->192.168.83.191
+        //emu -->10.0.2.2
+        const response = await axios.get(url);
 
         if (response.status === 200) {
           setMailDetails(response.data);
         } else {
-          console.error(`Error: Received status ${response.status}`);
+         // console.error(`Error: Received status ${response.status}`);
           setMailDetails([]);
         }
       } catch (error) {
-        console.error("Error fetching Mail data", error.message);
+       // console.error("Error fetching Mail data", error.message);
       }
     } else {
       setMailDetails([]);
@@ -281,12 +280,14 @@ export default function RouteDisplay() {
     const origin = `${currentLoc.latitude},${currentLoc.longitude}`; // Current location as origin
     const destination = `${destinationLoc.lat},${destinationLoc.lng}`; // Destination
 
+    console.log("key",GOOGLE_MAPS_API_KEY)
+
     try {
       // Get directions data from Google Maps API
       const response = await axios.get(
         `https://maps.googleapis.com/maps/api/directions/json?origin=${origin}&destination=${destination}&key=${GOOGLE_MAPS_API_KEY}`
       );
-
+      console.log("response ---getting directions ", response.data.routes);
       // If routes are available, decode the polyline and store the coordinates
       if (response.data.routes && response.data.routes.length > 0) {
         const points = polyline.decode(
@@ -313,6 +314,7 @@ export default function RouteDisplay() {
   const updateDeliveryStatus = async (deliveryId, status) => {
     try {
       const url = `${API_BASE_URL}:${APP_PORT}/api/postman/route-display/update-delivery-status`;
+      console.log(url);
       const response = await axios.put(url, { deliveryId, status });
 
       if (response.status === 200) {
@@ -321,7 +323,7 @@ export default function RouteDisplay() {
         console.error(`Error: Received status ${response.status}`);
       }
     } catch (error) {
-      console.error("Error updating delivery status", error.message);
+     console.error("Error updating delivery status", error.message);
     }
   };
 
@@ -412,24 +414,7 @@ export default function RouteDisplay() {
     updateIndexInStorage(); // Call the async function
   }, [currentIndex]);
 
-  // -------------Update mailId whenever currentIndex changes---------------------------------------
-  // useEffect(() => {
-  //   if (
-  //     deliveryDetails &&
-  //     deliveryDetails.visitOrder.split(",").map(Number) &&
-  //     deliveryDetails.destinations[
-  //       deliveryDetails.visitOrder.split(",").map(Number)[currentIndex]
-  //     ]
-  //   ) {
-  //     const newMailId =
-  //       deliveryDetails.destinations[
-  //         deliveryDetails.visitOrder.split(",").map(Number)[currentIndex]
-  //       ].mailId;
-  //     setMailId(newMailId); // Update mailId state
-  //   }
-  // }, [currentIndex]);
-
-  //-------------------------------------------------------------------------------------------------
+  
 
   //------------get current location in every 5 secounds and store it in a use state----------------------
   useEffect(() => {
@@ -471,14 +456,14 @@ export default function RouteDisplay() {
           longitudeDelta: 0.01,
         });
 
-        // -------Fetch the route to the next destination
+        //  -------Fetch the route to the next destination
         // getRoute(
         //   { latitude, longitude }, // Pass the updated location
         //   deliveryDetails.destinations[
         //     deliveryDetails.visitOrder.split(",").map(Number)[currentIndex]
         //   ]
         // );
-      }, 500000); // 5 seconds interval
+      }, 5000); // 5 seconds interval
     };
 
     startLocationTracking();
@@ -494,7 +479,7 @@ export default function RouteDisplay() {
   //-----------------------------------------------------------------------------------------
 
   //--------------- UseEffect to update the route whenever the current index changes
-
+//LLLLL---------------------------------------------------------------------------------------------------------------
   // useEffect(() => {
   //   if (
   //     currentLocation &&
@@ -508,6 +493,25 @@ export default function RouteDisplay() {
   //     );
   //   }
   // }, [currentIndex]);
+  useEffect(() => {
+    if (
+      currentLocation &&
+      currentIndex < deliveryDetails.visitOrder.split(",").map(Number).length
+    ) {
+      // Fetch the route to the next destination only when currentIndex changes
+      getRoute(
+        currentLocation,
+        deliveryDetails.destinations[
+          deliveryDetails.visitOrder.split(",").map(Number)[currentIndex]
+        ]
+      );
+    }
+  }, [currentIndex, currentLocation]);
+  
+  //   // Cleanup the interval when the component unmounts or dependencies change
+  //   return () => clearInterval(interval);
+  // }, [currentIndex]);
+  
 
   //setting the final reason --- works when confirm button pressed
   useEffect(() => {
@@ -530,6 +534,9 @@ export default function RouteDisplay() {
     set(postmanRef, {
       userId: userId,
       userLocation: location,
+      deliveredCount: currentIndex,
+      pendingCount: deliveryDetails.destinations.length - currentIndex,
+      userName: userName,
     })
       .then(() => {
         console.log("Location updated successfully!");
@@ -720,19 +727,20 @@ export default function RouteDisplay() {
                     Delivered
                   </Text>
 
-                  { finalReason=="Delivered" ?
-                    (<Image
-                    source={whileTick}
-                    style={{
-                      width: 18,
-                      backgroundColor: "fff",
-                      height: 18,
-                      marginLeft: 8,
-                      borderRadius: 10,
-                    }}
-                  />)
-                  : <></>
-                  }
+                  {finalReason == "Delivered" ? (
+                    <Image
+                      source={whileTick}
+                      style={{
+                        width: 18,
+                        backgroundColor: "fff",
+                        height: 18,
+                        marginLeft: 8,
+                        borderRadius: 10,
+                      }}
+                    />
+                  ) : (
+                    <></>
+                  )}
                 </View>
               </TouchableOpacity>
 
@@ -740,26 +748,27 @@ export default function RouteDisplay() {
                 style={styles.undeliveredButton}
                 onPress={handleUndelivered}
               >
-                 <View
+                <View
                   style={{
                     flexDirection: "row",
                     alignItems: "center",
                     justifyContent: "center",
                   }}
                 >
-                <Text style={styles.buttonText}>{selectedStatus}</Text>
-               {
-                (finalReason=="Undelivered - No Response" || finalReason=="Undelivered - Wrong Address" || finalReason=="Undelivered - Other" )
-                ?(<Image
-                  source={imageTick}
-                  style={{
-                    width: 21,
-                    backgroundColor: "fff",
-                    height: 21,
-                    marginLeft: 8,
-                  }}
-                />):(null)
-               } 
+                  <Text style={styles.buttonText}>{selectedStatus}</Text>
+                  {finalReason == "Undelivered - No Response" ||
+                  finalReason == "Undelivered - Wrong Address" ||
+                  finalReason == "Undelivered - Other" ? (
+                    <Image
+                      source={imageTick}
+                      style={{
+                        width: 21,
+                        backgroundColor: "fff",
+                        height: 21,
+                        marginLeft: 8,
+                      }}
+                    />
+                  ) : null}
                 </View>
               </TouchableOpacity>
 
