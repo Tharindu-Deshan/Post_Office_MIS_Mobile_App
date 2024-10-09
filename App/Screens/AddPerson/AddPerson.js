@@ -18,11 +18,12 @@ import axios from "axios";
 import { getCurrentIndex } from "../../Services/StorageService";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+const Image = require("./auto.png");
 const AddPerson = () => {
   const { deliveryDetails } = useContext(AuthContext);
 
   const [city, setCity] = useState("Kochchikade");
-  const [zone1,setZone1] = useState("Pallansena South");
+  const [zone1, setZone1] = useState("");
   const [houseNumber, setHouseNumber] = useState("");
   const [members, setMembers] = useState([{ customerId: 1, name: "" }]);
 
@@ -39,9 +40,12 @@ const AddPerson = () => {
   };
 
   const handleSubmit = async () => {
-    if (city && zone1 && houseNumber && members.every((member) => member.name)) {
-      
-
+    if (
+      city &&
+      zone1 &&
+      houseNumber &&
+      members.every((member) => member.name)
+    ) {
       try {
         const index = await getCurrentIndex();
         const visitOrderString = deliveryDetails.visitOrder; // Extract visitOrder string
@@ -50,21 +54,19 @@ const AddPerson = () => {
         const addressId = deliveryDetails.destinations[x].addressId;
 
         const addressWithMembers = {
-         
           addressId,
           members,
         };
 
         console.log(addressWithMembers);
 
-//http://localhost:8081/api/postman/add-person/
+        //http://localhost:8081/api/postman/add-person/
         const response = await axios.post(
           `${API_BASE_URL}:${APP_PORT}/api/postman/add-person/`,
           addressWithMembers
         );
         if (response.status === 200) {
           console.log("Address added successfully");
-         
         }
       } catch (error) {
         console.error(error);
@@ -122,23 +124,22 @@ const AddPerson = () => {
     }
   };
 
-const getZone1 = async () => {
-  const postmanId = await AsyncStorage.getItem('postmanId');
-  console.log("Postman Id:", postmanId);
-  const url = `${API_BASE_URL}:${APP_PORT}/api/postman/add-person/get-zone?postmanId=${postmanId}`;
-  console.log("URL:", url);
-  try{
-    const response = await axios.get(url);
-    setZone1(response.data);
-  }catch(error){
-    console.error(error);
-  }
-}
+  const getZone1 = async () => {
+    const postmanId = await AsyncStorage.getItem("postmanId");
+    console.log("Postman Id:", postmanId);
+    const url = `${API_BASE_URL}:${APP_PORT}/api/postman/add-person/get-zone?postmanId=${postmanId}`;
+    console.log("URL:", url);
+    try {
+      const response = await axios.get(url);
+      setZone1(response.data);
+    } catch (error) {
+      console.error("network errorr.......", error);
+    }
+  };
 
-
-useEffect(() => {
-  getZone1();
-},[]);
+  useEffect(() => {
+    getZone1();
+  }, []);
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -168,6 +169,7 @@ useEffect(() => {
               disabled={!deliveryDetails}
               onPress={handlePressCurrentHouse}
             />
+            
           </View>
         </View>
 
@@ -177,7 +179,8 @@ useEffect(() => {
           placeholder="Enter zone"
           value={zone1}
           // onChangeText={(text) => setZone(text)}
-          onChangeText={(text) => setZone1(text)} 
+          onChangeText={(text) => setZone1(text)}
+          editable={false}
         />
 
         <Text style={styles.label}>City</Text>
@@ -186,6 +189,7 @@ useEffect(() => {
           placeholder="Enter city"
           value={city}
           onChangeText={(text) => setCity(text)}
+          editable={false}
         />
 
         <Text style={styles.label}>Members</Text>

@@ -9,10 +9,12 @@ import {
   TouchableOpacity,
   StatusBar,
 } from "react-native";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useCallback } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import CommonLayout from "../../Components/commonLayout/CommonLayout";
+
+import { useFocusEffect } from "@react-navigation/native";
 
 import axios from "axios";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
@@ -30,9 +32,18 @@ export default function Home({ navigation }) {
   // const [name, setName] = useState("Tharindu");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  // const [currentIndex,setCurrentIndex]=useState(1);
 
-  const { userId, email, userName, setDeliveryDetails, deliveryDetails } =
-    useContext(AuthContext);
+  const {
+    userId,
+    email,
+    userName,
+    setDeliveryDetails,
+    deliveryDetails,
+    currentIndexContext,
+  } = useContext(AuthContext);
+
+  
 
   const [noDeliveryObjectFetched, setNoDeliveryObjectFetched] = useState("");
   const isDisabled =
@@ -43,7 +54,7 @@ export default function Home({ navigation }) {
   // LOG  Postman
   // LOG  logged in true
   // LOG  true
-  // LOG  Request successful
+  //LOG  Request successful
 
   // const getPostmanData = async () => {
   //   // console.log("getting postman data");
@@ -79,9 +90,14 @@ export default function Home({ navigation }) {
   // };
 
   const getPostmanData = async () => {
-    console.log("LOG ", "Postman");
+   
+
     try {
+    //console.log("User ID:", idd);  // Add this line
+
+      // const url = `${API_BASE_URL}:${APP_PORT}/api/postman/route-display/get-delivery?postmanId=${userId}`;
       const url = `${API_BASE_URL}:${APP_PORT}/api/postman/route-display/get-delivery?postmanId=4`;
+      console.log(url);
       const x = await getStartDutyStatus();
       console.log("LOG..... ", x);
       const response = await axios.get(url);
@@ -93,17 +109,18 @@ export default function Home({ navigation }) {
         setDeliveryDetails(response.data); // Set the valid delivery object
         setNoDeliveryObjectFetched(""); // Clear the no-delivery message
       }
+   
     } catch (error) {
       // Handle the 404 error when no delivery is found
       if (error.response && error.response.status === 404) {
-        console.log("No delivery assigned to this postman");
+        console.log("No delivery assigned to this postman...");
         setNoDeliveryObjectFetched("Not Assigned");
-        setDeliveryDetails(null); // Clear delivery details since none exist
+        setDeliveryDetails(null); // Clear delivery details since none exi
       } else {
         setNoDeliveryObjectFetched("Not Assigned");
-       
+
         // Handle other errors (e.g., network issues, server errors)
-       // console.error("Error fetching postman data", error.message);
+        // console.error("Error fetching postman data", error.message);
         setError(error.message);
       }
     } finally {
@@ -112,8 +129,11 @@ export default function Home({ navigation }) {
   };
 
   useEffect(() => {
-    getPostmanData();
-  }, []);
+    if(userId){
+      getPostmanData();
+    }
+   
+  }, [userId]);
 
   if (loading) {
     return <ActivityIndicator size="large" color="#0000ff" />;
@@ -141,11 +161,20 @@ export default function Home({ navigation }) {
               {deliveryDetails?.status || noDeliveryObjectFetched}
             </Text>
           </View>
+          {/* {deliveryDetails&&(<Text style={{ fontSize: 28, fontWeight: "bold", color: "#fff" }}>
+            Remaining <View>{deliveryDetails.destinations.length-currentIndexContext}</View>
+          </Text>)} */}
+          {deliveryDetails && (
+            <Text style={{ fontSize: 28, fontWeight: "bold", color: "#fff" }}>
+            Remaining   :  {" "}
+              <Text>
+                {deliveryDetails.destinations.length - currentIndexContext}
+              </Text>
+            </Text>
+          )}
         </View>
 
-        {/* <View style={styles.statusContainer}> */}
-
-        {/* </View> */}
+        {!deliveryDetails && <View style={styles.emptyContainer}></View>}
 
         <View style={styles.blockContainer}>
           <View style={styles.rowContainer}>
@@ -204,6 +233,9 @@ export default function Home({ navigation }) {
 }
 
 const styles = StyleSheet.create({
+  emptyContainer: {
+    marginTop: 20,
+  },
   container: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: "#f4f4f5",
@@ -293,7 +325,7 @@ const styles = StyleSheet.create({
     // shadowRadius: 10,
     // elevation: 6, // Slightly increased for a better elevation effect on Android
     marginBottom: 50,
-    marginTop: 20,
+    // marginTop: 20,
   },
   rowContainer: {
     flexDirection: "row",

@@ -20,7 +20,6 @@ import polyline from "polyline"; // For decoding Google Maps polyline data
 import { ref, set } from "firebase/database";
 import { db } from "../../../firebase_config.js";
 
-
 import { SelectList } from "react-native-dropdown-select-list";
 
 import AuthContext from "../../context/AuthContextProvider";
@@ -38,8 +37,14 @@ const imageTick = require("./done.png"); // Adjust the path as needed
 const whileTick = require("./whiteTick.png"); // Adjust the path as needed
 // const blackTick = require("./blackTick.png"); // Adjust the path as needed
 export default function RouteDisplay() {
-  const { deliveryDetails, userId, userName, setDeliveryDetails } =
-    useContext(AuthContext);
+  const {
+    deliveryDetails,
+    userId,
+    userName,
+    setDeliveryDetails,
+    currentIndexContext,
+    setCurrentIndexContext,
+  } = useContext(AuthContext);
 
   useEffect(() => {
     const fetchCurrentIndex = async () => {
@@ -53,8 +58,6 @@ export default function RouteDisplay() {
 
     fetchCurrentIndex();
   }, []);
-
- 
 
   useEffect(() => {
     const updatedeliverystatusstarted = async () => {
@@ -76,7 +79,8 @@ export default function RouteDisplay() {
   const [x, setX] = useState(0);
   const navigation = useNavigation();
   // Google Maps API key
-  const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY;
+  // const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY;
+  const GOOGLE_MAPS_API_KEY = "AIzaSyCd_5naVx6MeeUG3SmBohA04jzOvmAIDgo";
 
   // State for the current location of the user
   const [currentLocation, setCurrentLocation] = useState(null);
@@ -84,6 +88,10 @@ export default function RouteDisplay() {
   const [route, setRoute] = useState([]);
   // State to keep track of the current destination index in the delivery route
   const [currentIndex, setCurrentIndex] = useState(1);
+
+  useEffect(() => {
+    setCurrentIndexContext(currentIndex);
+  }, [currentIndex]);
 
   useEffect(() => {
     const fetchCurrentIndex = async () => {
@@ -157,9 +165,9 @@ export default function RouteDisplay() {
         mailId: mailId,
         status: finalReason,
       };
-     
+
       const url = `${API_BASE_URL}:${APP_PORT}/api/postman/update-status`;
-      console.log(url)
+      console.log(url);
       // Send the POST request to the backend using axios
       const response = await axios.put(
         //connected usb --> ipconfig -->ipv4-->192.168.83.191
@@ -167,11 +175,13 @@ export default function RouteDisplay() {
         url,
         payload
       );
+//---------------------------------------------------------------------------------------------
+      mailDetails.status = finalReason;
 
       // Handle the response
       console.log("Status updated successfully:", response.data);
     } catch (error) {
-      console.error("Error updating status:", error);
+      console.error("Error updating mail  status:", error);
     }
 
     setIsUndelivered(false);
@@ -205,6 +215,7 @@ export default function RouteDisplay() {
   // Function to open modal with sliding and fading animations
   const openModal = (setVisible) => {
     setVisible(true);
+
     Animated.parallel([
       Animated.timing(slideAnim, {
         toValue: 0, // Moves to the visible position
@@ -247,7 +258,7 @@ export default function RouteDisplay() {
     ) {
       try {
         const url = `${API_BASE_URL}:${APP_PORT}/api/postman/mail/get-details?mailId=${mailId}`;
-        console.log(url)
+        console.log(url);
         //connected usb --> ipconfig -->ipv4-->192.168.83.191
         //emu -->10.0.2.2
         const response = await axios.get(url);
@@ -255,11 +266,11 @@ export default function RouteDisplay() {
         if (response.status === 200) {
           setMailDetails(response.data);
         } else {
-         // console.error(`Error: Received status ${response.status}`);
+           console.error(`Error: Received status ${response.status}`);
           setMailDetails([]);
         }
       } catch (error) {
-       // console.error("Error fetching Mail data", error.message);
+         console.error("Error fetching Mail data", error.message);
       }
     } else {
       setMailDetails([]);
@@ -280,7 +291,7 @@ export default function RouteDisplay() {
     const origin = `${currentLoc.latitude},${currentLoc.longitude}`; // Current location as origin
     const destination = `${destinationLoc.lat},${destinationLoc.lng}`; // Destination
 
-    console.log("key",GOOGLE_MAPS_API_KEY)
+   // console.log("key", GOOGLE_MAPS_API_KEY);
 
     try {
       // Get directions data from Google Maps API
@@ -323,7 +334,7 @@ export default function RouteDisplay() {
         console.error(`Error: Received status ${response.status}`);
       }
     } catch (error) {
-     console.error("Error updating delivery status", error.message);
+      console.error("Error updating delivery status", error.message);
     }
   };
 
@@ -414,8 +425,6 @@ export default function RouteDisplay() {
     updateIndexInStorage(); // Call the async function
   }, [currentIndex]);
 
-  
-
   //------------get current location in every 5 secounds and store it in a use state----------------------
   useEffect(() => {
     let intervalId;
@@ -463,7 +472,7 @@ export default function RouteDisplay() {
         //     deliveryDetails.visitOrder.split(",").map(Number)[currentIndex]
         //   ]
         // );
-      }, 5000); // 5 seconds interval
+      }, 10000); // 10 seconds interval
     };
 
     startLocationTracking();
@@ -479,7 +488,7 @@ export default function RouteDisplay() {
   //-----------------------------------------------------------------------------------------
 
   //--------------- UseEffect to update the route whenever the current index changes
-//LLLLL---------------------------------------------------------------------------------------------------------------
+  //LLLLL---------------------------------------------------------------------------------------------------------------
   // useEffect(() => {
   //   if (
   //     currentLocation &&
@@ -507,11 +516,10 @@ export default function RouteDisplay() {
       );
     }
   }, [currentIndex, currentLocation]);
-  
+
   //   // Cleanup the interval when the component unmounts or dependencies change
   //   return () => clearInterval(interval);
   // }, [currentIndex]);
-  
 
   //setting the final reason --- works when confirm button pressed
   useEffect(() => {
@@ -530,7 +538,7 @@ export default function RouteDisplay() {
 
   const updateLocationInDatabase = (userId, location) => {
     //postmanRef: This uses Firebase's ref function to create a reference to the specific postman document
-    // within the PostmanTracker collection in the Firebase Realtime Database. The reference is created at 
+    // within the PostmanTracker collection in the Firebase Realtime Database. The reference is created at
     //the path PostmanTracker/${userId}, where userId identifies the postman's record.
     const postmanRef = ref(db, `PostmanTracker/${userId}`);
 
@@ -587,7 +595,7 @@ export default function RouteDisplay() {
           currentIndex === deliveryDetails.destinations.length
         } // Disable the button at the first location
       >
-        <MaterialIcons name="arrow-back" size={24} color="white" />
+        <MaterialIcons name="arrow-back" size={24} color="black" />
         <Text style={styles.prevButtonText}>Prev</Text>
       </TouchableOpacity>
 
@@ -624,7 +632,7 @@ export default function RouteDisplay() {
                   title="Arrived"
                   onPress={() => openModal(setArrivedModalVisible)}
                 >
-                  <Text style={styles.arrievedtext}>Arrived</Text>
+                  <Text style={styles.arrievedtext}>Update</Text>
                 </TouchableOpacity>
               ) : null}
 
@@ -896,6 +904,7 @@ const styles = StyleSheet.create({
   },
   nextLocationButton: {
     backgroundColor: "#c6cf11", // Button color
+    // backgroundColor: "#006666", // Button color
     paddingVertical: 20, // Adjust vertical padding
     borderRadius: 10, // Rounded corners
     justifyContent: "center",
@@ -1033,7 +1042,7 @@ const styles = StyleSheet.create({
     position: "absolute", // Floating effect to stay on top
     width: 70,
     height: 60,
-    backgroundColor: "#006666", // A nice soft blue color for the previous button
+    backgroundColor: "#c6cf11", // A nice soft blue color for the previous button
     borderRadius: 9, // Circular button
     justifyContent: "center", // Center the icon inside the button
     alignItems: "center", // Center the icon horizontally
@@ -1050,7 +1059,7 @@ const styles = StyleSheet.create({
   },
 
   prevButtonText: {
-    color: "#fff", // White text for contrast
+    color: "#000", // White text for contrast
     fontWeight: "bold", // Bold text for emphasis
     fontSize: 16, // Text size
   },

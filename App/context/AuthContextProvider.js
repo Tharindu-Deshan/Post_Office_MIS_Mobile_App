@@ -6,10 +6,12 @@ const AuthContext = createContext({
   userId: null,
   userName: null,
   email: null,
+  currentIndexContext: null,
   handleLogin: () => {},
   handleLogout: () => {},
   deliveryDetails: null,
   setDeliveryDetails: () => {},
+  setCurrentIndexContext: () => {},
 });
 
 export const AuthContextProvider = ({ children }) => {
@@ -18,6 +20,7 @@ export const AuthContextProvider = ({ children }) => {
   const [userName, setUserName] = useState("");
   const [deliveryDetails, setDeliveryDetails] = useState(null);
   const [email, setEmail] = useState("");
+  const [currentIndexContext, setCurrentIndexContext] = useState(1);
 
   const handleLogin = (username, postmanId, email) => {
     setIsLoggedIn(true);
@@ -50,6 +53,8 @@ export const AuthContextProvider = ({ children }) => {
         setUserName,
         deliveryDetails,
         setDeliveryDetails,
+        currentIndexContext,
+        setCurrentIndexContext,
       }}
     >
       {children}

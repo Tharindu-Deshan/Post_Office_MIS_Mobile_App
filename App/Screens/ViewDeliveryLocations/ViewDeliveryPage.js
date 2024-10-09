@@ -70,12 +70,9 @@ export default function ViewDeliveryPage() {
           url
         );
 
-        if (response.status === 200) {
+        
           setMailModalDetails(response.data);
-        } else {
-          console.error(`Error: Received status ${response.status}`);
-          setMailModalDetails([]);
-        }
+        
       } catch (error) {
         console.error("Error fetching Mail data", error.message);
       }
