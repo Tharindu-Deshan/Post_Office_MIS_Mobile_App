@@ -567,13 +567,13 @@ export default function RouteDisplay() {
       <TouchableOpacity
         style={[
           styles.floatingBackButton,
-          (currentIndex === 0 ||
+          (currentIndex === 1 ||
             currentIndex === deliveryDetails.destinations.length) &&
             styles.disabledButton, // Disable when at the first location
         ]}
         onPress={handlePreviousLocation}
         disabled={
-          currentIndex === 0 ||
+          currentIndex === 1 ||
           currentIndex === deliveryDetails.destinations.length
         } // Disable the button at the first location
       >
