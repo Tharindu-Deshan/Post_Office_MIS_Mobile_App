@@ -49,9 +49,9 @@ const LoginScreen = () => {
 
     try {
       const url = `${API_BASE_URL}:${APP_PORT}/mobile/authenticate`;
-      // console.log(API_BASE_URL);
-      // console.log(APP_PORT);
-      // console.log(email, password);
+      console.log(API_BASE_URL);
+      console.log(APP_PORT);
+      console.log(email, password);
       const response = await axios.post(url, {
         username: email,
         password: password,
@@ -70,7 +70,7 @@ const LoginScreen = () => {
       }
     } catch (error) {
       // console.error("Error authenticating user", error.message);
-     // alert("Incorrect Password or Email.");
+      // alert("Incorrect Password or Email.");//
       openAlert();
       Vibration.vibrate(500);
     } finally {
@@ -141,7 +141,10 @@ const LoginScreen = () => {
                   </View>
                 </View>
               </Modal> */}
-              <LoginFailedModal closeAlert={closeAlert} visible={modalVisible}/>
+              <LoginFailedModal
+                closeAlert={closeAlert}
+                visible={modalVisible}
+              />
 
               <TouchableOpacity style={styles.forgotPassword}>
                 <Text style={styles.forgotPasswordText}>
@@ -218,31 +221,31 @@ const styles = StyleSheet.create({
   //modal
   modalOverlay: {
     flex: 1, // takes up the whole screen
-    justifyContent: 'center', // center the alert vertically
-    alignItems: 'center', // center the alert horizontally
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // semi-transparent background
+    justifyContent: "center", // center the alert vertically
+    alignItems: "center", // center the alert horizontally
+    backgroundColor: "rgba(0, 0, 0, 0.5)", // semi-transparent background
   },
   alertBox: {
     width: 300, // set a fixed width for the alert box
     padding: 20, // padding inside the alert box
-    backgroundColor: '#fff', // white background for the alert
+    backgroundColor: "#fff", // white background for the alert
     borderRadius: 10, // rounded corners
-    alignItems: 'center', // center content inside the box
+    alignItems: "center", // center content inside the box
   },
   alertText: {
     fontSize: 18, // text size
     marginBottom: 20, // space below the text
-    textAlign: 'center', // center the text horizontally
+    textAlign: "center", // center the text horizontally
   },
   alertButton: {
     padding: 10, // padding inside the button
-    backgroundColor: '#007bff', // button background color
+    backgroundColor: "#007bff", // button background color
     borderRadius: 8, // rounded button corners
-    width: '100%', // button takes full width of the alert box
-    alignItems: 'center', // center the text inside the button
+    width: "100%", // button takes full width of the alert box
+    alignItems: "center", // center the text inside the button
   },
   alertButtonText: {
-    color: '#fff', // white text color
+    color: "#fff", // white text color
     fontSize: 16, // text size inside the button
   },
 });

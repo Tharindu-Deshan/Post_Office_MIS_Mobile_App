@@ -89,6 +89,7 @@ export default function Home({ navigation }) {
       // If the response is successful (200), set the delivery details
       if (response.status === 200) {
         console.log("Request successful");
+        console.log(response.data);
         setDeliveryDetails(response.data); // Set the valid delivery object
         setNoDeliveryObjectFetched(""); // Clear the no-delivery message
       }
@@ -99,8 +100,10 @@ export default function Home({ navigation }) {
         setNoDeliveryObjectFetched("Not Assigned");
         setDeliveryDetails(null); // Clear delivery details since none exist
       } else {
+        setNoDeliveryObjectFetched("Not Assigned");
+       
         // Handle other errors (e.g., network issues, server errors)
-        console.error("Error fetching postman data", error.message);
+       // console.error("Error fetching postman data", error.message);
         setError(error.message);
       }
     } finally {
@@ -134,7 +137,8 @@ export default function Home({ navigation }) {
           <View style={{ marginTop: 50, marginBottom: 10 }}>
             <Text style={styles.statusText}>
               Current Status:{" "}
-              {deliveryDetails?.status || noDeliveryObjectFetched || "Pending"}
+              {/* {deliveryDetails?.status || noDeliveryObjectFetched || "Pending"} */}
+              {deliveryDetails?.status || noDeliveryObjectFetched}
             </Text>
           </View>
         </View>

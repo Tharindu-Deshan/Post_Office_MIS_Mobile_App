@@ -529,6 +529,9 @@ export default function RouteDisplay() {
   }, [currentLocation]);
 
   const updateLocationInDatabase = (userId, location) => {
+    //postmanRef: This uses Firebase's ref function to create a reference to the specific postman document
+    // within the PostmanTracker collection in the Firebase Realtime Database. The reference is created at 
+    //the path PostmanTracker/${userId}, where userId identifies the postman's record.
     const postmanRef = ref(db, `PostmanTracker/${userId}`);
 
     set(postmanRef, {
