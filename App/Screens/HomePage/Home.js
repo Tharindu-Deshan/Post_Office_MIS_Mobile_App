@@ -57,7 +57,7 @@ export default function Home({ navigation }) {
   //LOG  Request successful
 
   // const getPostmanData = async () => {
-  //   // console.log("getting postman data");
+  //   // //console.log("getting postman data");
   //   try {
   //     const response = await axios.get(
   //       `http://192.168.83.191:8081/api/postman/route-display/get-delivery?postmanId=${userId}`
@@ -68,11 +68,11 @@ export default function Home({ navigation }) {
   //     if (response.status === 200) {
   //       // Check if the response body is "1" which means no delivery object
   //       if (response.data === 1) {
-  //         console.log("No delivery assigned to this postman");
+  //         //console.log("No delivery assigned to this postman");
   //         setNoDeliveryObjectFetched("Not Assigned");
   //         setDeliveryDetails(null); // Clear delivery details since none exist
   //       } else {
-  //         console.log("Request successful");
+  //         //console.log("Request successful");
   //         setDeliveryDetails(response.data); // Set the valid delivery object
   //         setNoDeliveryObjectFetched(""); // Clear the no-delivery message
   //       }
@@ -93,19 +93,19 @@ export default function Home({ navigation }) {
    
 
     try {
-    //console.log("User ID:", idd);  // Add this line
+    ////console.log("User ID:", idd);  // Add this line
 
       // const url = `${API_BASE_URL}:${APP_PORT}/api/postman/route-display/get-delivery?postmanId=${userId}`;
       const url = `${API_BASE_URL}:${APP_PORT}/api/postman/route-display/get-delivery?postmanId=4`;
-      console.log(url);
+      //console.log(url);
       const x = await getStartDutyStatus();
-      console.log("LOG..... ", x);
+      //console.log("LOG..... ", x);
       const response = await axios.get(url);
 
       // If the response is successful (200), set the delivery details
       if (response.status === 200) {
-        console.log("Request successful");
-        console.log(response.data);
+        //console.log("Request successful");
+        //console.log(response.data);
         setDeliveryDetails(response.data); // Set the valid delivery object
         setNoDeliveryObjectFetched(""); // Clear the no-delivery message
       }
@@ -113,7 +113,7 @@ export default function Home({ navigation }) {
     } catch (error) {
       // Handle the 404 error when no delivery is found
       if (error.response && error.response.status === 404) {
-        console.log("No delivery assigned to this postman...");
+        //console.log("No delivery assigned to this postman...");
         setNoDeliveryObjectFetched("Not Assigned");
         setDeliveryDetails(null); // Clear delivery details since none exi
       } else {

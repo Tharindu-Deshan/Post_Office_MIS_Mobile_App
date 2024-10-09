@@ -50,7 +50,7 @@ export default function RouteDisplay() {
     const fetchCurrentIndex = async () => {
       try {
         const x = await getCurrentIndex(4);
-        console.log("current index", x);
+        //console.log("current index", x);
       } catch (error) {
         console.error("Error fetching current index", error);
       }
@@ -65,7 +65,7 @@ export default function RouteDisplay() {
 
       //update asyncstorage telling duty is started
       await storeStartDutyStatus(true);
-      console.log("Duty started");
+      //console.log("Duty started");
       setDeliveryDetails((prevDetails) => ({
         ...prevDetails,
         status: "Started",
@@ -167,7 +167,7 @@ export default function RouteDisplay() {
       };
 
       const url = `${API_BASE_URL}:${APP_PORT}/api/postman/update-status`;
-      console.log(url);
+      //console.log(url);
       // Send the POST request to the backend using axios
       const response = await axios.put(
         //connected usb --> ipconfig -->ipv4-->192.168.83.191
@@ -179,7 +179,7 @@ export default function RouteDisplay() {
       mailDetails.status = finalReason;
 
       // Handle the response
-      console.log("Status updated successfully:", response.data);
+      //console.log("Status updated successfully:", response.data);
     } catch (error) {
       console.error("Error updating mail  status:", error);
     }
@@ -258,7 +258,7 @@ export default function RouteDisplay() {
     ) {
       try {
         const url = `${API_BASE_URL}:${APP_PORT}/api/postman/mail/get-details?mailId=${mailId}`;
-        console.log(url);
+        //console.log(url);
         //connected usb --> ipconfig -->ipv4-->192.168.83.191
         //emu -->10.0.2.2
         const response = await axios.get(url);
@@ -281,8 +281,8 @@ export default function RouteDisplay() {
   }, [currentIndex]);
 
   useEffect(() => {
-    console.log("Mail Id", mailId);
-    console.log("Mail details", mailDetails);
+    //console.log("Mail Id", mailId);
+    //console.log("Mail details", mailDetails);
   }, [mailDetails]);
 
   // Function to fetch the route between current location and destination
@@ -291,14 +291,14 @@ export default function RouteDisplay() {
     const origin = `${currentLoc.latitude},${currentLoc.longitude}`; // Current location as origin
     const destination = `${destinationLoc.lat},${destinationLoc.lng}`; // Destination
 
-   // console.log("key", GOOGLE_MAPS_API_KEY);
+   // //console.log("key", GOOGLE_MAPS_API_KEY);
 
     try {
       // Get directions data from Google Maps API
       const response = await axios.get(
         `https://maps.googleapis.com/maps/api/directions/json?origin=${origin}&destination=${destination}&key=${GOOGLE_MAPS_API_KEY}`
       );
-      console.log("response ---getting directions ", response.data.routes);
+      //console.log("response ---getting directions ", response.data.routes);
       // If routes are available, decode the polyline and store the coordinates
       if (response.data.routes && response.data.routes.length > 0) {
         const points = polyline.decode(
@@ -313,8 +313,8 @@ export default function RouteDisplay() {
 
         setRoute(coords); // Set the decoded route
       } else {
-        console.log("No routes found");
-        console.log(response.data);
+        //console.log("No routes found");
+        //console.log(response.data);
       }
     } catch (error) {
       console.error("Error fetching route:", error);
@@ -325,11 +325,11 @@ export default function RouteDisplay() {
   const updateDeliveryStatus = async (deliveryId, status) => {
     try {
       const url = `${API_BASE_URL}:${APP_PORT}/api/postman/route-display/update-delivery-status`;
-      console.log(url);
+      //console.log(url);
       const response = await axios.put(url, { deliveryId, status });
 
       if (response.status === 200) {
-        console.log("Delivery status updated successfully");
+        //console.log("Delivery status updated successfully");
       } else {
         console.error(`Error: Received status ${response.status}`);
       }
@@ -433,7 +433,7 @@ export default function RouteDisplay() {
       // Request location permissions from the user
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
-        console.log("Permission to access location was denied");
+        //console.log("Permission to access location was denied");
         return;
       }
 
@@ -550,9 +550,9 @@ export default function RouteDisplay() {
       userName: userName,
     })
       .then(() => {
-        console.log("Location updated successfully!");
+        //console.log("Location updated successfully!");
         setX(x + 1);
-        console.log(x);
+        //console.log(x);
       })
       .catch((error) => {
         console.error("Error updating location:", error);

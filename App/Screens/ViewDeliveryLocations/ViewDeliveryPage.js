@@ -84,7 +84,7 @@ export default function ViewDeliveryPage() {
   // Function to handle marker press
   const handleMarkerPress = (marker) => {
     setSelectedMarker(marker); // Set the selected marker details
-    // console.log(marker.mailId,marker);
+    // //console.log(marker.mailId,marker);
     getMailDetails(marker.mailId); // Fetch mail details
     setModalVisible(true); // Show the modal
   };

@@ -30,7 +30,7 @@ export const AuthContextProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    console.log(isLoggedIn);
+    //console.log(isLoggedIn);
   }, [isLoggedIn]);
 
   const handleLogout = () => {

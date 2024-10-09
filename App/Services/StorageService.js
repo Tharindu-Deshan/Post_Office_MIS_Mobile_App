@@ -62,7 +62,7 @@ export const getStartDutyStatus = async () => {
 export const removeStartDutyStatus = async () => {
   try {
     await AsyncStorage.removeItem('dutystatus');
-    console.log('Duty status removed successfully');
+    //console.log('Duty status removed successfully');
   } catch (error) {
     console.error('Error removing duty status:', error.message);
   }
