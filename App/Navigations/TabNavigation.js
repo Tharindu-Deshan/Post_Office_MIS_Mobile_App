@@ -1,54 +1,112 @@
-import { View, Text } from 'react-native'
-import React from 'react'
-import Home from '../Screens/Home';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs'
-import Fav from '../Screens/Fav';
-import Search from '../Screens/Search';
-import Profile from '../Screens/Profile';
-import {Ionicons} from '@expo/vector-icons';
+import React, { useContext,useState,useEffect } from 'react';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { Ionicons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
+import { FontAwesome5 } from '@expo/vector-icons';
+// import Home from '../Screens/HomePage/Home';
+
+
+import Profile from '../Screens/Profile/Profile';
+import ViewDeliveryPage from '../Screens/ViewDeliveryLocations/ViewDeliveryPage';
+import RouteDisplay from '../Screens/RouteDisplay/RouteDisplay';
+import StackNavigations from './StackNavigations';
+import AuthContext from '../context/AuthContextProvider';
+import { TouchableOpacity } from 'react-native';
+
+
+
 export default function TabNavigation() {
-    const Tab = createBottomTabNavigator();
+  const Tab = createBottomTabNavigator();
+  const {deliveryDetails} = useContext(AuthContext);
+
+  const [notFetched,setNotFetched] = useState("");
+ useEffect(() => {
+  if (deliveryDetails && deliveryDetails.status) {
+    setNotFetched(""); // Clear the "Not Assigned" message if there's a status
+  } else {
+    setNotFetched("Not Assigned"); // Set "Not Assigned" if there's no delivery status
+  }
+}, [deliveryDetails]);
+
+
+  const isDisabled =
+    deliveryDetails?.status === "Completed" ||
+    deliveryDetails?.status === "Not Assigned" ||
+    notFetched === "Not Assigned"
+    ;
   return (
-    <Tab.Navigator  screenOptions={{
-        headerShown:false
-    }}>
-        <Tab.Screen name = "Home" component ={Home}
-            options={{
-                    tabBarLabel:'Home',
-                    tabBarIcon : ({color,size})=>(
-                        <Ionicons name="home" color = {color} size = {size}/>
-                    ),
+    <Tab.Navigator  
+      screenOptions={({ route }) => ({
+        headerShown: false,
+        tabBarStyle: {
+          height: 72,  // Increase the height of the tab bar
+          paddingBottom: 10,  // Add padding to ensure the icons are centered
+          paddingTop: 10,  // Add padding to adjust icon position
+          backgroundColor: '#3f3f46',  // You can set a custom background color
+          borderTopLeftRadius: 20,  // Add a border radius to the tab bar
+          borderTopRightRadius: 20,  // Add a border radius to the tab bar
+          
+        },
+        tabBarLabelStyle: {
+          fontSize: 14,  // Increase the font size of the labels
+          fontWeight: 'bold',
+        },
+        tabBarIcon: ({ color, size }) => {
+          let iconName;
 
-            }}
-        />
-        <Tab.Screen name = "Search" component ={Search}
-            options={{
-                tabBarLabel:'Search',
-                tabBarIcon : ({color,size})=>(
-                    <Ionicons name="search" color = {color} size = {size}/>
-                ),
-
+          if (route.name === 'Main') {
+            iconName = 'home';
+            return <Ionicons name={iconName} size={size + 5} color={color}  />;
+          } else if (route.name === 'ViewDeliveryPage') {
+            iconName = 'google-maps';
+            return <MaterialCommunityIcons name={iconName} size={size + 5} color={color} />;
+          } else if (route.name === 'RouteDisplay') {
+            iconName = 'route';
+            return <FontAwesome5 name={iconName} size={size + 5} color={color} />;
+          } else if (route.name === 'Profile') {
+            iconName = 'user-circle-o';
+            return <FontAwesome name={iconName} size={size + 5} color={color} />;
+          }
+        },
+      })}
+    >
+      <Tab.Screen
+        name="Main"
+        component={StackNavigations}
+        options={{
+          tabBarLabel: 'Home',
         }}
-        />
-        <Tab.Screen name = "Fav" component ={Fav}
-            options={{
-                tabBarLabel:'Fav',
-                tabBarIcon : ({color,size})=>(
-                    <Ionicons name="heart" color = {color} size = {size}/>
-                ),
-
+      />
+      <Tab.Screen
+        name="ViewDeliveryPage"
+        component={ViewDeliveryPage}
+        options={{
+          tabBarLabel: 'View Delivery',
+          tabBarButton: (props) => (
+            <TouchableOpacity 
+            {...props} disabled={isDisabled} style={[props.style, { opacity: isDisabled ? 0.5 : 1 }]}  />
+          ),  // Disable the tab based on the status
         }}
-        />
-        <Tab.Screen name = "Profile" component ={Profile}
-            options={{
-                tabBarLabel:'Profile',
-                tabBarIcon : ({color,size})=>(
-                    <FontAwesome name="user-circle-o" color = {color} size = {size}/>
-                ),
-
+      />
+      <Tab.Screen
+        name="RouteDisplay"
+        component={RouteDisplay}
+        options={{
+          tabBarLabel: 'Route',
+          tabBarButton: (props) => (
+            <TouchableOpacity {...props} disabled={isDisabled} style={[props.style, { opacity: isDisabled ? 0.5 : 1 }]}  />
+          ),  // Disable the tab based on the status
         }}
-        />
+      />
+   
+      <Tab.Screen
+        name="Profile"
+        component={Profile}
+        options={{
+          tabBarLabel: 'Profile',
+        }}
+      />
     </Tab.Navigator>
-  )
+  );
 }

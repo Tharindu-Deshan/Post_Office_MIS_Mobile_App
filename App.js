@@ -1,23 +1,25 @@
-import { NavigationContainer } from '@react-navigation/native';
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
-import TabNavigation from './App/Navigations/TabNavigation';
+import React from "react";
+// import { NavigationContainer } from "@react-navigation/native";
+// import TabNavigation from "./App/Navigations/TabNavigation";
+import  {
+  AuthContextProvider,
+} from "./App/context/AuthContextProvider";
+// import LoginScreen from "./App/Screens/LoginPage/LoginScreen";
+import LoginChild from "./LoginChild";
 
 export default function App() {
+
+  
+
+  // const [userId, setUserId] = useState("4"); //setUserId method stores the userid in that
+  // const [deliveryDetails, setDeliveryDetails] = useState(null);
+  // const [userName, setUserName] = useState("tharindu");
+
+ 
+
   return (
-    <View style={styles.container}>
-      <NavigationContainer>
-        <TabNavigation/>
-      </NavigationContainer>
-    </View>
+    <AuthContextProvider>
+      <LoginChild/>
+    </AuthContextProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    
-   
-  },
-});

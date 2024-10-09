@@ -1,0 +1,60 @@
+{
+  "_id": "12",
+  "postmanId": "4",
+  "date": "2024-09-12",
+  "destinations": [
+    {
+      "addressId": "1",
+      "mailId": "",
+      "lat": 7.262757,
+      "lng": 79.848666
+    },
+    {
+      "addressId": "7",
+      "mailId": "11",
+      "lat": 7.261288,
+      "lng": 79.846199
+    },
+    {
+      "addressId": "8",
+      "mailId": "12",
+      "lat": 7.26182,
+      "lng": 79.844739
+    },
+    {
+      "addressId": "9",
+      "mailId": "13",
+      "lat": 7.259117,
+      "lng": 79.845126
+    },
+    {
+      "addressId": "10",
+      "mailId": "14",
+      "lat": 7.260799,
+      "lng": 79.849417
+    },
+    {
+      "addressId": "11",
+      "mailId": "15",
+      "lat": 7.260501,
+      "lng": 79.853365
+    },
+    {
+      "addressId": "12",
+      "mailId": "16",
+      "lat": 7.261884,
+      "lng": 79.850812
+    },
+    {
+      "addressId": "13",
+      "mailId": "17",
+      "lat": 7.264949,
+      "lng": 79.852035
+    }
+  ],
+  "visitOrder": "0,3,4,5,6,7,2,1,0",
+  "zone": "Pallansena South",
+  "status": "Assigned",
+  "deliveredCount": 8,
+  "_class": "com.sep.backend_noAuth.entity.Delivery"
+}
