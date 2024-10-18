@@ -28,19 +28,13 @@ export default function Profile() {
         }}
       >
         <View style={styles.profileContainer}>
-          <Image source={imageUser} style={styles.profileImage} />
+          <Image source={imageUser} style={styles.profileImage}  testID="profileImage" />
           <Text style={styles.profileName}>{userName}</Text>
           <Text style={styles.profileEmail}>POSTMAN</Text>
-
-          {/* Edit Profile Button below the email */}
-          {/* <TouchableOpacity style={styles.updateProfileButton} onPress={{}}>
-          <Feather name="edit" size={24} color="#fff" />
-          <Text style={styles.buttonTexthelp}>Edit Profile</Text>
-        </TouchableOpacity> */}
         </View>
       </View>
       <View>
-        <View style={styles.detailsSection}>
+        <View style={styles.detailsSection} testID="detailsSection">
           <View style={styles.detailsItemField}>
             <Feather
               name="user"
@@ -85,18 +79,6 @@ export default function Profile() {
               Email : <Text style={styles.detailsItem}>{email}</Text>
             </Text>
           </View>
-          {/* <View style={styles.detailsContainer}>
-          <Feather name="sun" size={20} color="#4a4a4a" style={styles.icon} />
-          <Text style={styles.detailsText}>
-            Theme Selection : <Text style={styles.detailsItem}>Light Mode</Text>
-          </Text>
-        </View> */}
-          {/* <View style={styles.detailsContainer}>
-          <Feather name="lock" size={20} color="#4a4a4a" style={styles.icon} />
-          <Text style={styles.detailsText}>
-            Password : <Text style={styles.detailsItem}>***********</Text>
-          </Text>
-        </View> */}
         </View>
       </View>
 
@@ -149,7 +131,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   detailsSection: {
-    marginTop:30,
+    marginTop: 30,
     width: "100%",
     marginBottom: 10,
   },

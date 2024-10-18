@@ -70,7 +70,7 @@ export default function ViewDeliveryPage() {
           url
         );
 
-        
+       // console.log(response)
           setMailModalDetails(response.data);
         
       } catch (error) {

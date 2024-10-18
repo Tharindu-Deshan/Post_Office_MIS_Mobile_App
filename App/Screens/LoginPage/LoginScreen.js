@@ -22,6 +22,7 @@ const backgroundImage = require("../LoginPage/07cfeb9c-421d-4ae1-b95f-73c60c97ef
 
 const LoginScreen = () => {
   const { handleLogin, isLoggedIn } = useContext(AuthContext);
+ 
 
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -48,10 +49,11 @@ const LoginScreen = () => {
     setLoading(true);
 
     try {
+      // const url = `${API_BASE_URL}:${APP_PORT}/mobile/authenticate`;
       const url = `${API_BASE_URL}:${APP_PORT}/mobile/authenticate`;
-      //console.log(API_BASE_URL);
-      //console.log(APP_PORT);
-      //console.log(email, password);
+      console.log(API_BASE_URL);
+      console.log(APP_PORT);
+      console.log(email, password);
       const response = await axios.post(url, {
         username: email,
         password: password,

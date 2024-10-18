@@ -258,7 +258,7 @@ export default function RouteDisplay() {
     ) {
       try {
         const url = `${API_BASE_URL}:${APP_PORT}/api/postman/mail/get-details?mailId=${mailId}`;
-        //console.log(url);
+        console.log(url);
         //connected usb --> ipconfig -->ipv4-->192.168.83.191
         //emu -->10.0.2.2
         const response = await axios.get(url);
@@ -472,7 +472,7 @@ export default function RouteDisplay() {
         //     deliveryDetails.visitOrder.split(",").map(Number)[currentIndex]
         //   ]
         // );
-      }, 10000); // 10 seconds interval
+      },5000); // 10 seconds interval
     };
 
     startLocationTracking();
