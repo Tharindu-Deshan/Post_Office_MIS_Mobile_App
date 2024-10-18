@@ -40,7 +40,7 @@ export default function Profile() {
         </View>
       </View>
       <View>
-        <View style={styles.detailsSection}>
+        <View style={styles.detailsSection} testID="detailsSection">
           <View style={styles.detailsItemField}>
             <Feather
               name="user"
@@ -149,7 +149,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   detailsSection: {
-    marginTop:30,
+    marginTop: 30,
     width: "100%",
     marginBottom: 10,
   },

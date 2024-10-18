@@ -136,7 +136,7 @@ export default function Home({ navigation }) {
   }, [userId]);
 
   if (loading) {
-    return <ActivityIndicator size="large" color="#0000ff" />;
+    return <ActivityIndicator testID="ActivityIndicator" size="large" color="#0000ff" />;
   }
 
   return (
@@ -193,6 +193,7 @@ export default function Home({ navigation }) {
             {/* //------------------------------------------------------------------------------------------------------------------- */}
 
             <TouchableOpacity
+             testID="explore-map-button" 
               style={[
                 styles.buttonBlock1,
                 isDisabled && styles.disabledButtonExpolreMap,

@@ -1,38 +1,79 @@
 import React from "react";
-import { render, fireEvent } from "@testing-library/react-native";
-import AuthContext, { AuthContextProvider } from "../../App/context/AuthContextProvider";
-import Profile from "../../App/Screens/Profile/Profile";
-// import Profile from "../Profile"; // Adjust the import path as needed
+// import { render, screen,  } from "@testing-library/react-native";
+import {
+  render,
+  screen,
+  within,
+  fireEvent,
+} from "@testing-library/react-native";
+import  AuthContext from "../../App/context/AuthContextProvider";
+// import Profile from "../Profile";
 // import AuthContext from "../../context/AuthContextProvider";
+ import Profile from "../../App/Screens/Profile/Profile";
+// import AuthContext from "../../App/context/AuthContextProvider";
 
-// Mock the AuthContext to provide dummy user data for the test
-const mockAuthContext = {
+const mockLogout = jest.fn();
+
+const authContextValue = {
+  isLoggedIn: true,
   userId: "12345",
   userName: "John Doe",
   email: "johndoe@example.com",
-  handleLogout: jest.fn(), // Mock the logout function
+  handleLogin: jest.fn(),
+  handleLogout: mockLogout,
+  deliveryDetails: { item: "Package 1", status: "Delivered" },
+  setDeliveryDetails: jest.fn(),
+  currentIndexContext: 1,
+  setCurrentIndexContext: jest.fn(),
 };
 
+const renderComponent = () =>
+  
+  render(
+    <AuthContext.Provider value={authContextValue}>
+      <Profile/>
+      
+    </AuthContext.Provider>
+  );
+
 describe("Profile Component", () => {
-  test("renders user information and handles logout", () => {
-    // Render the Profile component within the AuthContext provider
-    const { getByText } = render(
-      <AuthContextProvider value={mockAuthContext}>
-        <Profile />
-      </AuthContextProvider>
-    );
+  it("calls the logout function when the logout button is pressed", () => {
+    renderComponent();
 
-    // Check if the user name, ID, and email are displayed
-    expect(getByText("John Doe")).toBeTruthy(); // User Name
-    expect(getByText("Postman ID : 12345")).toBeTruthy(); // User ID
-    expect(getByText("johndoe@example.com")).toBeTruthy(); // Email
-
-    // Check if the logout button is rendered and simulate a logout click
-    const logoutButton = getByText("Logout");
-    expect(logoutButton).toBeTruthy();
+    const logoutButton = screen.getByText("Logout");
     fireEvent.press(logoutButton);
 
-    // Verify if the handleLogout function is called
-    expect(mockAuthContext.handleLogout).toHaveBeenCalled();
+    expect(mockLogout).toHaveBeenCalled();
+  });
+
+  it("renders the details section correctly", () => {
+    renderComponent();
+
+    const detailsSection = screen.getByTestId("detailsSection");
+    expect(detailsSection).toBeTruthy();
+  });
+
+  it("renders user name, postman ID, contact, and email correctly in details section", () => {
+    renderComponent();
+
+    const detailsSection = screen.getByTestId("detailsSection");
+
+    const userNameText =
+      within(detailsSection).getByText(/User Name : John Doe/);
+    expect(userNameText).toBeTruthy();
+
+    const postmanIDText =
+      within(detailsSection).getByText(/Postman ID : 12345/);
+    expect(postmanIDText).toBeTruthy();
+
+    const contactText = within(detailsSection).getByText(
+      /Contact : 076 551 6789/
+    );
+    expect(contactText).toBeTruthy();
+
+    const emailText = within(detailsSection).getByText(
+      /Email : johndoe@example.com/
+    );
+    expect(emailText).toBeTruthy();
   });
 });
