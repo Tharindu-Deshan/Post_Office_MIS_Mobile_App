@@ -164,7 +164,7 @@ export default function Home({ navigation }) {
           {/* {deliveryDetails&&(<Text style={{ fontSize: 28, fontWeight: "bold", color: "#fff" }}>
             Remaining <View>{deliveryDetails.destinations.length-currentIndexContext}</View>
           </Text>)} */}
-          {deliveryDetails && (
+          {!isDisabled && deliveryDetails && (
             <Text style={{ fontSize: 28, fontWeight: "bold", color: "#fff" }}>
             Remaining   :  {" "}
               <Text>
