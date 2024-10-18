@@ -117,9 +117,5 @@ describe("Home Component", () => {
     const exploreMapButton = getByTestId("explore-map-button");
     expect(exploreMapButton).not.toBeDisabled(); // Check that it is NOT disabled
   });
-  
-  
-  
-  
 
 });
