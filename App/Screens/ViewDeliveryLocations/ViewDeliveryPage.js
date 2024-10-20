@@ -64,8 +64,7 @@ export default function ViewDeliveryPage() {
       try {
         const url = `${API_BASE_URL}/api/postman/mail/get-details?mailId=${mailId}`;
         const response = await axios.get(
-          //connected usb --> ipconfig -->ipv4-->192.168.83.191
-          //emu -->10.0.2.2
+        
           url
         );
 
@@ -83,7 +82,7 @@ export default function ViewDeliveryPage() {
   // Function to handle marker press
   const handleMarkerPress = (marker) => {
     setSelectedMarker(marker); // Set the selected marker details
-    // //console.log(marker.mailId,marker);
+
     getMailDetails(marker.mailId); // Fetch mail details
     setModalVisible(true); // Show the modal
   };
@@ -125,35 +124,7 @@ export default function ViewDeliveryPage() {
                 />
               );
             })}
-            {/* {deliveryDetails.visitOrder
-              .split(",")
-              .map(Number)
-              .map((orderIndex, index) => {
-                const location = deliveryDetails.destinations[orderIndex];
-                return (
-                  <CustomMarker
-                    key={index}
-                    coordinate={{
-                      latitude: location.lat,
-                      longitude: location.lng,
-                    }}
-                    title={`Location ${index + 1}`}
-                    tag={
-                      index === deliveryDetails.destinations.length - 1
-                        ? "Post Office"
-                        : String(index)
-                    }
-                    onPress={() =>
-                      handleMarkerPress({
-                        title: `Location ${index + 1}`,
-                        lat: location.lat,
-                        lng: location.lng,
-                        mailId :location.mailId,
-                      })
-                    }
-                  />
-                );
-              })} */}
+            
           </MapView>
         </View>
 
@@ -181,7 +152,7 @@ export default function ViewDeliveryPage() {
           </View>
         </View>
 
-        {/* Modal to show marker info */}
+        
         <Modal
   transparent={true}
   animationType="slide"

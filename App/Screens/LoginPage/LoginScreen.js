@@ -50,8 +50,6 @@ const LoginScreen = () => {
       const url = `${API_BASE_URL}/mobile/authenticate`;
       console.log(url);
 
-      //console.log(APP_PORT);
-      //console.log(email, password);
       const response = await axios.post(url, {
         username: email,
         password: password,
@@ -69,8 +67,7 @@ const LoginScreen = () => {
         alert("Authentication failed. Please check your credentials.");
       }
     } catch (error) {
-      // console.error("Error authenticating user", error.message);
-      // alert("Incorrect Password or Email.");//
+    
       openAlert();
       Vibration.vibrate(500);
     } finally {
@@ -121,26 +118,7 @@ const LoginScreen = () => {
                 </Text>
               </TouchableOpacity>
 
-              {/* <Modal
-                transparent={true}
-                visible={modalVisible}
-                animationType="fade"
-                onRequestClose={closeAlert}
-              >
-                <View style={styles.modalOverlay}>
-                  <View style={styles.alertBox}>
-                    <Text style={styles.alertText}>
-                      Login Failed!
-                    </Text>
-                    <TouchableOpacity
-                      style={styles.alertButton}
-                      onPress={closeAlert}
-                    >
-                      <Text style={styles.alertButtonText}>OK</Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              </Modal> */}
+           
               <LoginFailedModal
                 closeAlert={closeAlert}
                 visible={modalVisible}

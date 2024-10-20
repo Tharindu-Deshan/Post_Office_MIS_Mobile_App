@@ -76,11 +76,7 @@ const AddAddress = () => {
         const url = `${API_BASE_URL}/api/postman/address/add-address`;
         const response = await axios.post(url, address);
         if (response.status === 200) {
-          //console.log("Address added successfully");
-          // Alert.alert(
-          //   "Form Submitted",
-          //   `Address: ${JSON.stringify(address, null, 2)}`
-          // );
+        
         }
       } catch (error) {
         console.error(error);

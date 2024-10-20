@@ -13,9 +13,9 @@ import {
   Image,
 } from "react-native";
 import MapView, { Marker, Polyline } from "react-native-maps";
-import * as Location from "expo-location"; // For accessing device location
-import axios from "axios"; // For making HTTP requests
-import polyline from "polyline"; // For decoding Google Maps polyline data
+import * as Location from "expo-location"; 
+import axios from "axios"; 
+import polyline from "polyline"; 
 import { ref, set } from "firebase/database";
 import { db } from "../../../firebase_config.js";
 
@@ -34,7 +34,7 @@ import MarkDestinations from "./MarkDestinations.js";
 
 const imageTick = require("./done.png"); // Adjust the path as needed
 const whileTick = require("./whiteTick.png"); // Adjust the path as needed
-// const blackTick = require("./blackTick.png"); // Adjust the path as needed
+
 export default function RouteDisplay() {
   const {
     deliveryDetails,
@@ -49,7 +49,7 @@ export default function RouteDisplay() {
     const fetchCurrentIndex = async () => {
       try {
         const x = await getCurrentIndex(4);
-        //console.log("current index", x);
+      
       } catch (error) {
         console.error("Error fetching current index", error);
       }
@@ -64,7 +64,7 @@ export default function RouteDisplay() {
 
       //update asyncstorage telling duty is started
       await storeStartDutyStatus(true);
-      //console.log("Duty started");
+    
       setDeliveryDetails((prevDetails) => ({
         ...prevDetails,
         status: "Started",
@@ -74,12 +74,11 @@ export default function RouteDisplay() {
     updatedeliverystatusstarted();
   }, []);
 
-  //testingpurpose
-  const [x, setX] = useState(0);
+
   const navigation = useNavigation();
   // Google Maps API key
-  // const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY;
-  const GOOGLE_MAPS_API_KEY = "AIzaSyCd_5naVx6MeeUG3SmBohA04jzOvmAIDgo";
+  const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY;
+ 
 
   // State for the current location of the user
   const [currentLocation, setCurrentLocation] = useState(null);
@@ -114,25 +113,23 @@ export default function RouteDisplay() {
   const [isDeliveryReasonSelected, setIsDeliveryReasonSelected] =
     useState(false);
   const [finalReason, setFinalReasonSelected] = useState("");
-  // mail id usestate--
+ 
   const [mailId, setMailId] = useState(
     deliveryDetails.destinations[
       deliveryDetails.visitOrder.split(",").map(Number)[currentIndex]
     ].mailId
   );
-  //ref eken krnne mkkhri dyk krnkot eken thw component ekak wenas wenn hdnn... anith component eka ekka
-  //connection ekk thiygnn wage.actions denn plwn anith object ekt
-  const mapViewRef = useRef(null); // Reference to the map view component//
-  const zoomedInRef = useRef(false); // Boolean to track if the map has zoomed in
+  
+  const mapViewRef = useRef(null); 
+  const zoomedInRef = useRef(false); 
   //--------------------------------------------------------------------------------------------
   // State for controlling the visibility of the modals
   const [detailsModalVisible, setDetailsModalVisible] = useState(false); // Modal for "Details"
   const [arrivedModalVisible, setArrivedModalVisible] = useState(false); // Modal for "Arrived"
-  // Animated values for slide-in effect for modals
-  const slideAnim = useRef(new Animated.Value(300)).current; // Starts the modal off-screen
-  const fadeAnim = useRef(new Animated.Value(0)).current; // Opacity starts at 0 (invisible)
-  //---------------------------------------------------------------------------------------------
-  // Initial region (map zoom level and coordinates)
+  
+  const slideAnim = useRef(new Animated.Value(300)).current; 
+  const fadeAnim = useRef(new Animated.Value(0)).current; 
+ 
   const [region, setRegion] = useState({
     latitude: deliveryDetails.destinations[0].lat,
     longitude: deliveryDetails.destinations[0].lng,
@@ -140,14 +137,7 @@ export default function RouteDisplay() {
     longitudeDelta: 0.015,
   });
 
-  // // Custom Marker component to show a marker with a title and tag on the map
-  // const CustomMarker = ({ coordinate, title, tag }) => (
-  //   <Marker coordinate={coordinate} title={title}>
-  //     <View style={styles.customMarker}>
-  //       <Text style={styles.tag}>{tag}</Text>
-  //     </View>
-  //   </Marker>
-  // );
+
 
   const statusOptions = [
     { key: "1", value: "Undelivered - No Response" },
@@ -166,19 +156,16 @@ export default function RouteDisplay() {
       };
 
       const url = `${API_BASE_URL}/api/postman/update-status`;
-      //console.log(url);
+    
       // Send the POST request to the backend using axios
       const response = await axios.put(
-        //connected usb --> ipconfig -->ipv4-->192.168.83.191
-        //emu -->10.0.2.2
+      
         url,
         payload
       );
-//---------------------------------------------------------------------------------------------
+
       mailDetails.status = finalReason;
 
-      // Handle the response
-      //console.log("Status updated successfully:", response.data);
     } catch (error) {
       console.error("Error updating mail  status:", error);
     }
@@ -284,8 +271,8 @@ export default function RouteDisplay() {
   // Function to fetch the route between current location and destination
 
   const getRoute = async (currentLoc, destinationLoc) => {
-    const origin = `${currentLoc.latitude},${currentLoc.longitude}`; // Current location as origin
-    const destination = `${destinationLoc.lat},${destinationLoc.lng}`; // Destination
+    const origin = `${currentLoc.latitude},${currentLoc.longitude}`; 
+    const destination = `${destinationLoc.lat},${destinationLoc.lng}`; 
     try {
       // Get directions data from Google Maps API
       const response = await axios.get(
@@ -316,11 +303,11 @@ export default function RouteDisplay() {
   const updateDeliveryStatus = async (deliveryId, status) => {
     try {
       const url = `${API_BASE_URL}/api/postman/route-display/update-delivery-status`;
-      //console.log(url);
+     
       const response = await axios.put(url, { deliveryId, status });
 
       if (response.status === 200) {
-        //console.log("Delivery status updated successfully");
+    
       } else {
         console.error(`Error: Received status ${response.status}`);
       }
@@ -485,9 +472,7 @@ export default function RouteDisplay() {
     }
   }, [currentIndex, currentLocation]);
 
-  //   // Cleanup the interval when the component unmounts or dependencies change
-  //   return () => clearInterval(interval);
-  // }, [currentIndex]);
+
 
   //setting the final reason --- works when confirm button pressed
   useEffect(() => {
@@ -504,10 +489,9 @@ export default function RouteDisplay() {
     }
   }, [currentLocation]);
 
+  
   const updateLocationInDatabase = (userId, location) => {
-    //postmanRef: This uses Firebase's ref function to create a reference to the specific postman document
-    // within the PostmanTracker collection in the Firebase Realtime Database. The reference is created at
-    //the path PostmanTracker/${userId}, where userId identifies the postman's record.
+    
     const postmanRef = ref(db, `PostmanTracker/${userId}`);
 
     set(postmanRef, {
@@ -518,9 +502,7 @@ export default function RouteDisplay() {
       userName: userName,
     })
       .then(() => {
-        //console.log("Location updated successfully!");
-        setX(x + 1);
-        //console.log(x);
+       
       })
       .catch((error) => {
         console.error("Error updating location:", error);
@@ -539,8 +521,7 @@ export default function RouteDisplay() {
         showsUserLocation={true} // Show user's location on the map
         followsUserLocation={true} // Map follows the user's location
       >
-        {/* Add markers for each destination --------------------------------------------------------------------------------*/}
-
+       
         <MarkDestinations />
 
         {/* Draw the route polyline if available */}
@@ -549,7 +530,7 @@ export default function RouteDisplay() {
         )}
       </MapView>
 
-      {/* //--------------------------------------------------------------------------------------------------------------?>>>>>>>>>>>>>? */}
+      
       <TouchableOpacity
         style={[
           styles.floatingBackButton,
@@ -567,7 +548,7 @@ export default function RouteDisplay() {
         <Text style={styles.prevButtonText}>Prev</Text>
       </TouchableOpacity>
 
-      {/* ?-------------------------------------------------------------------------------------------------- */}
+    
 
       {/* Buttons at the bottom */}
       <View style={styles.buttonContainer}>
@@ -650,11 +631,6 @@ export default function RouteDisplay() {
                   <Text>{mailDetails.mailType}</Text>
                   {"\n"}
 
-                  {/* <Text style={{ fontWeight: "bold" }}>Zone: </Text>
-                  <Text>{mailDetails.zone}</Text>
-                  {"\n"}
-                  <Text style={{ fontWeight: "bold" }}>City: </Text>
-                  <Text>{mailDetails.city}</Text> */}
                   {"\n"}
                 </Text>
               </ScrollView>
@@ -933,12 +909,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
   },
-  // confirmButton: {
-  //   backgroundColor: "#f33",
-  //   paddingVertical: 10,
-  //   paddingHorizontal: 20,
-  //   borderRadius: 5,
-  // },
+  
   cancelButton: {
     backgroundColor: "#fff",
     paddingVertical: 10,

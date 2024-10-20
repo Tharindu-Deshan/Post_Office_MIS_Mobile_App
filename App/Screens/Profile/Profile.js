@@ -32,11 +32,7 @@ export default function Profile() {
           <Text style={styles.profileName}>{userName}</Text>
           <Text style={styles.profileEmail}>POSTMAN</Text>
 
-          {/* Edit Profile Button below the email */}
-          {/* <TouchableOpacity style={styles.updateProfileButton} onPress={{}}>
-          <Feather name="edit" size={24} color="#fff" />
-          <Text style={styles.buttonTexthelp}>Edit Profile</Text>
-        </TouchableOpacity> */}
+  
         </View>
       </View>
       <View>
@@ -85,18 +81,7 @@ export default function Profile() {
               Email : <Text style={styles.detailsItem}>{email}</Text>
             </Text>
           </View>
-          {/* <View style={styles.detailsContainer}>
-          <Feather name="sun" size={20} color="#4a4a4a" style={styles.icon} />
-          <Text style={styles.detailsText}>
-            Theme Selection : <Text style={styles.detailsItem}>Light Mode</Text>
-          </Text>
-        </View> */}
-          {/* <View style={styles.detailsContainer}>
-          <Feather name="lock" size={20} color="#4a4a4a" style={styles.icon} />
-          <Text style={styles.detailsText}>
-            Password : <Text style={styles.detailsItem}>***********</Text>
-          </Text>
-        </View> */}
+         
         </View>
       </View>
 
@@ -170,9 +155,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#eee", // Softer border for detail sections
     paddingVertical: 15,
-    // borderColor: "black", // Custom blue border color
-    // borderWidth: 1, // Adjust the thickness of the border
-    // borderStyle:"dashed"
+   
   },
   detailsItemField: {
     flexDirection: "row", // Align icon and text in a row
@@ -190,9 +173,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#eee", // Softer border for detail sections
     paddingVertical: 15,
-    // borderColor: "black", // Custom blue border color
-    // borderWidth: 1, // Adjust the thickness of the border
-    // borderStyle:"dashed"
+   
   },
 
   detailsText: {
