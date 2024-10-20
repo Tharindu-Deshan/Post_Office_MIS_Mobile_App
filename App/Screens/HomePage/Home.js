@@ -96,7 +96,7 @@ export default function Home({ navigation }) {
     ////console.log("User ID:", idd);  // Add this line
 
       // const url = `${API_BASE_URL} /api/postman/route-display/get-delivery?postmanId=${userId}`;
-      const url = `${API_BASE_URL} /api/postman/route-display/get-delivery?postmanId=4`;
+      const url = `${API_BASE_URL}/api/postman/route-display/get-delivery?postmanId=4`;
       //console.log(url);
       const x = await getStartDutyStatus();
       //console.log("LOG..... ", x);

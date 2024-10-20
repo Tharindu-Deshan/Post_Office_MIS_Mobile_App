@@ -32,7 +32,7 @@ const AddAddress = () => {
   const getZone1 = async () => {
     const postmanId = await AsyncStorage.getItem('postmanId');
     //console.log("Postman Id:", postmanId);
-    const url = `${API_BASE_URL} /api/postman/add-person/get-zone?postmanId=${postmanId}`;
+    const url = `${API_BASE_URL}/api/postman/add-person/get-zone?postmanId=${postmanId}`;
     
     try{
       //console.log("URL:", url);
@@ -74,7 +74,7 @@ const AddAddress = () => {
       
 
       try {
-        const url = `${API_BASE_URL} /api/postman/address/add-address`;
+        const url = `${API_BASE_URL}/api/postman/address/add-address`;
         const response = await axios.post(url, address);
         if (response.status === 200) {
           //console.log("Address added successfully");
