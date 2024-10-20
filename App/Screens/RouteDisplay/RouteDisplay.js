@@ -258,9 +258,7 @@ export default function RouteDisplay() {
     ) {
       try {
         const url = `${API_BASE_URL}:${APP_PORT}/api/postman/mail/get-details?mailId=${mailId}`;
-        //console.log(url);
-        //connected usb --> ipconfig -->ipv4-->192.168.83.191
-        //emu -->10.0.2.2
+    
         const response = await axios.get(url);
 
         if (response.status === 200) {
@@ -281,8 +279,7 @@ export default function RouteDisplay() {
   }, [currentIndex]);
 
   useEffect(() => {
-    //console.log("Mail Id", mailId);
-    //console.log("Mail details", mailDetails);
+
   }, [mailDetails]);
 
   // Function to fetch the route between current location and destination
@@ -290,16 +287,12 @@ export default function RouteDisplay() {
   const getRoute = async (currentLoc, destinationLoc) => {
     const origin = `${currentLoc.latitude},${currentLoc.longitude}`; // Current location as origin
     const destination = `${destinationLoc.lat},${destinationLoc.lng}`; // Destination
-
-   // //console.log("key", GOOGLE_MAPS_API_KEY);
-
     try {
       // Get directions data from Google Maps API
       const response = await axios.get(
         `https://maps.googleapis.com/maps/api/directions/json?origin=${origin}&destination=${destination}&key=${GOOGLE_MAPS_API_KEY}`
       );
-      //console.log("response ---getting directions ", response.data.routes);
-      // If routes are available, decode the polyline and store the coordinates
+      
       if (response.data.routes && response.data.routes.length > 0) {
         const points = polyline.decode(
           response.data.routes[0].overview_polyline.points
@@ -313,8 +306,7 @@ export default function RouteDisplay() {
 
         setRoute(coords); // Set the decoded route
       } else {
-        //console.log("No routes found");
-        //console.log(response.data);
+   
       }
     } catch (error) {
       console.error("Error fetching route:", error);
@@ -465,13 +457,6 @@ export default function RouteDisplay() {
           longitudeDelta: 0.01,
         });
 
-        //  -------Fetch the route to the next destination
-        // getRoute(
-        //   { latitude, longitude }, // Pass the updated location
-        //   deliveryDetails.destinations[
-        //     deliveryDetails.visitOrder.split(",").map(Number)[currentIndex]
-        //   ]
-        // );
       }, 10000); // 10 seconds interval
     };
 
@@ -485,23 +470,7 @@ export default function RouteDisplay() {
     };
   }, []); // Re-run if currentIndex or deliveryDetails changes
 
-  //-----------------------------------------------------------------------------------------
-
-  //--------------- UseEffect to update the route whenever the current index changes
-  //LLLLL---------------------------------------------------------------------------------------------------------------
-  // useEffect(() => {
-  //   if (
-  //     currentLocation &&
-  //     currentIndex < deliveryDetails.visitOrder.split(",").map(Number).length
-  //   ) {
-  //     getRoute(
-  //       currentLocation,
-  //       deliveryDetails.destinations[
-  //         deliveryDetails.visitOrder.split(",").map(Number)[currentIndex]
-  //       ]
-  //     );
-  //   }
-  // }, [currentIndex]);
+ 
   useEffect(() => {
     if (
       currentLocation &&

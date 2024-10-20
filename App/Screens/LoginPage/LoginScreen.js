@@ -49,7 +49,8 @@ const LoginScreen = () => {
 
     try {
       const url = `${API_BASE_URL}:${APP_PORT}/mobile/authenticate`;
-      //console.log(API_BASE_URL);
+      console.log(url);
+
       //console.log(APP_PORT);
       //console.log(email, password);
       const response = await axios.post(url, {
