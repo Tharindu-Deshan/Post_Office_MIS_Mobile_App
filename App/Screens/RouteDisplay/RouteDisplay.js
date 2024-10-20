@@ -1,5 +1,4 @@
 import { API_BASE_URL } from "@env";
-import { APP_PORT } from "@env";
 import React, { useState, useEffect, useRef, useContext } from "react";
 import { useNavigation } from "@react-navigation/native";
 import {

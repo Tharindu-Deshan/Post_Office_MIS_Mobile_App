@@ -1,7 +1,6 @@
 import React, { useContext, useRef, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_BASE_URL } from "@env";
-import { APP_PORT } from "@env";
 import {
   View,
   Text,

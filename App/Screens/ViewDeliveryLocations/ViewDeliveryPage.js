@@ -1,5 +1,4 @@
 import { API_BASE_URL } from "@env";
-import { APP_PORT } from "@env";
 import axios from "axios";
 import React, { useState, useRef, useContext } from "react";
 import {
