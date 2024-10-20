@@ -166,7 +166,7 @@ export default function RouteDisplay() {
         status: finalReason,
       };
 
-      const url = `${API_BASE_URL}:${APP_PORT}/api/postman/update-status`;
+      const url = `${API_BASE_URL} /api/postman/update-status`;
       //console.log(url);
       // Send the POST request to the backend using axios
       const response = await axios.put(
@@ -257,7 +257,7 @@ export default function RouteDisplay() {
       ].mailId
     ) {
       try {
-        const url = `${API_BASE_URL}:${APP_PORT}/api/postman/mail/get-details?mailId=${mailId}`;
+        const url = `${API_BASE_URL} /api/postman/mail/get-details?mailId=${mailId}`;
     
         const response = await axios.get(url);
 
@@ -316,7 +316,7 @@ export default function RouteDisplay() {
   //Function update Delivery Status ------------------------
   const updateDeliveryStatus = async (deliveryId, status) => {
     try {
-      const url = `${API_BASE_URL}:${APP_PORT}/api/postman/route-display/update-delivery-status`;
+      const url = `${API_BASE_URL} /api/postman/route-display/update-delivery-status`;
       //console.log(url);
       const response = await axios.put(url, { deliveryId, status });
 

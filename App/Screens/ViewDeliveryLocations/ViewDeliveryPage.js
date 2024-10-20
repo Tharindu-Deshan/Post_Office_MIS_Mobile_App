@@ -63,7 +63,7 @@ export default function ViewDeliveryPage() {
   const getMailDetails = async (mailId) => {
     if (mailId) {
       try {
-        const url = `${API_BASE_URL}:${APP_PORT}/api/postman/mail/get-details?mailId=${mailId}`;
+        const url = `${API_BASE_URL} /api/postman/mail/get-details?mailId=${mailId}`;
         const response = await axios.get(
           //connected usb --> ipconfig -->ipv4-->192.168.83.191
           //emu -->10.0.2.2

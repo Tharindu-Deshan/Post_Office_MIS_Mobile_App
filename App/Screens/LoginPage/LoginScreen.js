@@ -48,7 +48,7 @@ const LoginScreen = () => {
     setLoading(true);
 
     try {
-      const url = `${API_BASE_URL}:${APP_PORT}/mobile/authenticate`;
+      const url = `${API_BASE_URL} /mobile/authenticate`;
       console.log(url);
 
       //console.log(APP_PORT);
