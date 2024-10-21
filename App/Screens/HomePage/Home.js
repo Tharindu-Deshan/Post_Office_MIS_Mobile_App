@@ -43,84 +43,41 @@ export default function Home({ navigation }) {
     currentIndexContext,
   } = useContext(AuthContext);
 
-  
-
   const [noDeliveryObjectFetched, setNoDeliveryObjectFetched] = useState("");
   const isDisabled =
     deliveryDetails?.status === "Completed" ||
     deliveryDetails?.status === "Not Assigned" ||
     noDeliveryObjectFetched === "Not Assigned";
-  // getting postman data
-  // LOG  Postman
-  // LOG  logged in true
-  // LOG  true
-  //LOG  Request successful
-
-  // const getPostmanData = async () => {
-  //   // //console.log("getting postman data");
-  //   try {
-  //     const response = await axios.get(
-  //       `http://192.168.83.191:8081/api/postman/route-display/get-delivery?postmanId=${userId}`
-  //     );
-  //     //connected usb --> ipconfig -->ipv4-->192.168.83.191
-  //     //emu -->10.0.2.2
-
-  //     if (response.status === 200) {
-  //       // Check if the response body is "1" which means no delivery object
-  //       if (response.data === 1) {
-  //         //console.log("No delivery assigned to this postman");
-  //         setNoDeliveryObjectFetched("Not Assigned");
-  //         setDeliveryDetails(null); // Clear delivery details since none exist
-  //       } else {
-  //         //console.log("Request successful");
-  //         setDeliveryDetails(response.data); // Set the valid delivery object
-  //         setNoDeliveryObjectFetched(""); // Clear the no-delivery message
-  //       }
-  //     } else {
-  //       console.error(`Error: Received status ${response.status}`);
-  //       setNoDeliveryObjectFetched("Not Assigned");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error fetching postman data", error.message);
-  //     setNoDeliveryObjectFetched("Not Assigned");
-  //     setError(error.message);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
+  
+ 
 
   const getPostmanData = async () => {
-   
-
     try {
-    ////console.log("User ID:", idd);  // Add this line
-
-      // const url = `${API_BASE_URL}:${APP_PORT}/api/postman/route-display/get-delivery?postmanId=${userId}`;
+      
+      const baseUrl = `${API_BASE_URL}`;
+      const appPort = `${APP_PORT}`;
       const url = `${API_BASE_URL}:${APP_PORT}/api/postman/route-display/get-delivery?postmanId=4`;
-      console.log(url);
+      
       const x = await getStartDutyStatus();
-      //console.log("LOG..... ", x);
+      
       const response = await axios.get(url);
 
       // If the response is successful (200), set the delivery details
       if (response.status === 200) {
-        //console.log("Request successful");
-        console.log(response.data);
+        
+        console.log("Delivery Obj Received.");
+        
         setDeliveryDetails(response.data); // Set the valid delivery object
         setNoDeliveryObjectFetched(""); // Clear the no-delivery message
       }
-   
     } catch (error) {
-      // Handle the 404 error when no delivery is found
+     
       if (error.response && error.response.status === 404) {
-        //console.log("No delivery assigned to this postman...");
+       
         setNoDeliveryObjectFetched("Not Assigned");
         setDeliveryDetails(null); // Clear delivery details since none exi
       } else {
         setNoDeliveryObjectFetched("Not Assigned");
-
-        // Handle other errors (e.g., network issues, server errors)
-        // console.error("Error fetching postman data", error.message);
         setError(error.message);
       }
     } finally {
@@ -129,10 +86,9 @@ export default function Home({ navigation }) {
   };
 
   useEffect(() => {
-    if(userId){
+    if (userId) {
       getPostmanData();
     }
-   
   }, [userId]);
 
   if (loading) {
@@ -157,16 +113,14 @@ export default function Home({ navigation }) {
           <View style={{ marginTop: 50, marginBottom: 10 }}>
             <Text style={styles.statusText}>
               Current Status:{" "}
-              {/* {deliveryDetails?.status || noDeliveryObjectFetched || "Pending"} */}
+             
               {deliveryDetails?.status || noDeliveryObjectFetched}
             </Text>
           </View>
-          {/* {deliveryDetails&&(<Text style={{ fontSize: 28, fontWeight: "bold", color: "#fff" }}>
-            Remaining <View>{deliveryDetails.destinations.length-currentIndexContext}</View>
-          </Text>)} */}
+          
           {deliveryDetails && (
             <Text style={{ fontSize: 28, fontWeight: "bold", color: "#fff" }}>
-            Remaining   :  {" "}
+              Remaining :{" "}
               <Text>
                 {deliveryDetails.destinations.length - currentIndexContext}
               </Text>
@@ -193,7 +147,7 @@ export default function Home({ navigation }) {
             {/* //------------------------------------------------------------------------------------------------------------------- */}
 
             <TouchableOpacity
-            testID="explore-map-button" 
+              testID="explore-map-button"
               style={[
                 styles.buttonBlock1,
                 isDisabled && styles.disabledButtonExpolreMap,

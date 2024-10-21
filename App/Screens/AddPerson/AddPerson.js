@@ -58,15 +58,12 @@ const AddPerson = () => {
           members,
         };
 
-        //console.log(addressWithMembers);
-
-        //http://localhost:8081/api/postman/add-person/
         const response = await axios.post(
           `${API_BASE_URL}:${APP_PORT}/api/postman/add-person/`,
           addressWithMembers
         );
         if (response.status === 200) {
-          //console.log("Address added successfully");
+     
         }
       } catch (error) {
         console.error(error);
@@ -106,11 +103,11 @@ const AddPerson = () => {
         console.error("Mail ID is missing");
         return;
       }
-      //console.log(mailId);
-      const url = `${API_BASE_URL}:${APP_PORT}/api/postman/mail/get-details?mailId=${mailId}`;
+      
+      const baseUrl = `${API_BASE_URL}`;const appPort = `${APP_PORT}`;const url = `${API_BASE_URL}:${APP_PORT}/api/postman/mail/get-details?mailId=${mailId}`;
       const response = await axios.get(url);
       const destinationAddress = response.data.destinationAddress;
-      // const housenumber = destinationAddress.split(',')[0].trim();
+      
       const housenumber = destinationAddress
         .split(",")[0]
         .replace(/\s+/g, "")
@@ -127,7 +124,7 @@ const AddPerson = () => {
   const getZone1 = async () => {
     const postmanId = await AsyncStorage.getItem("postmanId");
     //console.log("Postman Id:", postmanId);
-    const url = `${API_BASE_URL}:${APP_PORT}/api/postman/add-person/get-zone?postmanId=${postmanId}`;
+    const baseUrl = `${API_BASE_URL}`;const appPort = `${APP_PORT}`;const url = `${API_BASE_URL}:${APP_PORT}/api/postman/add-person/get-zone?postmanId=${postmanId}`;
     //console.log("URL:", url);
     try {
       const response = await axios.get(url);

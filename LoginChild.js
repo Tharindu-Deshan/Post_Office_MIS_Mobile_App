@@ -10,9 +10,7 @@ export default function LoginChild() {
   const { isLoggedIn } = useContext(AuthContext);
 
   useEffect(() => {
-    //console.log("logged in", isLoggedIn);
-
-    //check cookies
+    
   }, [isLoggedIn]);
   return (
     <NavigationContainer>
