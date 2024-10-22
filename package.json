@@ -7,13 +7,7 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "test": "jest"
-  },
-  "jest": {
-    "preset": "jest-expo",
-    "transformIgnorePatterns": [
-      "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@sentry/react-native|native-base|react-native-svg)"
-    ]
+    "test": "jest --verbose"
   },
   "dependencies": {
     "@expo/metro-runtime": "~3.2.3",
@@ -25,7 +19,7 @@
     "@react-navigation/stack": "^6.4.1",
     "axios": "^1.7.2",
     "dotenv": "^16.4.5",
-    "expo": "~51.0.37",
+    "expo": "~51.0.38",
     "expo-barcode-scanner": "~13.0.1",
     "expo-camera": "~15.0.16",
     "expo-font": "~12.0.10",
@@ -35,7 +29,7 @@
     "jest": "^29.4.0",
     "jest-expo": "~51.0.4",
     "polyline": "^0.2.0",
-    "react": "18.2.0",
+    "react": "^18.2.0",
     "react-dom": "18.2.0",
     "react-native": "^0.74.5",
     "react-native-camera": "^4.2.1",
@@ -54,6 +48,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
+    "@testing-library/jest-native": "^5.4.3",
     "@testing-library/react-native": "^12.7.2"
   },
   "private": true

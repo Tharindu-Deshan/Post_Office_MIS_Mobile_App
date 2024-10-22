@@ -48,10 +48,13 @@ const LoginScreen = () => {
     setLoading(true);
 
     try {
+      // const baseUrl = `${API_BASE_URL}`;const appPort = `${APP_PORT}`;const url = `${API_BASE_URL}:${APP_PORT}/mobile/authenticate`;
+      // const baseUrl = `${API_BASE_URL}`;const appPort = `${APP_PORT}`;const url = `${API_BASE_URL}:${APP_PORT}/mobile/authenticate`;
+      const baseUrl = `${API_BASE_URL}`;
+      const appPort = `${APP_PORT}`;
       const url = `${API_BASE_URL}:${APP_PORT}/mobile/authenticate`;
-      console.log(API_BASE_URL);
-      console.log(APP_PORT);
-      console.log(email, password);
+
+   
       const response = await axios.post(url, {
         username: email,
         password: password,
@@ -59,7 +62,7 @@ const LoginScreen = () => {
 
       if (response.status === 200) {
         const { username, postmanId, email, token } = response.data;
-        console.log("Authentication successful");
+        //console.log("Authentication successful");
 
         await AsyncStorage.setItem("userToken", token);
         await AsyncStorage.setItem("postmanId", postmanId);

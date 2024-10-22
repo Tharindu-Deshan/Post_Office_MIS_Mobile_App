@@ -14,17 +14,38 @@ import * as Location from "expo-location";
 import AuthContext from "../../context/AuthContextProvider";
 import axios from "axios";
 import AddressModal from "./AddAddressModal";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const AddAddress = () => {
-  const { deliveryDetails } = useContext(AuthContext);
+  
   const [newAddress, setNewAddress] = useState({});
 
   const [modalVisible, setModalVisible] = useState(false);
 
   const [city, setCity] = useState("Kochchikade");
-  const zone = deliveryDetails.zone;
+  const [zone,setZone1]=useState("");
   const [houseNumber, setHouseNumber] = useState("");
   const [members, setMembers] = useState([{ customerId: 1, name: "" }]);
+
+
+  //------------------------------------------------------------------------------
+  const getZone1 = async () => {
+    const postmanId = await AsyncStorage.getItem('postmanId');
+    //console.log("Postman Id:", postmanId);
+    const baseUrl = `${API_BASE_URL}`;const appPort = `${APP_PORT}`;const url = `${API_BASE_URL}:${APP_PORT}/api/postman/add-person/get-zone?postmanId=${postmanId}`;
+    
+    try{
+      //console.log("URL:", url);
+      const response = await axios.get(url);
+      //console.log("Response:", response.data);
+      setZone1(response.data);
+    }catch(error){
+      console.error("network errorr.......",error);
+    }
+  }
+  useEffect(() => {
+    getZone1();
+  },[])
 
   const handleMemberChange = (index, field, value) => {
     const updatedMembers = members.map((member, idx) =>
@@ -53,14 +74,10 @@ const AddAddress = () => {
       
 
       try {
-        const url = `${API_BASE_URL}:${APP_PORT}/api/postman/address/add-address`;
+        const baseUrl = `${API_BASE_URL}`;const appPort = `${APP_PORT}`;const url = `${API_BASE_URL}:${APP_PORT}/api/postman/address/add-address`;
         const response = await axios.post(url, address);
         if (response.status === 200) {
-          console.log("Address added successfully");
-          // Alert.alert(
-          //   "Form Submitted",
-          //   `Address: ${JSON.stringify(address, null, 2)}`
-          // );
+      
         }
       } catch (error) {
         console.error(error);

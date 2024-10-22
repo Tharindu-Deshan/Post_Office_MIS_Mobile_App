@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, Button, StyleSheet } from "react-native";
 import { BarCodeScanner } from "expo-barcode-scanner";
+// import { Camera } from "expo-camera";
 
 export default function BarCodeScannerComponent() {
   const [hasPermission, setHasPermission] = useState(null);

@@ -1,3 +1,4 @@
+
 import AuthContext from '../../context/AuthContextProvider';
 import React, { useContext } from "react";
 import { Marker } from "react-native-maps";
@@ -5,17 +6,17 @@ import { View, Text, StyleSheet } from "react-native";
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 
 export default function MarkDestinations() {
-  const { deliveryDetails } = useContext(AuthContext);
+  const { deliveryDetails, currentIndexContext } = useContext(AuthContext);
 
   // Split the visitOrder string and convert it to an array of numbers
   const orderIndices = deliveryDetails.visitOrder.split(",").map(Number);
-  
+
   // Filter out the last '0' if present and take only indices up to 7th index (1 in this case)
   const filteredIndices = orderIndices.slice(0, orderIndices.lastIndexOf(0) !== -1 ? orderIndices.lastIndexOf(0) : orderIndices.length);
 
-  const CustomMarker = ({ coordinate, title, tag, onPress }) => (
-    <Marker coordinate={coordinate} onPress={onPress}>
-      <View style={styles.customMarker}>
+  const CustomMarker = ({ coordinate, title, tag, isCurrent,testID }) => (
+    <Marker coordinate={coordinate}>
+      <View style={[styles.customMarker, isCurrent && styles.currentMarker]} testID={testID}>
         <Text style={styles.tag}>{tag}</Text>
       </View>
     </Marker>
@@ -26,6 +27,7 @@ export default function MarkDestinations() {
       {
         filteredIndices.map((orderIndex, index) => {
           const location = deliveryDetails.destinations[orderIndex];
+          const isCurrent = orderIndex === currentIndexContext;
           return (
             <CustomMarker
               key={index}
@@ -40,9 +42,11 @@ export default function MarkDestinations() {
               }
               tag={
                 index === 0
-                  ? (<FontAwesome6 name="building-columns" size={24} color="black" />)
+                  ? (<FontAwesome6 name="building-columns" size={24} color="black" testID="postOfficeIcon" />)
                   : String(index)
               }
+              isCurrent={isCurrent}
+              testID={`marker-${index}`}
             />
           );
         })
@@ -50,8 +54,6 @@ export default function MarkDestinations() {
     </>
   );
 }
-
-
 
 const styles = StyleSheet.create({
   customMarker: {
@@ -62,6 +64,9 @@ const styles = StyleSheet.create({
     borderColor: "black",
     borderWidth: 1,
     alignItems: "center",
+  },
+  currentMarker: {
+    backgroundColor: "yellow", // Change this color to highlight the current index
   },
   tag: {
     color: "black",

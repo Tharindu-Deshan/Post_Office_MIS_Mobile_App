@@ -63,19 +63,16 @@ export default function ViewDeliveryPage() {
   const getMailDetails = async (mailId) => {
     if (mailId) {
       try {
-        const url = `${API_BASE_URL}:${APP_PORT}/api/postman/mail/get-details?mailId=${mailId}`;
+        const baseUrl = `${API_BASE_URL}`;const appPort = `${APP_PORT}`;const url = `${API_BASE_URL}:${APP_PORT}/api/postman/mail/get-details?mailId=${mailId}`;
         const response = await axios.get(
           //connected usb --> ipconfig -->ipv4-->192.168.83.191
           //emu -->10.0.2.2
           url
         );
 
-        if (response.status === 200) {
+       // console.log(response)
           setMailModalDetails(response.data);
-        } else {
-          console.error(`Error: Received status ${response.status}`);
-          setMailModalDetails([]);
-        }
+        
       } catch (error) {
         console.error("Error fetching Mail data", error.message);
       }
@@ -87,7 +84,7 @@ export default function ViewDeliveryPage() {
   // Function to handle marker press
   const handleMarkerPress = (marker) => {
     setSelectedMarker(marker); // Set the selected marker details
-    // console.log(marker.mailId,marker);
+    // //console.log(marker.mailId,marker);
     getMailDetails(marker.mailId); // Fetch mail details
     setModalVisible(true); // Show the modal
   };
