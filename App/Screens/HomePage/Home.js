@@ -65,7 +65,7 @@ export default function Home({ navigation }) {
       // If the response is successful (200), set the delivery details
       if (response.status === 200) {
         
-        console.log("Delivery Obj Received.");
+       
         
         setDeliveryDetails(response.data); // Set the valid delivery object
         setNoDeliveryObjectFetched(""); // Clear the no-delivery message
